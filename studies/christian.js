@@ -405,7 +405,7 @@ function place(k, x, y, tx, ty) {
   // a leader line from the lettering to the thing it names
   const gap = 0.02 * (ALIGN[k] === 'right' ? 1 : -1);
   const x0 = X(x + gap), y0 = Y(y), x1 = X(tx), y1 = Y(ty);
-  L.path.setAttribute('d', `M${x0},${y0} Q${(x0 + x1) / 2},${y0} ${x1},${y1}`);
+  L.path.setAttribute('d', conn >= 4 ? `M${x0},${y0} L${x1},${y1}` : `M${x0},${y0} Q${(x0 + x1) / 2},${y0} ${x1},${y1}`);
   L.dot.setAttribute('cx', x1);
   L.dot.setAttribute('cy', y1);
 }
@@ -432,7 +432,7 @@ function layout(p) {
 // Things that join, point and mark (the bridge, its arrows, the line of history)
 // are drawn as crisp graphics over the paint. ?conn=1 gilded, 2 engraved, 3 glass.
 const conn = Number(params.get('conn')) || 0;
-const CONN_NAMES = ['Watercolor', 'Gilded', 'Engraved', 'Glass'];
+const CONN_NAMES = ['Watercolor', 'Gilded', 'Engraved', 'Glass', 'Line', 'Bold', 'Channel'];
 document.body.classList.add(`conn${conn}`);
 const nav = document.getElementById('nav');
 CONN_NAMES.forEach((n, i) => {
@@ -510,7 +510,7 @@ function drawConn(p, t) {
       <path d="M${-ext},${ty - 0.025} V${ty + 0.025}" stroke="${INK}" stroke-width=".0045" stroke-linecap="round"/>
       ${xs.map((x) => `<circle cx="${f(x)}" cy="${ty}" r=".014" fill="${PAPER}" stroke="${INK}" stroke-width=".004"/>`).join('')}
       <circle cx="${f(bx)}" cy="${ty}" r="${f(0.03 + 0.003 * Math.sin(t * 2.4))}" fill="none" stroke="${RUBY}" stroke-width=".0025"/><circle cx="${f(bx)}" cy="${ty}" r=".017" fill="${RUBY}"/>`;
-  } else {
+  } else if (conn === 3) {
     // ----- glass: jewel-coloured panes held in dark lead -----
     const LEAD = '#1d1714', b = 0.008;
     g += `<defs><linearGradient id="ruby" x1="0" x2="1"><stop offset="0" stop-color="#7c1018"/><stop offset=".5" stop-color="#cf2a32"/><stop offset="1" stop-color="#7c1018"/></linearGradient>
@@ -532,6 +532,41 @@ function drawConn(p, t) {
       ${xs.map((x) => `<path d="${lozenge(x, ty, 0.026)}" fill="url(#saph)" stroke="${LEAD}" stroke-width=".006" stroke-linejoin="round"/>`).join('')}
       <path d="${lozenge(bx, ty, 0.04 + 0.003 * Math.sin(t * 2.4))}" fill="url(#ruby)" stroke="${LEAD}" stroke-width=".007" stroke-linejoin="round"/>
       <path d="${lozenge(bx - 0.006, ty - 0.008, 0.008)}" fill="#fff" opacity=".6"/>`;
+  } else {
+    // ----- modern and minimal: plain lines in warm ink, one accent colour -----
+    const DARK = '#33271f', ACC = crim > 0.5 ? '#a3262b' : '#b07a1e', RED = '#a3262b', PAP = '#f8f2e4';
+    const line = (d, col, wd, extra = '') => `<path d="${d}" fill="none" stroke="${PAP}" stroke-width="${wd + 0.012}" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="none" stroke="${col}" stroke-width="${wd}" stroke-linecap="round" stroke-linejoin="round" ${extra}/>`;
+    const axis = `M0,${f(top)} V${f(bot)}`;
+    g += `<defs><clipPath id="bc"><rect x="-.06" y="${f(top)}" width=".12" height="${f(h)}"/></clipPath></defs><g opacity="${f(Math.min(1, ba * 1.3))}">`;
+    if (conn === 4) {
+      // one fine line, dashes of light running down it, a plain arrowhead
+      g += line(`M0,${f(top)} V${f(bot - 0.03)}`, ACC, 0.009);
+      g += `<path d="M0,${f(top)} V${f(bot - 0.04)}" fill="none" stroke="${PAP}" stroke-width=".0045" stroke-linecap="round" stroke-dasharray=".018 .075" stroke-dashoffset="${f(-t * 0.05)}"/>`;
+      g += `<path d="M0,${f(bot + 0.004)} L-.024,${f(bot - 0.042)} L.024,${f(bot - 0.042)}Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/>`;
+      g += `<g opacity="${f(cr)}">${line(`M-.085,${cy} H.085`, ACC, 0.009)}</g>`;
+    } else if (conn === 5) {
+      // one bold stroke with pale arrows moving inside it
+      g += line(axis, ACC, 0.036);
+      g += `<g opacity="${f(cr)}">${line(`M-.1,${cy} H.1`, ACC, 0.036)}</g>`;
+      g += `<path d="${axis}" fill="none" stroke="${ACC}" stroke-width=".036" stroke-linecap="round"/>`;
+      g += `<g clip-path="url(#bc)" fill="none" stroke="${PAP}" stroke-width=".0065" stroke-linecap="round" stroke-linejoin="round">${chevrons(w, top, bot, t, 0.075, (oy) => `<path d="M-.0095,${f(oy)} L0,${f(oy + 0.011)} L.0095,${f(oy)}"/>`)}</g>`;
+    } else {
+      // an open channel in outline, with beads descending through it
+      const a = 0.02, x = 0.1;
+      const outline = cr > 0.5
+        ? `M${-a},${f(top)} V${f(cy - a)} H${-x} V${f(cy + a)} H${-a} V${f(bot)} M${a},${f(top)} V${f(cy - a)} H${x} V${f(cy + a)} H${a} V${f(bot)} M${-x},${f(cy - a)} V${f(cy + a)} M${x},${f(cy - a)} V${f(cy + a)}`
+        : `M${-a},${f(top)} V${f(bot)} M${a},${f(top)} V${f(bot)}`;
+      g += `<path d="M0,${f(top)} V${f(bot)}" stroke="${PAP}" stroke-width="${2 * a}" opacity=".8"/>`;
+      g += `<rect x="${-x}" y="${f(cy - a)}" width="${2 * x}" height="${2 * a}" fill="${PAP}" opacity="${f(0.8 * cr)}"/>`;
+      g += line(outline, DARK, 0.0048);
+      g += `<g clip-path="url(#bc)" fill="${ACC}">${chevrons(w, top + 0.01, bot, t, 0.065, (oy) => `<circle cx="0" cy="${f(oy)}" r=".0085"/>`)}</g>`;
+    }
+    g += '</g>';
+    // the line of history
+    g += line(`M${-ext},${ty} H${ext + 0.04}`, DARK, 0.0055);
+    g += `<path d="M${ext + 0.085},${ty} L${ext + 0.03},${ty - 0.026} L${ext + 0.03},${ty + 0.026}Z" fill="${DARK}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/>`;
+    g += xs.map((x) => `<circle cx="${f(x)}" cy="${ty}" r=".013" fill="${PAP}" stroke="${DARK}" stroke-width=".0055"/>`).join('');
+    g += `<circle cx="${f(bx)}" cy="${ty}" r="${f(0.031 + 0.004 * Math.sin(t * 2.4))}" fill="none" stroke="${RED}" stroke-width=".003"/><circle cx="${f(bx)}" cy="${ty}" r=".018" fill="${RED}" stroke="${PAP}" stroke-width=".004"/>`;
   }
   connSvg.innerHTML = `<g transform="translate(${innerWidth / 2},${innerHeight / 2}) scale(${unit})">${g}</g>`;
 }
