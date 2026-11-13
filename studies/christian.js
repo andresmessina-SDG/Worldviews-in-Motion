@@ -431,16 +431,16 @@ function layout(p) {
 // ---------- connectors ----------
 // Things that join, point and mark (the bridge, its arrows, the line of history)
 // are drawn as crisp graphics over the paint. ?conn=1 gilded, 2 engraved, 3 glass.
-const conn = Number(params.get('conn')) || 0;
+const conn = params.has('conn') ? Number(params.get('conn')) || 0 : 5;   // Bold is the house style
 const CONN_NAMES = ['Watercolor', 'Gilded', 'Engraved', 'Glass', 'Line', 'Bold', 'Channel'];
 document.body.classList.add(`conn${conn}`);
 const nav = document.getElementById('nav');
 CONN_NAMES.forEach((n, i) => {
   const a = document.createElement('a');
   a.textContent = n;
-  a.href = i ? `?conn=${i}` : '?';
+  a.href = `?conn=${i}`;
   if (i === conn) a.className = 'on';
-  nav.appendChild(a);
+  if (params.has('conn')) nav.appendChild(a);
 });
 const connSvg = document.getElementById('conn');
 const INK = '#2b211d', RUBY = '#8f1d22', PAPER = '#fbf6ea';
@@ -546,10 +546,10 @@ function drawConn(p, t) {
       g += `<g opacity="${f(cr)}">${line(`M-.085,${cy} H.085`, ACC, 0.009)}</g>`;
     } else if (conn === 5) {
       // one bold stroke with pale arrows moving inside it
-      g += line(axis, ACC, 0.036);
-      g += `<g opacity="${f(cr)}">${line(`M-.1,${cy} H.1`, ACC, 0.036)}</g>`;
-      g += `<path d="${axis}" fill="none" stroke="${ACC}" stroke-width=".036" stroke-linecap="round"/>`;
-      g += `<g clip-path="url(#bc)" fill="none" stroke="${PAP}" stroke-width=".0065" stroke-linecap="round" stroke-linejoin="round">${chevrons(w, top, bot, t, 0.075, (oy) => `<path d="M-.0095,${f(oy)} L0,${f(oy + 0.011)} L.0095,${f(oy)}"/>`)}</g>`;
+      g += line(axis, ACC, 0.044);
+      g += `<g opacity="${f(cr)}">${line(`M-.105,${cy} H.105`, ACC, 0.044)}</g>`;
+      g += `<path d="${axis}" fill="none" stroke="${ACC}" stroke-width=".044" stroke-linecap="round"/>`;
+      g += `<g clip-path="url(#bc)" fill="none" stroke="${PAP}" stroke-width=".0085" stroke-linecap="round" stroke-linejoin="round">${chevrons(w, top, bot, t, 0.085, (oy) => `<path d="M-.0135,${f(oy)} L0,${f(oy + 0.0165)} L.0135,${f(oy)}"/>`)}</g>`;
     } else {
       // an open channel in outline, with beads descending through it
       const a = 0.02, x = 0.1;
