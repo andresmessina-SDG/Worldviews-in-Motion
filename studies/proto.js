@@ -8,18 +8,23 @@ const PROTOS = {
     labels: [
       ['The triune God', 0, 0.56, ''],
       ['Christ the Mediator', 0.07, 0.1, 'left'],
-      ['Image-bearer', 0.09, -0.39, 'left light'],
-      ['Sin', -0.16, -0.45, 'right light'],
-      ['Creation', 0, -0.66, 'light'],
-      ['History moves toward a goal', 0, -0.8, ''],
+      ['Image-bearer', 0.09, -0.39, 'left'],
+      ['Sin', -0.16, -0.45, 'right'],
+      ['The created world', 0, -0.66, ''],
+      ['Creation', -0.84, -0.8, 'small'],
+      ['Fall', -0.32, -0.8, 'small'],
+      ['Redemption', 0.2, -0.8, 'small now'],
+      ['Consummation', 0.72, -0.8, 'small'],
     ],
   },
   2: {
     name: 'Naturalism',
     tag: 'The cosmos is all there is: a closed system of cause and effect.',
     labels: [
-      ['The cosmos: all there is', 0, 0.3, 'light'],
-      ['Matter that thinks', 0.09, -0.05, 'left light'],
+      ['The cosmos: all there is', 0, 0.3, ''],
+      ['Matter that thinks', 0.09, -0.05, 'left'],
+      ['Nothing beyond the cosmos', 0, 0.69, ''],
+      ['Cause and effect, unbroken', 0, -0.36, ''],
       ['Time, without a goal', 0, -0.8, ''],
     ],
   },
@@ -28,8 +33,8 @@ const PROTOS = {
     tag: 'All is one, and the one is Brahman.',
     labels: [
       ['Brahman: the One', 0, 0.22, ''],
-      ['Atman', 0.22, -0.08, 'left'],
-      ['Avidya: ignorance', 0.02, -0.12, 'right'],
+      ['Atman: the self', 0.22, -0.08, 'left'],
+      ['Avidya: ignorance', 0.03, -0.2, 'right'],
       ['Maya: the world of appearances', 0, -0.4, ''],
       ['Samsara: the wheel of rebirth', 0, -0.78, ''],
     ],
@@ -53,6 +58,7 @@ uniform vec2 uRes;
 uniform float uTime;
 uniform float uScene;
 uniform float uUnit;
+uniform vec4 uLab[12];
 
 float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 vec2 hash2(vec2 p){ float n = hash(p); return vec2(n, hash(p + n * 37.1 + 11.3)); }
@@ -116,6 +122,11 @@ float splatter(float thr){ return splat(q, 14., thr, 1.) + splat(q + 7.3, 31., t
 // A pen line following the contour d = 0.
 float pen(float d){ return smoothstep(PW, PW * .3, abs(d)); }
 float broken(float k, float seed, float thr){ return step(thr, noise(q * k + seed)); }
+float chev(vec2 c, vec2 dir, float s){
+  vec2 n = vec2(-dir.y, dir.x);
+  vec2 p = q + wM * .006;
+  return pen(min(sdSeg(p, c, c - dir * s + n * s), sdSeg(p, c, c - dir * s - n * s)));
+}
 float dryStroke(vec2 a, vec2 b, float head){
   vec2 p = q + wL * .02;
   float d = sdSeg(p, a, b) - .011 * (.7 + .6 * noise(vec2(q.x * 3., 1.)));
@@ -137,9 +148,9 @@ void main(){
   PW = .0028 * (.5 + noise(q * 9.));
 
   float v1 = fbm(q * 1.1 + wL * 1.6 + 2.), v2 = fbm(q * 2.3 - wL * 2.2 + 7.);
-  float blooms = bloom(q, 1.) * bloom(q * 2.1, 5.);
+  float blooms = mix(1., bloom(q, 1.) * bloom(q * 2.1, 5.), .22);
   float streaks = .8 + .4 * noise(vec2(q.x * 2.5 + wL.x * 3., q.y * 34. + wL.y * 8.));
-  float patches = smoothstep(.3, .5, fbm(q * 1.4 + wL + 20.) + .12);
+  float patches = mix(.8, 1., smoothstep(.3, .5, fbm(q * 1.4 + wL + 20.) + .12));
   float wob = wM.x * .025 + wF.y * .006;
   vec2 hand = wL * .06;
   float tide = .8;
@@ -169,7 +180,7 @@ void main(){
     float nearG = exp(-pow(max(rg - rG, 0.) / .5, 2.));
     A = up * (K(glory) * nearG * .8 + K(apricot) * (1. - nearG) * (.35 + 1.1 * v2) + K(mauve) * smoothstep(.45, 1.5, rg) * (.3 + 1.5 * v1))
       + (1. - up) * (K(aqua) * (.45 + .9 * v2) + K(blue) * smoothstep(.3, 1.3, rw) * (.4 + 1.5 * v1));
-    A *= blooms * streaks * .58 * patches;
+    A *= blooms * streaks * .5 * patches;
     A *= 1. - .93 * max(layers(dG, 11., .04, .0045, 0.), layers(dW, 17., .04, .0045, 0.));
 
     // the Ultimate: gold leaf warming to rose at the rim, pale at the heart
@@ -202,9 +213,7 @@ void main(){
     dens = layers(dS, 5., .01, .0035, tide);
     A += K(vec3(.9, .5, .3)) * dens * 1.1 + K(vec3(.98, .78, .3)) * dens * .4;
 
-    A += K(vec3(.45, .3, .24)) * dryStroke(vec2(-1.05, -.87), vec2(1., -.87), 1.) * .8;
-    float sp = splatter(.9);
-    A += K(mix(vec3(.93, .46, .14), vec3(.1, .26, .46), step(0., -q.y + wL.y))) * sp * .7;
+    A += K(vec3(.45, .3, .24)) * dryStroke(vec2(-1.05, -.87), vec2(1.05, -.87), 1.) * .8;
 
     // ink: loose outlines, and halo rings instead of rays
     ink += pen(dG + .012 + wob) + pen(dG - .02 - wob * 1.4) * broken(6., 2., .45);
@@ -214,6 +223,12 @@ void main(){
     ink += smoothstep(.006, .003, abs(dG - .185)) * step(.72, fract(ang * 60. / 6.2832)) * .7;
     ink += pen(dW + .01 - wob) + pen(dW - .024 + wob * 1.3) * broken(5., 8., .5);
     ink += pen(dS - .012 + wob * .4) + pen(min(dB, dX) - .01 + wob * .4);
+    ink += chev(vec2(-.07, .1), vec2(0., -1.), .028) + chev(vec2(-.07, .15), vec2(0., -1.), .028);
+    for (int i = 0; i < 4; i++){
+      float tx = -.84 + .52 * float(i);
+      ink += pen(sdSeg(q + wM * .006, vec2(tx, -.845), vec2(tx, -.895)));
+    }
+    A += K(vec3(.98, .76, .25)) * exp(-pow((dS - .022) / .009, 2.)) * .9;
 
   } else if (uScene < 2.5) {
     // ================= Naturalism: one sealed box, nothing above =================
@@ -240,8 +255,7 @@ void main(){
     dens = layers(dS, 5., .01, .0035, tide);
     A += K(vec3(.24, .36, .5)) * dens * 1.1;
 
-    A += K(vec3(.36, .34, .36)) * dryStroke(vec2(-1.05, -.87), vec2(1., -.87), 0.) * .7;
-    A += K(vec3(.2, .3, .44)) * splatter(.92) * .6;
+    A += K(vec3(.36, .34, .36)) * dryStroke(vec2(-1.05, -.87), vec2(1., -.87), 0.) * .7 * smoothstep(.75, -.5, q.x + (H - .5) * .5);
 
     // ink: ruled outlines and the lattice of law inside
     float inside = smoothstep(.0, -.02, dBx);
@@ -254,6 +268,11 @@ void main(){
     ink += smoothstep(.003, 0., node) * inside * step(.45, hash(cell)) * .7;
     ink += pen(dBx + .012 + wob * .4) + pen(dBx - .018 - wob * .5) * broken(5., 2., .4);
     ink += pen(dS - .012 + wob * .4);
+    vec2 gc = q + hand * .4 - vec2(0., .69);
+    ink += pen(length(gc) - .13) * step(.5, fract(atan(gc.y, gc.x) * 22. / 6.2832)) * .55;
+    // cause runs to effect: small arrowheads along the lattice
+    vec2 ac = (cell + vec2(.5, 0.)) * .15;
+    if (hash(cell + 4.) > .55) ink += smoothstep(PW, PW * .3, min(sdSeg(gp, ac, ac + vec2(-.014, .012)), sdSeg(gp, ac, ac + vec2(-.014, -.012)))) * inside * .7;
 
   } else if (uScene < 3.5) {
     // ================= Hindu monism: one ocean, no edges =================
@@ -279,10 +298,8 @@ void main(){
     float dP = length(q + wL * .1 - Sc) - .13 - wM.x * .05;
     A += K(vec3(.36, .22, .4)) * layers(dP, 6., .04, .02, .3) * .55;
     dens = layers(dS, 5., .01, .0035, tide);
-    A += K(vec3(.74, .16, .24)) * dens * 1.1;
+    A += K(vec3(.74, .16, .24)) * dens * .8 + K(vec3(.96, .52, .16)) * dens * .5;
 
-    float sp = splatter(.9);
-    A += K(mix(marigold, violet, step(.5, hash(floor(q * 14.))))) * sp * .7;
 
     // ink: ripples in the ocean, and the wheel that binds
     float rr = length(q + hand - C);
@@ -293,7 +310,13 @@ void main(){
     float ang = atan(q.y - C.y, q.x - C.x);
     float sa = abs(fract(ang * 12. / 6.2832 + .5) - .5) * 6.2832 / 12. * rr;
     ink += smoothstep(PW * 1.2, PW * .4, sa) * smoothstep(.69, .7, rr) * smoothstep(.76, .75, rr);
-    ink += pen(dS - .012 + wob * .4);
+    float sang = atan(q.y - Sc.y, q.x - Sc.x);
+    ink += pen(dS - .014 + wob * .4) * step(.45, fract(sang * 11. / 6.2832));
+    for (int i = 0; i < 3; i++){
+      float a = .6 + 2.0944 * float(i);
+      vec2 c = C + .675 * vec2(cos(a), sin(a));
+      ink += chev(c, vec2(-sin(a), cos(a)), .035);
+    }
 
   } else {
     // ================= Nihilism: the box, with its pigment running off =================
@@ -333,7 +356,6 @@ void main(){
     float dPool = q.y + .8 + (v2 - .5) * .22 + wM.x * .05;
     A += K(vec3(.34, .36, .44)) * layers(dPool, 8., .03, .006, .9) * (.35 + .6 * v1) * bloom(q * 3., 9.);
 
-    A += K(vec3(.3, .3, .36)) * splatter(.93) * .55 * smoothstep(.3, -.2, q.y);
 
     // ink: an outline giving out, and a self with nothing inside
     ink += pen(dBx + .012 + wob * .5) * broken(4., 2., .5) * .8;
@@ -345,6 +367,17 @@ void main(){
   }
 
   A += K(inkCol) * min(ink, 1.) * (.5 + H);
+
+  // lettering: paper lifted with a damp brush behind each label
+  float lift = 0.;
+  for (int i = 0; i < 12; i++){
+    vec4 L = uLab[i];
+    if (L.z <= 0.) continue;
+    vec2 b = abs(q + wM * .02 - L.xy) - L.zw + .03;
+    float d = length(max(b, 0.)) + min(max(b.x, b.y), 0.) - .03 + wF.x * .01;
+    lift = max(lift, smoothstep(.035, -.012, d));
+  }
+  A *= 1. - .84 * lift;
 
   // ---------- paper, grain and the taped margin ----------
   A *= 1. + .63 * (.5 - H);
@@ -412,9 +445,16 @@ function resize() {
     els[i].style.left = `${innerWidth / 2 + x * unit}px`;
     els[i].style.top = `${innerHeight / 2 - y * unit}px`;
   });
+  const rects = [...els, document.querySelector('.t')].map((el) => {
+    const r = el.getBoundingClientRect();
+    return [(r.left + r.width / 2 - innerWidth / 2) / unit, (innerHeight / 2 - r.top - r.height / 2) / unit, r.width / 2 / unit + 0.02, r.height / 2 / unit + 0.012];
+  });
+  while (rects.length < 12) rects.push([0, 0, 0, 0]);
+  gl.uniform4fv(U('uLab[0]'), new Float32Array(rects.flat()));
 }
 addEventListener('resize', resize);
 resize();
+document.fonts.ready.then(resize);
 
 const still = params.has('still');
 function frame(now) {
