@@ -53,6 +53,7 @@ const FRAG = `
 precision highp float;
 uniform vec2 uRes;
 uniform float uT, uUnit, uExt;
+uniform float uTl;
 uniform float uJoin, uBbot, uBa, uCrim, uCross, uStainR, uStainA, uGlow, uDull, uAct;
 uniform vec4 uLab[3];
 
@@ -218,7 +219,7 @@ void main(){
   }
 
   // ---------- history: one stroke, four marks, and where we are ----------
-  {
+  if (uTl > .5) {
     float y = -.87;
     vec2 p = q + wL * .02;
     float along = clamp((q.x + uExt) / (2. * uExt), 0., 1.);
@@ -427,6 +428,114 @@ function layout(p) {
     0.22 + bl.w / 2, by + 0.03, bl.on ? bl.w / 2 + 0.02 : 0, bl.h / 2 + 0.012]);
 }
 
+// ---------- connectors ----------
+// Things that join, point and mark (the bridge, its arrows, the line of history)
+// are drawn as crisp graphics over the paint. ?conn=1 gilded, 2 engraved, 3 glass.
+const conn = Number(params.get('conn')) || 0;
+const CONN_NAMES = ['Watercolor', 'Gilded', 'Engraved', 'Glass'];
+document.body.classList.add(`conn${conn}`);
+const nav = document.getElementById('nav');
+CONN_NAMES.forEach((n, i) => {
+  const a = document.createElement('a');
+  a.textContent = n;
+  a.href = i ? `?conn=${i}` : '?';
+  if (i === conn) a.className = 'on';
+  nav.appendChild(a);
+});
+const connSvg = document.getElementById('conn');
+const INK = '#2b211d', RUBY = '#8f1d22', PAPER = '#fbf6ea';
+const f = (n) => n.toFixed(4);
+
+function chevrons(w, y0, y1, t, s, draw) {
+  let out = '';
+  for (let oy = y0 - 2 * s + ((t * 0.04) % s); oy < y1; oy += s) out += draw(oy);
+  return out;
+}
+const chevPath = (w, oy, h, th) => `M${-w},${f(oy)} L0,${f(oy + h)} L${w},${f(oy)} L${w},${f(oy + th)} L0,${f(oy + h + th)} L${-w},${f(oy + th)}Z`;
+const lozenge = (x, y, r) => `M${f(x)},${f(y - r)} L${f(x + r * 0.8)},${f(y)} L${f(x)},${f(y + r)} L${f(x - r * 0.8)},${f(y)}Z`;
+
+function drawConn(p, t) {
+  const top = -(p.join * (0.2 - 0.47) + 0.47 - (0.29 + p.join * 0.07) + 0.03);   // svg y grows downward
+  const bot = -p.bbot;
+  const h = Math.max(0.001, bot - top);
+  const w = 0.045, cy = -0.03, L = 0.135, T = 0.036;
+  const crim = p.crim, ba = p.ba, cr = p.cross;
+  const ty = 0.87, xs = [0, 1, 2, 3].map((i) => ext * (-0.72 + 0.48 * i)), bx = ext * (-0.72 + 0.48 * p.act);
+  let g = '';
+
+  if (conn === 1) {
+    // ----- gilded: gold leaf, a coloured field, fine black line -----
+    const b = 0.012;
+    g += `<defs><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1" spreadMethod="reflect" gradientTransform="translate(${f(Math.sin(t * 0.5) * 0.35)},0)">
+      <stop offset="0" stop-color="#fbeeb0"/><stop offset=".3" stop-color="#e2b33c"/><stop offset=".55" stop-color="#a8741a"/><stop offset=".78" stop-color="#f3d77a"/><stop offset="1" stop-color="#b8862a"/></linearGradient>
+      <filter id="sh" x="-50%" y="-20%" width="200%" height="140%"><feDropShadow dx="0" dy=".005" stdDeviation=".006" flood-color="#3a2410" flood-opacity=".4"/></filter>
+      <clipPath id="bc"><rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}" rx=".012"/></clipPath></defs>`;
+    g += `<g opacity="${f(ba)}" filter="url(#sh)">
+      <rect x="${-w - b}" y="${f(top - b)}" width="${2 * (w + b)}" height="${f(h + 2 * b)}" rx=".022" fill="url(#gold)" stroke="${INK}" stroke-width=".0035"/>
+      <rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}" rx=".012" fill="#1f4a8a"/>
+      <rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}" rx=".012" fill="${RUBY}" opacity="${f(crim)}"/>
+      <g clip-path="url(#bc)" fill="url(#gold)" stroke="${INK}" stroke-width=".002">${chevrons(w, top, bot, t, 0.11, (oy) => `<path d="${chevPath(w - 0.008, oy, 0.04, 0.026)}"/>`)}</g>
+      <rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}" rx=".012" fill="none" stroke="${INK}" stroke-width=".003"/></g>`;
+    const beam = (k) => `M${-L * k},${f(cy - T * 1.45 * k)} L${-L * 0.36},${f(cy - T * 0.85 * k)} L${L * 0.36},${f(cy - T * 0.85 * k)} L${L * k},${f(cy - T * 1.45 * k)} L${L * k},${f(cy + T * 1.45 * k)} L${L * 0.36},${f(cy + T * 0.85 * k)} L${-L * 0.36},${f(cy + T * 0.85 * k)} L${-L * k},${f(cy + T * 1.45 * k)}Z`;
+    g += `<g opacity="${f(cr)}" filter="url(#sh)"><path d="${beam(1)}" fill="url(#gold)" stroke="${INK}" stroke-width=".0035"/>
+      <path d="${beam(0.76)}" fill="${RUBY}" stroke="${INK}" stroke-width=".0025"/>
+      <circle cx="0" cy="${cy}" r=".027" fill="url(#gold)" stroke="${INK}" stroke-width=".003"/><circle cx="0" cy="${cy}" r=".013" fill="#1f4a8a" stroke="${INK}" stroke-width=".002"/>
+      <circle cx="-.004" cy="${cy - 0.004}" r=".004" fill="#fff" opacity=".7"/></g>`;
+    g += `<g filter="url(#sh)"><line x1="${-ext}" y1="${ty}" x2="${ext}" y2="${ty}" stroke="${INK}" stroke-width=".018" stroke-linecap="round"/>
+      <line x1="${-ext}" y1="${ty}" x2="${ext}" y2="${ty}" stroke="url(#gold)" stroke-width=".011" stroke-linecap="round"/>
+      <path d="M${ext + 0.09},${ty} L${ext - 0.02},${ty - 0.05} Q${ext + 0.015},${ty} ${ext - 0.02},${ty + 0.05}Z" fill="url(#gold)" stroke="${INK}" stroke-width=".0035" stroke-linejoin="round"/>
+      ${xs.map((x) => `<circle cx="${f(x)}" cy="${ty}" r=".02" fill="url(#gold)" stroke="${INK}" stroke-width=".003"/><circle cx="${f(x)}" cy="${ty}" r=".008" fill="${INK}"/>`).join('')}
+      <circle cx="${f(bx)}" cy="${ty}" r="${f(0.032 + 0.002 * Math.sin(t * 2.4))}" fill="url(#gold)" stroke="${INK}" stroke-width=".003"/>
+      <circle cx="${f(bx)}" cy="${ty}" r=".021" fill="${RUBY}" stroke="${INK}" stroke-width=".002"/><circle cx="${f(bx - 0.007)}" cy="${ty - 0.007}" r=".005" fill="#fff" opacity=".75"/></g>`;
+  } else if (conn === 2) {
+    // ----- engraved: ruled ink lines on bare paper, one red -----
+    const col = crim > 0.5 ? RUBY : '#8a5a12';
+    let hatch = '';
+    for (let y = top + 0.012; y < bot - 0.006; y += 0.012) hatch += `M${-w + 0.004},${f(y)} h.012 M${w - 0.016},${f(y)} h.012 `;
+    g += `<defs><clipPath id="bc"><rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}"/></clipPath></defs>`;
+    g += `<g opacity="${f(ba)}"><rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}" fill="${PAPER}" opacity=".86"/>
+      <path d="${hatch}" stroke="${INK}" stroke-width=".0016" opacity=".7"/>
+      <g clip-path="url(#bc)" fill="none" stroke="${col}" stroke-width=".0075" stroke-linecap="round" stroke-linejoin="round">${chevrons(w, top, bot, t, 0.085, (oy) => `<path d="M${-w + 0.02},${f(oy)} L0,${f(oy + 0.03)} L${w - 0.02},${f(oy)}"/>`)}</g>
+      <path d="M${-w},${f(top)} V${f(bot)} M${w},${f(top)} V${f(bot)}" stroke="${INK}" stroke-width=".0045" stroke-linecap="round"/>
+      <path d="M${-w - 0.009},${f(top)} V${f(bot)} M${w + 0.009},${f(top)} V${f(bot)}" stroke="${INK}" stroke-width=".0015"/>
+      <path d="M${-w - 0.02},${f(bot)} H${w + 0.02} M${-w - 0.02},${f(top)} H${w + 0.02}" stroke="${INK}" stroke-width=".0035" stroke-linecap="round"/></g>`;
+    g += `<g opacity="${f(cr)}"><rect x="${-L}" y="${f(cy - T)}" width="${2 * L}" height="${2 * T}" fill="${PAPER}" opacity=".92"/>
+      <rect x="${-L}" y="${f(cy - T)}" width="${2 * L}" height="${2 * T}" fill="none" stroke="${INK}" stroke-width=".0045"/>
+      <rect x="${-L + 0.009}" y="${f(cy - T + 0.009)}" width="${2 * L - 0.018}" height="${2 * T - 0.018}" fill="none" stroke="${INK}" stroke-width=".0015"/>
+      <path d="M${-L},${f(cy - T - 0.012)} V${f(cy + T + 0.012)} M${L},${f(cy - T - 0.012)} V${f(cy + T + 0.012)}" stroke="${INK}" stroke-width=".0045" stroke-linecap="round"/>
+      <path d="${lozenge(0, cy, 0.024)}" fill="${RUBY}"/><path d="${lozenge(-0.075, cy, 0.01)}${lozenge(0.075, cy, 0.01)}" fill="${INK}"/></g>`;
+    g += `<line x1="${-ext}" y1="${ty}" x2="${ext + 0.06}" y2="${ty}" stroke="${INK}" stroke-width=".0045" stroke-linecap="round"/>
+      <line x1="${-ext}" y1="${ty + 0.011}" x2="${ext}" y2="${ty + 0.011}" stroke="${INK}" stroke-width=".0015"/>
+      <path d="M${ext + 0.015},${ty - 0.035} L${ext + 0.07},${ty} L${ext + 0.015},${ty + 0.035}" fill="none" stroke="${INK}" stroke-width=".0045" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M${-ext},${ty - 0.025} V${ty + 0.025}" stroke="${INK}" stroke-width=".0045" stroke-linecap="round"/>
+      ${xs.map((x) => `<circle cx="${f(x)}" cy="${ty}" r=".014" fill="${PAPER}" stroke="${INK}" stroke-width=".004"/>`).join('')}
+      <circle cx="${f(bx)}" cy="${ty}" r="${f(0.03 + 0.003 * Math.sin(t * 2.4))}" fill="none" stroke="${RUBY}" stroke-width=".0025"/><circle cx="${f(bx)}" cy="${ty}" r=".017" fill="${RUBY}"/>`;
+  } else {
+    // ----- glass: jewel-coloured panes held in dark lead -----
+    const LEAD = '#1d1714', b = 0.008;
+    g += `<defs><linearGradient id="ruby" x1="0" x2="1"><stop offset="0" stop-color="#7c1018"/><stop offset=".5" stop-color="#cf2a32"/><stop offset="1" stop-color="#7c1018"/></linearGradient>
+      <linearGradient id="saph" x1="0" x2="1"><stop offset="0" stop-color="#173a80"/><stop offset=".5" stop-color="#3f79d6"/><stop offset="1" stop-color="#173a80"/></linearGradient>
+      <linearGradient id="amber" x1="0" x2="1"><stop offset="0" stop-color="#d98a12"/><stop offset=".5" stop-color="#ffd86b"/><stop offset="1" stop-color="#d98a12"/></linearGradient>
+      <clipPath id="bc"><rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}"/></clipPath></defs>`;
+    g += `<g opacity="${f(ba)}"><rect x="${-w - b}" y="${f(top - b)}" width="${2 * (w + b)}" height="${f(h + 2 * b)}" rx=".006" fill="${LEAD}"/>
+      <rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}" fill="url(#saph)"/>
+      <rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}" fill="url(#ruby)" opacity="${f(crim)}"/>
+      <g clip-path="url(#bc)" fill="url(#amber)" stroke="${LEAD}" stroke-width=".006" stroke-linejoin="round">${chevrons(w, top, bot, t, 0.12, (oy) => `<path d="${chevPath(w, oy, 0.045, 0.04)}" opacity="${f(0.88 + 0.12 * Math.sin(t * 1.3 + oy * 30))}"/>`)}</g>
+      <rect x="${-w + 0.008}" y="${f(top + 0.01)}" width=".006" height="${f(Math.max(0, h - 0.02))}" fill="#fff" opacity=".28"/></g>`;
+    g += `<g opacity="${f(cr)}"><rect x="${-L - b}" y="${f(cy - T - b)}" width="${2 * (L + b)}" height="${2 * (T + b)}" rx=".006" fill="${LEAD}"/>
+      <rect x="${-L}" y="${f(cy - T)}" width="${2 * L}" height="${2 * T}" fill="url(#ruby)"/>
+      <path d="M${-w - 0.004},${f(cy - T)} V${f(cy + T)} M${w + 0.004},${f(cy - T)} V${f(cy + T)}" stroke="${LEAD}" stroke-width=".006"/>
+      <path d="${lozenge(0, cy, T)}" fill="url(#amber)" stroke="${LEAD}" stroke-width=".006" stroke-linejoin="round"/>
+      <rect x="${-L + 0.008}" y="${f(cy - T + 0.007)}" width="${2 * L - 0.016}" height=".005" fill="#fff" opacity=".28"/></g>`;
+    g += `<line x1="${-ext}" y1="${ty}" x2="${ext}" y2="${ty}" stroke="${LEAD}" stroke-width=".009" stroke-linecap="round"/>
+      <path d="M${ext + 0.085},${ty} L${ext - 0.015},${ty - 0.048} L${ext - 0.015},${ty + 0.048}Z" fill="url(#amber)" stroke="${LEAD}" stroke-width=".007" stroke-linejoin="round"/>
+      ${xs.map((x) => `<path d="${lozenge(x, ty, 0.026)}" fill="url(#saph)" stroke="${LEAD}" stroke-width=".006" stroke-linejoin="round"/>`).join('')}
+      <path d="${lozenge(bx, ty, 0.04 + 0.003 * Math.sin(t * 2.4))}" fill="url(#ruby)" stroke="${LEAD}" stroke-width=".007" stroke-linejoin="round"/>
+      <path d="${lozenge(bx - 0.006, ty - 0.008, 0.008)}" fill="#fff" opacity=".6"/>`;
+  }
+  connSvg.innerHTML = `<g transform="translate(${innerWidth / 2},${innerHeight / 2}) scale(${unit})">${g}</g>`;
+}
+
 // ---------- loop ----------
 function frame(now) {
   const x = Math.min(1, (now - t0) / DUR);
@@ -441,9 +550,10 @@ function frame(now) {
   gl.uniform1f(U('uT'), frozen !== null ? frozen : now / 1000);
   gl.uniform1f(U('uJoin'), live.join);
   gl.uniform1f(U('uBbot'), live.bbot);
-  gl.uniform1f(U('uBa'), live.ba);
+  gl.uniform1f(U('uBa'), conn ? 0 : live.ba);
+  gl.uniform1f(U('uTl'), conn ? 0 : 1);
   gl.uniform1f(U('uCrim'), live.crim);
-  gl.uniform1f(U('uCross'), live.cross);
+  gl.uniform1f(U('uCross'), conn ? 0 : live.cross);
   gl.uniform1f(U('uStainR'), live.stainR);
   gl.uniform1f(U('uStainA'), live.stainA);
   gl.uniform1f(U('uGlow'), live.glow);
@@ -451,6 +561,7 @@ function frame(now) {
   gl.uniform1f(U('uAct'), live.act);
   gl.uniform4fv(U('uLab[0]'), rects);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
+  if (conn) drawConn(live, frozen !== null ? frozen : now / 1000);
   requestAnimationFrame(frame);
 }
 

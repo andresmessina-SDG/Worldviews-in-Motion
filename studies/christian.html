@@ -10,8 +10,16 @@
 <style>
   :root { --ink: #2b211d; --red: #8f1d22; --title: 'Cormorant Garamond', Georgia, serif; --soft: 'Fraunces', 'Cormorant Garamond', Georgia, serif; }
   html, body { margin: 0; height: 100%; overflow: hidden; background: #f6f1e7; color: var(--ink); font-family: var(--title); }
-  canvas, svg#lines { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
-  svg#lines { pointer-events: none; }
+  canvas, svg#lines, svg#conn { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  svg#lines, svg#conn { pointer-events: none; }
+  #nav { position: fixed; right: 8vw; top: 9vh; display: flex; gap: 6px; }
+  #nav a { font-family: var(--soft); font-size: .95rem; color: var(--ink); text-decoration: none; padding: 4px 12px 5px; border: 1.2px solid var(--ink); border-radius: 18px; }
+  #nav a.on { background: var(--ink); color: #f6f1e7; }
+  .conn1 svg#lines circle { fill: #b8862a; stroke: var(--ink); stroke-width: 1; }
+  .conn2 svg#lines path { stroke-width: .8; }
+  .conn2 svg#lines circle { fill: #fbf6ea; stroke: var(--ink); stroke-width: 1.2; }
+  .conn3 svg#lines path { stroke-width: 1.8; opacity: .9; }
+  .conn3 svg#lines circle { fill: #2a56a8; stroke: #1d1714; stroke-width: 1.5; }
   svg#lines path { fill: none; stroke: var(--ink); stroke-width: 1.2; stroke-linecap: round; opacity: .75; }
   svg#lines circle { fill: var(--ink); }
   svg#lines g { transition: opacity .5s ease; }
@@ -39,7 +47,9 @@
 </head>
 <body>
 <canvas id="c"></canvas>
+<svg id="conn"></svg>
 <svg id="lines"></svg>
+<div id="nav"></div>
 <div class="t">
   <p class="k">Worldviews in Motion</p>
   <h1>Christian Theism</h1>
