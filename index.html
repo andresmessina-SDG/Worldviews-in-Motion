@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Worldviews in Motion</title>
+  <meta name="description" content="An animated watercolor visualizer of the world's major worldviews.">
+  <meta name="theme-color" content="#f6f1e7">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <canvas id="paint" aria-hidden="true"></canvas>
+  <div id="labels" aria-hidden="true"></div>
+
+  <div class="ui">
+    <header>
+      <div class="titles">
+        <p class="kicker">Worldviews in Motion</p>
+        <h1 id="name"></h1>
+        <p id="tagline"></p>
+      </div>
+      <nav id="swatches" aria-label="Worldviews"></nav>
+    </header>
+
+    <div id="stage"></div>
+
+    <footer class="panel">
+      <div id="acts" role="tablist" aria-label="Four questions"></div>
+      <div id="copy" aria-live="polite">
+        <h2 id="actTitle"></h2>
+        <p id="caption"></p>
+        <p id="margin"></p>
+      </div>
+      <div id="moves"></div>
+    </footer>
+  </div>
+
+  <p id="nogl" hidden>This painting needs WebGL, which your browser has switched off.</p>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
