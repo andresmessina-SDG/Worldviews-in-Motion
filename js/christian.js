@@ -1,11 +1,12 @@
 // Christian theism as a living painting: four acts, always in motion.
-// ?act=1..4 opens on an act; ?t=seconds freezes the clock (for stills).
+// The address ends in #creation, #fall, #redemption or #new-creation.
+// ?act=1..4 and ?t=seconds open on an act with the clock frozen (for stills).
 
 const ACTS = [
   {
     name: 'Creation',
     text: 'God made the world and called it good. He made man in his image and spoke with him.',
-    p: { join: 0, bbot: -0.12, ba: 0.95, crim: 0, cross: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0 },
+    p: { join: 0, bbot: -0.12, ba: 0.95, crim: 0, cross: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, snap: 0, rip: 0.9, ripAt: 0 },
     labels: {
       god: ['The triune God', 'Father, Son and Holy Spirit'],
       world: ['Creation', 'Made by God, and good'],
@@ -16,7 +17,7 @@ const ACTS = [
   {
     name: 'Fall',
     text: 'Man rebelled against God. Sin took hold of the heart and spoiled the whole world.',
-    p: { join: 0, bbot: 0.14, ba: 0.5, crim: 0, cross: 0, stainR: 0.16, stainA: 0.62, glow: 0, dull: 1 },
+    p: { join: 0, bbot: -0.12, ba: 0.95, crim: 0, cross: 0, stainR: 0.16, stainA: 0.62, glow: 0, dull: 1, snap: 1, rip: -0.8, ripAt: 1 },
     labels: {
       god: ['The triune God', 'Father, Son and Holy Spirit'],
       world: ['Creation', 'Still good, now spoiled'],
@@ -28,7 +29,7 @@ const ACTS = [
   {
     name: 'Redemption',
     text: 'God came down. The Son became man, died on the cross for sin and rose again.',
-    p: { join: 0, bbot: -0.33, ba: 1, crim: 1, cross: 1, stainR: 0.1, stainA: 0.55, glow: 1, dull: 0.3 },
+    p: { join: 0, bbot: -0.33, ba: 1, crim: 1, cross: 1, stainR: 0.1, stainA: 0.55, glow: 1, dull: 0.3, snap: 0, rip: 0.8, ripAt: 1 },
     labels: {
       god: ['The triune God', 'Father, Son and Holy Spirit'],
       world: ['Creation', 'Loved, and being restored'],
@@ -40,7 +41,7 @@ const ACTS = [
   {
     name: 'New Creation',
     text: 'God will live with his people in a world made new. He remains God, and they remain his creatures.',
-    p: { join: 1, bbot: -0.12, ba: 0, crim: 1, cross: 0, stainR: 0.02, stainA: 0, glow: 0.8, dull: 0 },
+    p: { join: 1, bbot: -0.12, ba: 0, crim: 1, cross: 0, stainR: 0.02, stainA: 0, glow: 0.8, dull: 0, snap: 0, rip: 0.7, ripAt: 1 },
     labels: {
       god: ['The triune God', 'Father, Son and Holy Spirit'],
       world: ['The new creation', 'The world made new'],
@@ -52,7 +53,8 @@ const ACTS = [
 const FRAG = `
 precision highp float;
 uniform vec2 uRes;
-uniform float uT, uUnit, uExt;
+uniform float uT, uUnit, uExt, uRip, uRipY;
+uniform vec2 uCen;
 uniform float uTl;
 uniform float uJoin, uBbot, uBa, uCrim, uCross, uStainR, uStainA, uGlow, uDull, uAct;
 uniform vec4 uLab[3];
@@ -101,7 +103,7 @@ float pen(float d){ return smoothstep(PW, PW * .3, abs(d)); }
 
 void main(){
   vec2 frag = gl_FragCoord.xy;
-  q = (frag - .5 * uRes) / uUnit;
+  q = (frag - uCen) / uUnit;
   float t = uT;
 
   wL = vec2(fbm(q * 1.2 + t * .012), fbm(q * 1.2 + vec2(31.7, 11.3) - t * .012)) - .5;
@@ -167,6 +169,14 @@ void main(){
     ink += pen(dW + .01 - wob) + pen(dW - .024 + wob * 1.3) * step(.5, noise(q * 5. + 8.));
   }
 
+  // ---------- ripples through creation: light when God acts, shadow when sin spreads ----------
+  {
+    float rr = length(q + wL * .03 - vec2(0., uRipY));
+    float rip = pow(max(0., sin(rr * 15. - t * 1.2)), 6.) * exp(-rr * 3.) * smoothstep(0., .06, rr) * smoothstep(0., -.03, dW);
+    A *= 1. - .4 * max(uRip, 0.) * rip;
+    A += K(vec3(.13, .11, .22)) * max(-uRip, 0.) * rip * .35;
+  }
+
   // ---------- the Ultimate ----------
   {
     float dens = layers(dG, 1., .03, .0045, tide);
@@ -204,7 +214,7 @@ void main(){
   // ---------- sin: a stain that keeps creeping ----------
   {
     float creep = fbm(q * 5. + vec2(t * .05, -t * .04)) - .5;
-    float d = length(q + wL * .12 + wM * .05 - Sc - vec2(-.02, -.02)) - uStainR - wM.x * .06 - creep * .07;
+    float d = length(q + wL * .12 + wM * .05 - Sc - vec2(-.02, -.02)) - uStainR * (1. + .07 * sin(t * .8)) - wM.x * .06 - creep * .07;
     A += K(vec3(.13, .11, .22)) * layers(d, 6., .03, .012, .5) * uStainA;
   }
 
@@ -267,6 +277,10 @@ void main(){
 // ---------- WebGL ----------
 const canvas = document.getElementById('c');
 const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
+if (!gl) {
+  document.getElementById('nogl').hidden = false;
+  throw new Error('WebGL unavailable');
+}
 const sh = (type, src) => {
   const s = gl.createShader(type);
   gl.shaderSource(s, src);
@@ -290,7 +304,11 @@ const U = (n) => locs[n] || (locs[n] = gl.getUniformLocation(prog, n));
 // ---------- acts ----------
 const params = new URLSearchParams(location.search);
 const frozen = params.has('t') ? Number(params.get('t')) : null;
-let act = Math.min(3, Math.max(0, (Number(params.get('act')) || 1) - 1));
+const SLUGS = ['creation', 'fall', 'redemption', 'new-creation'];
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const clock = (now) => (frozen !== null ? frozen : reduced ? 0 : now / 1000);
+const fromHash = SLUGS.indexOf(location.hash.slice(1));
+let act = fromHash >= 0 ? fromHash : Math.min(3, Math.max(0, (Number(params.get('act')) || 1) - 1));
 let live = { ...ACTS[act].p, act };
 let from = live;
 let t0 = -1e9;
@@ -363,29 +381,51 @@ function go(i) {
   from = { ...live };
   act = i;
   t0 = performance.now();
+  history.replaceState(null, '', `#${SLUGS[i]}`);
   renderText(false);
 }
-let auto = frozen === null && !params.has('act');
+let auto = frozen === null && !params.has('act') && fromHash < 0 && !reduced;
 addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight') { auto = false; go(Math.min(3, act + 1)); }
   if (e.key === 'ArrowLeft') { auto = false; go(Math.max(0, act - 1)); }
 });
-setInterval(() => { if (auto && !document.hidden) go(act + 1); }, 11000);
+setInterval(() => { if (auto && !document.hidden) go(act + 1); }, 14000);
 
 // ---------- layout ----------
-let dpr = 1, unit = 1, ext = 1;
+let dpr = 1, unit = 1, ext = 1, cx = 0, cy = 0, quality = 1;
 const rects = new Float32Array(12);
+const head = document.querySelector('.head');
+const actBox = document.querySelector('.act');
 function resize() {
-  dpr = Math.min(window.devicePixelRatio || 1, 2);
-  canvas.width = Math.round(innerWidth * dpr);
-  canvas.height = Math.round(innerHeight * dpr);
+  const W = innerWidth, Hh = innerHeight;
+  const narrow = W / Hh < 1.3;
+  document.body.classList.toggle('narrow', narrow);
+  if (narrow) {
+    // title above, painting in the middle, the act's words below
+    const topH = head.getBoundingClientRect().bottom + 4;
+    const botH = Hh - actBox.getBoundingClientRect().top + 4;
+    unit = Math.min((Hh - topH - botH) / 1.94, W / 1.85);
+    cx = W / 2;
+    cy = topH + (Hh - topH - botH) / 2 + 0.02 * unit;
+    ext = W / 2 / unit - 0.13;
+  } else {
+    unit = Math.min(Hh / 2, W / 1.5);
+    cx = W / 2;
+    cy = Hh / 2;
+    ext = Math.min(1.05, W / 2 / unit - 0.16);
+  }
+  dpr = Math.min(window.devicePixelRatio || 1, 2) * quality;
+  canvas.width = Math.round(W * dpr);
+  canvas.height = Math.round(Hh * dpr);
   gl.viewport(0, 0, canvas.width, canvas.height);
-  unit = Math.min(innerHeight / 2, innerWidth / 1.5);
-  ext = Math.min(1.05, innerWidth / 2 / unit - 0.16);
   marks.forEach((b, i) => {
-    b.style.left = `${innerWidth / 2 + ext * (-0.72 + 0.48 * i) * unit}px`;
-    b.style.top = `${innerHeight / 2 + 0.795 * unit}px`;
+    b.style.left = `${cx + ext * (-0.72 + 0.48 * i) * unit}px`;
+    b.style.top = `${cy + 0.795 * unit}px`;
   });
+  const room = (x) => `${Math.max(60, (W / 2 / unit - x - 0.1) * unit)}px`;
+  labels.bridge.el.style.maxWidth = room(0.22);
+  labels.self.el.style.maxWidth = room(0.48);
+  labels.sin.el.style.maxWidth = room(0.48);
   measure();
 }
 function measure() {
@@ -394,8 +434,8 @@ function measure() {
     labels[k].h = labels[k].el.offsetHeight / unit;
   }
 }
-const X = (x) => innerWidth / 2 + x * unit;
-const Y = (y) => innerHeight / 2 - y * unit;
+const X = (x) => cx + x * unit;
+const Y = (y) => cy - y * unit;
 
 function place(k, x, y, tx, ty) {
   const L = labels[k];
@@ -405,22 +445,31 @@ function place(k, x, y, tx, ty) {
   // a leader line from the lettering to the thing it names
   const gap = 0.02 * (ALIGN[k] === 'right' ? 1 : -1);
   const x0 = X(x + gap), y0 = Y(y), x1 = X(tx), y1 = Y(ty);
-  L.path.setAttribute('d', conn >= 4 ? `M${x0},${y0} L${x1},${y1}` : `M${x0},${y0} Q${(x0 + x1) / 2},${y0} ${x1},${y1}`);
+  L.path.setAttribute('d', `M${x0},${y0} L${x1},${y1}`);
   L.dot.setAttribute('cx', x1);
   L.dot.setAttribute('cy', y1);
 }
 
-function layout(p) {
+// Where things stand for a given set of act values (scene units, y up).
+function sceneY(p) {
   const mix = (a, b) => a + (b - a) * p.join;
   const Gy = mix(0.47, 0.2), rG = mix(0.29, 0.36);
   const Wy = mix(-0.43, -0.2), rW = mix(0.36, 0.38);
   const Sy = mix(-0.4, 0);
+  const bTop = Gy - rG + 0.03;
+  const brk = bTop - (bTop - p.bbot) * 0.5;            // where the bridge snaps
+  const ripY = Wy + rW - 0.02 + (Sy - (Wy + rW - 0.02)) * p.ripAt;
+  return { Gy, rG, Wy, rW, Sy, bTop, brk, ripY };
+}
+
+function layout(p) {
+  const { Gy, rG, Wy, rW, Sy, bTop, brk } = sceneY(p);
   const godY = Gy + rG * 0.38, worldY = Wy - rW * 0.6;
   place('god', 0, godY);
   place('world', 0, worldY);
-  const bTop = Gy - rG + 0.03;
-  const by = Math.max(-0.02, (bTop + p.bbot) / 2 + 0.07);
-  place('bridge', 0.22, by + 0.03, 0.055, by - 0.02);
+  const whole = Math.max(-0.02, (bTop + p.bbot) / 2 + 0.07);
+  const by = whole + (brk - whole) * p.snap;
+  place('bridge', 0.22, by + 0.03, 0.05 - 0.03 * p.snap, by - 0.02 * (1 - p.snap));
   place('self', rW + 0.1, Sy + 0.03, 0.105, Sy);
   place('sin', -(rW + 0.1), Sy - 0.08, -0.02 - p.stainR * 0.8, Sy - 0.06);
   const bl = labels.bridge;
@@ -429,150 +478,71 @@ function layout(p) {
 }
 
 // ---------- connectors ----------
-// Things that join, point and mark (the bridge, its arrows, the line of history)
-// are drawn as crisp graphics over the paint. ?conn=1 gilded, 2 engraved, 3 glass.
-const conn = params.has('conn') ? Number(params.get('conn')) || 0 : 5;   // Bold is the house style
-const CONN_NAMES = ['Watercolor', 'Gilded', 'Engraved', 'Glass', 'Line', 'Bold', 'Channel'];
-document.body.classList.add(`conn${conn}`);
-const nav = document.getElementById('nav');
-CONN_NAMES.forEach((n, i) => {
-  const a = document.createElement('a');
-  a.textContent = n;
-  a.href = `?conn=${i}`;
-  if (i === conn) a.className = 'on';
-  if (params.has('conn')) nav.appendChild(a);
-});
+// Things that join, point and mark are drawn as plain strokes over the paint:
+// warm ink, one accent colour, and a paper-coloured edge so they read on any wash.
 const connSvg = document.getElementById('conn');
-const INK = '#2b211d', RUBY = '#8f1d22', PAPER = '#fbf6ea';
+const DARK = '#33271f', RED = '#a3262b', OCHRE = '#b07a1e', PAP = '#f8f2e4';
 const f = (n) => n.toFixed(4);
-
-function chevrons(w, y0, y1, t, s, draw) {
-  let out = '';
-  for (let oy = y0 - 2 * s + ((t * 0.04) % s); oy < y1; oy += s) out += draw(oy);
-  return out;
-}
-const chevPath = (w, oy, h, th) => `M${-w},${f(oy)} L0,${f(oy + h)} L${w},${f(oy)} L${w},${f(oy + th)} L0,${f(oy + h + th)} L${-w},${f(oy + th)}Z`;
-const lozenge = (x, y, r) => `M${f(x)},${f(y - r)} L${f(x + r * 0.8)},${f(y)} L${f(x)},${f(y + r)} L${f(x - r * 0.8)},${f(y)}Z`;
+const hex = (c) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
+const blend = (a, b, k) => `rgb(${hex(a).map((v, i) => Math.round(v + (hex(b)[i] - v) * k)).join(',')})`;
+const stroke = (d, col, wd) => `<path d="${d}" fill="none" stroke="${PAP}" stroke-width="${wd + 0.012}" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="none" stroke="${col}" stroke-width="${wd}" stroke-linecap="round" stroke-linejoin="round"/>`;
+const shape = (d, col) => `<path d="${d}" fill="${col}" stroke="${PAP}" stroke-width=".012" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="${col}"/>`;
 
 function drawConn(p, t) {
-  const top = -(p.join * (0.2 - 0.47) + 0.47 - (0.29 + p.join * 0.07) + 0.03);   // svg y grows downward
-  const bot = -p.bbot;
-  const h = Math.max(0.001, bot - top);
-  const w = 0.045, cy = -0.03, L = 0.135, T = 0.036;
-  const crim = p.crim, ba = p.ba, cr = p.cross;
-  const ty = 0.87, xs = [0, 1, 2, 3].map((i) => ext * (-0.72 + 0.48 * i)), bx = ext * (-0.72 + 0.48 * p.act);
-  let g = '';
+  const sc = sceneY(p);
+  const top = -sc.bTop, bot = -p.bbot;            // svg y grows downward
+  const HW = 0.022, WD = 0.044, cyB = -0.03;
+  const ACC = blend(OCHRE, RED, p.crim);
+  let g = `<g opacity="${f(Math.min(1, p.ba * 1.3))}">`;
 
-  if (conn === 1) {
-    // ----- gilded: gold leaf, a coloured field, fine black line -----
-    const b = 0.012;
-    g += `<defs><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1" spreadMethod="reflect" gradientTransform="translate(${f(Math.sin(t * 0.5) * 0.35)},0)">
-      <stop offset="0" stop-color="#fbeeb0"/><stop offset=".3" stop-color="#e2b33c"/><stop offset=".55" stop-color="#a8741a"/><stop offset=".78" stop-color="#f3d77a"/><stop offset="1" stop-color="#b8862a"/></linearGradient>
-      <filter id="sh" x="-50%" y="-20%" width="200%" height="140%"><feDropShadow dx="0" dy=".005" stdDeviation=".006" flood-color="#3a2410" flood-opacity=".4"/></filter>
-      <clipPath id="bc"><rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}" rx=".012"/></clipPath></defs>`;
-    g += `<g opacity="${f(ba)}" filter="url(#sh)">
-      <rect x="${-w - b}" y="${f(top - b)}" width="${2 * (w + b)}" height="${f(h + 2 * b)}" rx=".022" fill="url(#gold)" stroke="${INK}" stroke-width=".0035"/>
-      <rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}" rx=".012" fill="#1f4a8a"/>
-      <rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}" rx=".012" fill="${RUBY}" opacity="${f(crim)}"/>
-      <g clip-path="url(#bc)" fill="url(#gold)" stroke="${INK}" stroke-width=".002">${chevrons(w, top, bot, t, 0.11, (oy) => `<path d="${chevPath(w - 0.008, oy, 0.04, 0.026)}"/>`)}</g>
-      <rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}" rx=".012" fill="none" stroke="${INK}" stroke-width=".003"/></g>`;
-    const beam = (k) => `M${-L * k},${f(cy - T * 1.45 * k)} L${-L * 0.36},${f(cy - T * 0.85 * k)} L${L * 0.36},${f(cy - T * 0.85 * k)} L${L * k},${f(cy - T * 1.45 * k)} L${L * k},${f(cy + T * 1.45 * k)} L${L * 0.36},${f(cy + T * 0.85 * k)} L${-L * 0.36},${f(cy + T * 0.85 * k)} L${-L * k},${f(cy + T * 1.45 * k)}Z`;
-    g += `<g opacity="${f(cr)}" filter="url(#sh)"><path d="${beam(1)}" fill="url(#gold)" stroke="${INK}" stroke-width=".0035"/>
-      <path d="${beam(0.76)}" fill="${RUBY}" stroke="${INK}" stroke-width=".0025"/>
-      <circle cx="0" cy="${cy}" r=".027" fill="url(#gold)" stroke="${INK}" stroke-width=".003"/><circle cx="0" cy="${cy}" r=".013" fill="#1f4a8a" stroke="${INK}" stroke-width=".002"/>
-      <circle cx="-.004" cy="${cy - 0.004}" r=".004" fill="#fff" opacity=".7"/></g>`;
-    g += `<g filter="url(#sh)"><line x1="${-ext}" y1="${ty}" x2="${ext}" y2="${ty}" stroke="${INK}" stroke-width=".018" stroke-linecap="round"/>
-      <line x1="${-ext}" y1="${ty}" x2="${ext}" y2="${ty}" stroke="url(#gold)" stroke-width=".011" stroke-linecap="round"/>
-      <path d="M${ext + 0.09},${ty} L${ext - 0.02},${ty - 0.05} Q${ext + 0.015},${ty} ${ext - 0.02},${ty + 0.05}Z" fill="url(#gold)" stroke="${INK}" stroke-width=".0035" stroke-linejoin="round"/>
-      ${xs.map((x) => `<circle cx="${f(x)}" cy="${ty}" r=".02" fill="url(#gold)" stroke="${INK}" stroke-width=".003"/><circle cx="${f(x)}" cy="${ty}" r=".008" fill="${INK}"/>`).join('')}
-      <circle cx="${f(bx)}" cy="${ty}" r="${f(0.032 + 0.002 * Math.sin(t * 2.4))}" fill="url(#gold)" stroke="${INK}" stroke-width=".003"/>
-      <circle cx="${f(bx)}" cy="${ty}" r=".021" fill="${RUBY}" stroke="${INK}" stroke-width=".002"/><circle cx="${f(bx - 0.007)}" cy="${ty - 0.007}" r=".005" fill="#fff" opacity=".75"/></g>`;
-  } else if (conn === 2) {
-    // ----- engraved: ruled ink lines on bare paper, one red -----
-    const col = crim > 0.5 ? RUBY : '#8a5a12';
-    let hatch = '';
-    for (let y = top + 0.012; y < bot - 0.006; y += 0.012) hatch += `M${-w + 0.004},${f(y)} h.012 M${w - 0.016},${f(y)} h.012 `;
-    g += `<defs><clipPath id="bc"><rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}"/></clipPath></defs>`;
-    g += `<g opacity="${f(ba)}"><rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}" fill="${PAPER}" opacity=".86"/>
-      <path d="${hatch}" stroke="${INK}" stroke-width=".0016" opacity=".7"/>
-      <g clip-path="url(#bc)" fill="none" stroke="${col}" stroke-width=".0075" stroke-linecap="round" stroke-linejoin="round">${chevrons(w, top, bot, t, 0.085, (oy) => `<path d="M${-w + 0.02},${f(oy)} L0,${f(oy + 0.03)} L${w - 0.02},${f(oy)}"/>`)}</g>
-      <path d="M${-w},${f(top)} V${f(bot)} M${w},${f(top)} V${f(bot)}" stroke="${INK}" stroke-width=".0045" stroke-linecap="round"/>
-      <path d="M${-w - 0.009},${f(top)} V${f(bot)} M${w + 0.009},${f(top)} V${f(bot)}" stroke="${INK}" stroke-width=".0015"/>
-      <path d="M${-w - 0.02},${f(bot)} H${w + 0.02} M${-w - 0.02},${f(top)} H${w + 0.02}" stroke="${INK}" stroke-width=".0035" stroke-linecap="round"/></g>`;
-    g += `<g opacity="${f(cr)}"><rect x="${-L}" y="${f(cy - T)}" width="${2 * L}" height="${2 * T}" fill="${PAPER}" opacity=".92"/>
-      <rect x="${-L}" y="${f(cy - T)}" width="${2 * L}" height="${2 * T}" fill="none" stroke="${INK}" stroke-width=".0045"/>
-      <rect x="${-L + 0.009}" y="${f(cy - T + 0.009)}" width="${2 * L - 0.018}" height="${2 * T - 0.018}" fill="none" stroke="${INK}" stroke-width=".0015"/>
-      <path d="M${-L},${f(cy - T - 0.012)} V${f(cy + T + 0.012)} M${L},${f(cy - T - 0.012)} V${f(cy + T + 0.012)}" stroke="${INK}" stroke-width=".0045" stroke-linecap="round"/>
-      <path d="${lozenge(0, cy, 0.024)}" fill="${RUBY}"/><path d="${lozenge(-0.075, cy, 0.01)}${lozenge(0.075, cy, 0.01)}" fill="${INK}"/></g>`;
-    g += `<line x1="${-ext}" y1="${ty}" x2="${ext + 0.06}" y2="${ty}" stroke="${INK}" stroke-width=".0045" stroke-linecap="round"/>
-      <line x1="${-ext}" y1="${ty + 0.011}" x2="${ext}" y2="${ty + 0.011}" stroke="${INK}" stroke-width=".0015"/>
-      <path d="M${ext + 0.015},${ty - 0.035} L${ext + 0.07},${ty} L${ext + 0.015},${ty + 0.035}" fill="none" stroke="${INK}" stroke-width=".0045" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M${-ext},${ty - 0.025} V${ty + 0.025}" stroke="${INK}" stroke-width=".0045" stroke-linecap="round"/>
-      ${xs.map((x) => `<circle cx="${f(x)}" cy="${ty}" r=".014" fill="${PAPER}" stroke="${INK}" stroke-width=".004"/>`).join('')}
-      <circle cx="${f(bx)}" cy="${ty}" r="${f(0.03 + 0.003 * Math.sin(t * 2.4))}" fill="none" stroke="${RUBY}" stroke-width=".0025"/><circle cx="${f(bx)}" cy="${ty}" r=".017" fill="${RUBY}"/>`;
-  } else if (conn === 3) {
-    // ----- glass: jewel-coloured panes held in dark lead -----
-    const LEAD = '#1d1714', b = 0.008;
-    g += `<defs><linearGradient id="ruby" x1="0" x2="1"><stop offset="0" stop-color="#7c1018"/><stop offset=".5" stop-color="#cf2a32"/><stop offset="1" stop-color="#7c1018"/></linearGradient>
-      <linearGradient id="saph" x1="0" x2="1"><stop offset="0" stop-color="#173a80"/><stop offset=".5" stop-color="#3f79d6"/><stop offset="1" stop-color="#173a80"/></linearGradient>
-      <linearGradient id="amber" x1="0" x2="1"><stop offset="0" stop-color="#d98a12"/><stop offset=".5" stop-color="#ffd86b"/><stop offset="1" stop-color="#d98a12"/></linearGradient>
-      <clipPath id="bc"><rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}"/></clipPath></defs>`;
-    g += `<g opacity="${f(ba)}"><rect x="${-w - b}" y="${f(top - b)}" width="${2 * (w + b)}" height="${f(h + 2 * b)}" rx=".006" fill="${LEAD}"/>
-      <rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}" fill="url(#saph)"/>
-      <rect x="${-w}" y="${f(top)}" width="${2 * w}" height="${f(h)}" fill="url(#ruby)" opacity="${f(crim)}"/>
-      <g clip-path="url(#bc)" fill="url(#amber)" stroke="${LEAD}" stroke-width=".006" stroke-linejoin="round">${chevrons(w, top, bot, t, 0.12, (oy) => `<path d="${chevPath(w, oy, 0.045, 0.04)}" opacity="${f(0.88 + 0.12 * Math.sin(t * 1.3 + oy * 30))}"/>`)}</g>
-      <rect x="${-w + 0.008}" y="${f(top + 0.01)}" width=".006" height="${f(Math.max(0, h - 0.02))}" fill="#fff" opacity=".28"/></g>`;
-    g += `<g opacity="${f(cr)}"><rect x="${-L - b}" y="${f(cy - T - b)}" width="${2 * (L + b)}" height="${2 * (T + b)}" rx=".006" fill="${LEAD}"/>
-      <rect x="${-L}" y="${f(cy - T)}" width="${2 * L}" height="${2 * T}" fill="url(#ruby)"/>
-      <path d="M${-w - 0.004},${f(cy - T)} V${f(cy + T)} M${w + 0.004},${f(cy - T)} V${f(cy + T)}" stroke="${LEAD}" stroke-width=".006"/>
-      <path d="${lozenge(0, cy, T)}" fill="url(#amber)" stroke="${LEAD}" stroke-width=".006" stroke-linejoin="round"/>
-      <rect x="${-L + 0.008}" y="${f(cy - T + 0.007)}" width="${2 * L - 0.016}" height=".005" fill="#fff" opacity=".28"/></g>`;
-    g += `<line x1="${-ext}" y1="${ty}" x2="${ext}" y2="${ty}" stroke="${LEAD}" stroke-width=".009" stroke-linecap="round"/>
-      <path d="M${ext + 0.085},${ty} L${ext - 0.015},${ty - 0.048} L${ext - 0.015},${ty + 0.048}Z" fill="url(#amber)" stroke="${LEAD}" stroke-width=".007" stroke-linejoin="round"/>
-      ${xs.map((x) => `<path d="${lozenge(x, ty, 0.026)}" fill="url(#saph)" stroke="${LEAD}" stroke-width=".006" stroke-linejoin="round"/>`).join('')}
-      <path d="${lozenge(bx, ty, 0.04 + 0.003 * Math.sin(t * 2.4))}" fill="url(#ruby)" stroke="${LEAD}" stroke-width=".007" stroke-linejoin="round"/>
-      <path d="${lozenge(bx - 0.006, ty - 0.008, 0.008)}" fill="#fff" opacity=".6"/>`;
+  // arrowheads running down the bridge
+  let arrows = '';
+  const gapS = 0.085;
+  for (let oy = top - 2 * gapS + ((t * 0.04) % gapS); oy < bot; oy += gapS) arrows += `<path d="M-.0135,${f(oy)} L0,${f(oy + 0.0165)} L.0135,${f(oy)}"/>`;
+  const arrowsIn = (clip) => `<g clip-path="url(#${clip})" fill="none" stroke="${PAP}" stroke-width=".0085" stroke-linecap="round" stroke-linejoin="round">${arrows}</g>`;
+
+  if (p.snap > 0.02) {
+    // snapped: two pieces whose jagged ends would fit, the lower one fallen aside
+    const yb = -sc.brk, gap = 0.085 * p.snap;
+    const ya = yb - gap / 2, yl = yb + gap / 2;
+    const jag = (y) => [[HW, -0.012], [HW * 0.35, 0.012], [-HW * 0.25, -0.016], [-HW, 0.008]].map(([x, dy]) => `${f(x)},${f(y + dy)}`);
+    const upper = `M${-HW},${f(top + HW)} A${HW} ${HW} 0 0 1 ${HW},${f(top + HW)} L${jag(ya).join(' L')}Z`;
+    const lower = `M${jag(yl).reverse().join(' L')} L${HW},${f(bot - HW)} A${HW} ${HW} 0 0 1 ${-HW},${f(bot - HW)}Z`;
+    const lean = p.snap * (13 + 1.8 * Math.sin(t * 0.9));
+    g += `<defs><clipPath id="bc"><path d="${upper}"/></clipPath></defs>`;
+    g += shape(upper, ACC) + arrowsIn('bc');
+    g += `<g transform="rotate(${f(lean)} 0 ${f(bot)})" opacity="${f(1 - 0.22 * p.snap)}">${shape(lower, ACC)}</g>`;
   } else {
-    // ----- modern and minimal: plain lines in warm ink, one accent colour -----
-    const DARK = '#33271f', ACC = crim > 0.5 ? '#a3262b' : '#b07a1e', RED = '#a3262b', PAP = '#f8f2e4';
-    const line = (d, col, wd, extra = '') => `<path d="${d}" fill="none" stroke="${PAP}" stroke-width="${wd + 0.012}" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="none" stroke="${col}" stroke-width="${wd}" stroke-linecap="round" stroke-linejoin="round" ${extra}/>`;
-    const axis = `M0,${f(top)} V${f(bot)}`;
-    g += `<defs><clipPath id="bc"><rect x="-.06" y="${f(top)}" width=".12" height="${f(h)}"/></clipPath></defs><g opacity="${f(Math.min(1, ba * 1.3))}">`;
-    if (conn === 4) {
-      // one fine line, dashes of light running down it, a plain arrowhead
-      g += line(`M0,${f(top)} V${f(bot - 0.03)}`, ACC, 0.009);
-      g += `<path d="M0,${f(top)} V${f(bot - 0.04)}" fill="none" stroke="${PAP}" stroke-width=".0045" stroke-linecap="round" stroke-dasharray=".018 .075" stroke-dashoffset="${f(-t * 0.05)}"/>`;
-      g += `<path d="M0,${f(bot + 0.004)} L-.024,${f(bot - 0.042)} L.024,${f(bot - 0.042)}Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/>`;
-      g += `<g opacity="${f(cr)}">${line(`M-.085,${cy} H.085`, ACC, 0.009)}</g>`;
-    } else if (conn === 5) {
-      // one bold stroke with pale arrows moving inside it
-      g += line(axis, ACC, 0.044);
-      g += `<g opacity="${f(cr)}">${line(`M-.105,${cy} H.105`, ACC, 0.044)}</g>`;
-      g += `<path d="${axis}" fill="none" stroke="${ACC}" stroke-width=".044" stroke-linecap="round"/>`;
-      g += `<g clip-path="url(#bc)" fill="none" stroke="${PAP}" stroke-width=".0085" stroke-linecap="round" stroke-linejoin="round">${chevrons(w, top, bot, t, 0.085, (oy) => `<path d="M-.0135,${f(oy)} L0,${f(oy + 0.0165)} L.0135,${f(oy)}"/>`)}</g>`;
-    } else {
-      // an open channel in outline, with beads descending through it
-      const a = 0.02, x = 0.1;
-      const outline = cr > 0.5
-        ? `M${-a},${f(top)} V${f(cy - a)} H${-x} V${f(cy + a)} H${-a} V${f(bot)} M${a},${f(top)} V${f(cy - a)} H${x} V${f(cy + a)} H${a} V${f(bot)} M${-x},${f(cy - a)} V${f(cy + a)} M${x},${f(cy - a)} V${f(cy + a)}`
-        : `M${-a},${f(top)} V${f(bot)} M${a},${f(top)} V${f(bot)}`;
-      g += `<path d="M0,${f(top)} V${f(bot)}" stroke="${PAP}" stroke-width="${2 * a}" opacity=".8"/>`;
-      g += `<rect x="${-x}" y="${f(cy - a)}" width="${2 * x}" height="${2 * a}" fill="${PAP}" opacity="${f(0.8 * cr)}"/>`;
-      g += line(outline, DARK, 0.0048);
-      g += `<g clip-path="url(#bc)" fill="${ACC}">${chevrons(w, top + 0.01, bot, t, 0.065, (oy) => `<circle cx="0" cy="${f(oy)}" r=".0085"/>`)}</g>`;
-    }
-    g += '</g>';
-    // the line of history
-    g += line(`M${-ext},${ty} H${ext + 0.04}`, DARK, 0.0055);
-    g += `<path d="M${ext + 0.085},${ty} L${ext + 0.03},${ty - 0.026} L${ext + 0.03},${ty + 0.026}Z" fill="${DARK}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/>`;
-    g += xs.map((x) => `<circle cx="${f(x)}" cy="${ty}" r=".013" fill="${PAP}" stroke="${DARK}" stroke-width=".0055"/>`).join('');
-    g += `<circle cx="${f(bx)}" cy="${ty}" r="${f(0.031 + 0.004 * Math.sin(t * 2.4))}" fill="none" stroke="${RED}" stroke-width=".003"/><circle cx="${f(bx)}" cy="${ty}" r=".018" fill="${RED}" stroke="${PAP}" stroke-width=".004"/>`;
+    g += `<defs><clipPath id="bc"><rect x="-.04" y="${f(top)}" width=".08" height="${f(Math.max(0.001, bot - top))}"/></clipPath></defs>`;
+    g += stroke(`M0,${f(top)} V${f(bot)}`, ACC, WD);
+    g += `<g opacity="${f(p.cross)}">${stroke(`M-.105,${cyB} H.105`, ACC, WD)}</g>`;
+    g += `<path d="M0,${f(top)} V${f(bot)}" fill="none" stroke="${ACC}" stroke-width="${WD}" stroke-linecap="round"/>`;
+    g += arrowsIn('bc');
   }
-  connSvg.innerHTML = `<g transform="translate(${innerWidth / 2},${innerHeight / 2}) scale(${unit})">${g}</g>`;
+  g += '</g>';
+
+  // the line of history
+  const ty = 0.87, bx = ext * (-0.72 + 0.48 * p.act);
+  g += stroke(`M${f(-ext)},${ty} H${f(ext + 0.04)}`, DARK, 0.0055);
+  g += `<path d="M${f(ext + 0.085)},${ty} L${f(ext + 0.03)},${ty - 0.026} L${f(ext + 0.03)},${ty + 0.026}Z" fill="${DARK}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/>`;
+  for (let i = 0; i < 4; i++) g += `<circle cx="${f(ext * (-0.72 + 0.48 * i))}" cy="${ty}" r=".013" fill="${PAP}" stroke="${DARK}" stroke-width=".0055"/>`;
+  g += `<circle cx="${f(bx)}" cy="${ty}" r="${f(0.031 + 0.004 * Math.sin(t * 2.4))}" fill="none" stroke="${RED}" stroke-width=".003"/><circle cx="${f(bx)}" cy="${ty}" r=".018" fill="${RED}" stroke="${PAP}" stroke-width=".004"/>`;
+
+  connSvg.innerHTML = `<g transform="translate(${f(cx)},${f(cy)}) scale(${f(unit)})">${g}</g>`;
 }
 
 // ---------- loop ----------
+let lastT = 0, acc = 0, nF = 0;
 function frame(now) {
+  // if frames come slowly, paint at a lower resolution rather than stutter
+  if (frozen === null && lastT) {
+    acc += now - lastT;
+    if (++nF === 40) {
+      if (acc / nF > 36 && quality > 0.5) { quality -= 0.25; resize(); }
+      acc = 0; nF = 0;
+    }
+  }
+  lastT = now;
   const x = Math.min(1, (now - t0) / DUR);
   const target = { ...ACTS[act].p, act };
   const e = ease(x);
@@ -581,14 +551,17 @@ function frame(now) {
 
   gl.uniform2f(U('uRes'), canvas.width, canvas.height);
   gl.uniform1f(U('uUnit'), unit * dpr);
+  gl.uniform2f(U('uCen'), cx * dpr, canvas.height - cy * dpr);
+  gl.uniform1f(U('uRip'), live.rip);
+  gl.uniform1f(U('uRipY'), sceneY(live).ripY);
   gl.uniform1f(U('uExt'), ext);
-  gl.uniform1f(U('uT'), frozen !== null ? frozen : now / 1000);
+  gl.uniform1f(U('uT'), clock(now));
   gl.uniform1f(U('uJoin'), live.join);
   gl.uniform1f(U('uBbot'), live.bbot);
-  gl.uniform1f(U('uBa'), conn ? 0 : live.ba);
-  gl.uniform1f(U('uTl'), conn ? 0 : 1);
+  gl.uniform1f(U('uBa'), 0);
+  gl.uniform1f(U('uTl'), 0);
   gl.uniform1f(U('uCrim'), live.crim);
-  gl.uniform1f(U('uCross'), conn ? 0 : live.cross);
+  gl.uniform1f(U('uCross'), 0);
   gl.uniform1f(U('uStainR'), live.stainR);
   gl.uniform1f(U('uStainA'), live.stainA);
   gl.uniform1f(U('uGlow'), live.glow);
@@ -596,7 +569,7 @@ function frame(now) {
   gl.uniform1f(U('uAct'), live.act);
   gl.uniform4fv(U('uLab[0]'), rects);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
-  if (conn) drawConn(live, frozen !== null ? frozen : now / 1000);
+  drawConn(live, clock(now));
   requestAnimationFrame(frame);
 }
 
