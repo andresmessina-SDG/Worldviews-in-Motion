@@ -58,6 +58,78 @@ h1 { margin: 2px 0 0; font-size: clamp(2rem, 5.5vmin, 3.6rem); font-weight: 600;
 #moves button::after { content: '  \2192'; font-style: normal; }
 #moves button:hover { background: var(--ink); color: var(--paper); }
 
+/* ---------- the menu: index tabs on the left edge of the sheet ---------- */
+#menu { position: fixed; left: 0; top: 0; width: 0; height: 100%; z-index: 5; }
+.tab {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  padding: 0 9px 0 0;
+  border: 1px solid rgba(60, 40, 20, .14);
+  border-left: 0;
+  border-radius: 0 9px 12px 0 / 0 12px 9px 0;
+  background:
+    linear-gradient(to right, transparent calc(100% - 64px), color-mix(in srgb, var(--c2) 30%, transparent)) ,
+    #fbf7ec;
+  box-shadow: 0 1px 2px rgba(60, 40, 20, .18), 0 3px 9px rgba(60, 40, 20, .08);
+  font-family: var(--soft);
+  font-variation-settings: 'SOFT' 100, 'WONK' 0;
+  font-style: italic;
+  font-size: 21px;
+  line-height: 1;
+  color: var(--ink);
+  cursor: pointer;
+  transform-origin: 0 50%;
+  will-change: transform, height;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+.tab-name {
+  position: relative;
+  white-space: nowrap;
+  transform-origin: 100% 50%;
+  will-change: transform;
+}
+.tab-name::after {              /* an ink line that draws itself under the name in focus */
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1.6px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 100% 50%;
+  transition: transform .4s cubic-bezier(.6, 0, .2, 1);
+}
+.tab.hot .tab-name::after { transform: scaleX(1); }
+.tab-dab {                      /* a dab of the worldview's own paint */
+  flex: none;
+  border-radius: 50% 46% 52% 48%;
+  background: radial-gradient(circle at 36% 34%, var(--c1) 0 38%, var(--c2) 78%);
+  filter: url(#dab-edge);
+  opacity: .92;
+  mix-blend-mode: multiply;
+}
+.tab.cur { font-weight: 600; box-shadow: 0 1px 2px rgba(60, 40, 20, .22), 0 4px 12px rgba(60, 40, 20, .14); }
+.tab.cur .tab-name { color: var(--red); }
+
+/* not yet painted: drawn in pencil */
+.tab.pencil { color: #8d8781; cursor: default; background: #fbf7ec; box-shadow: 0 1px 2px rgba(60, 40, 20, .1); }
+.tab.pencil .tab-dab { background: none; filter: none; mix-blend-mode: normal; border: 1.3px dashed #a9a39c; opacity: .9; }
+.tab.pencil .tab-name::after { height: 1px; background: repeating-linear-gradient(to right, currentColor 0 5px, transparent 5px 8px); }
+
+.tab-rule { position: absolute; left: 0; top: 0; height: 1px; background: var(--ink); pointer-events: none; }
+.t { transition: opacity .5s ease; }
+.menu-open .t { opacity: .2; }
+
 /* ---------- lettering in the painting ---------- */
 .l {
   position: fixed;

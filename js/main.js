@@ -1,5 +1,7 @@
 import { createPainter } from './paint.js';
 import { WORLDVIEWS, HOME } from './worldviews.js';
+import { CATALOGUE } from './catalogue.js';
+import { createMenu } from './menu.js';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -120,7 +122,16 @@ function go(wv, act) {
   dur = reduced ? 1 : moved ? 4200 : 2600;
   history.replaceState(null, '', `#${wv}/${actOf().slug}`);
   renderText(false, moved);
+  if (moved) { menu.setCurrent(wv); menu.peek(1600); }
 }
+// ---------- the menu of worldviews ----------
+const menu = createMenu($('menu'), CATALOGUE, {
+  isBuilt: (id) => !!WORLDVIEWS[id],
+  onSelect: (id) => { auto = false; go(id, cur.act); },
+});
+menu.setCurrent(cur.wv);
+if (frozen === null) menu.peek(2800);
+
 let auto = frozen === null && !location.hash && !params.has('act') && !reduced;
 addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight') { auto = false; go(cur.wv, cur.act + 1); }
