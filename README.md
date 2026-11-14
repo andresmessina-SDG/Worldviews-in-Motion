@@ -1,7 +1,7 @@
 # Worldviews-in-Motion
 An animated watercolor visualizer of the world's major worldviews.
 
-Each worldview is shown as one painting that answers four questions in turn: where we came from, what went wrong, what puts it right, and where it all ends. Two worldviews are built so far: Christian theism, and deism, which is one question away from it ("What if God never spoke?"). Asking the question turns one painting into the other.
+Each worldview is shown as one painting that answers four questions in turn: where we came from, what went wrong, what puts it right, and where it all ends. Three worldviews are built so far, each one question away from the last: Christian theism, deism ("What if God never spoke?") and naturalism ("What if there is no clockmaker?"). Asking the question turns one painting into the next.
 
 Two layers make up every page. The painting shows what the worldview says exists. Plain strokes drawn over it show how those things relate: what joins them, which way it runs, and where we are in history.
 

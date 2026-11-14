@@ -15,6 +15,8 @@ uniform vec3 uGlory, uSky, uFar, uLow, uDeep, uSea, uLand, uGodC, uGodRim, uStai
 uniform float uBg, uWarm, uGodA;
 // what is present, and what moves
 uniform float uWave, uHaloL, uHaloR, uClock, uRing, uStainS;
+uniform float uBox, uLat, uPulse, uBare, uManA;   // a squared, sealed world; its lattice of law; an empty upper page
+uniform vec3 uManC;
 uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
 uniform vec3 uHands;            // second, minute and hour hands, radians clockwise from the top
 uniform vec4 uLab[3];
@@ -89,7 +91,9 @@ void main(){
   vec2 Wc = vec2(0., uW.x); float rW = uW.y;
   vec2 Sc = vec2(0., uSy);  float rS = .066;
   float dG = length(q + hand - G) - rG;
-  float dW = length(q + hand.yx - Wc) - rW;
+  vec2 bq = abs(q + hand.yx * .5 - Wc) - (rW - .035);
+  float dW = mix(length(q + hand.yx - Wc) - rW, length(max(bq, 0.)) + min(max(bq.x, bq.y), 0.) - .035, uBox);
+  float pres = smoothstep(0., .3, uGodA);                       // is there anything above at all
   float dS = length(q + hand * .4 - Sc) - rS;
   float rg = length(q - G), rw = length(q - Wc);
   float ang = atan(q.y - G.y, q.x - G.x);
@@ -102,12 +106,13 @@ void main(){
          + (1. - up) * (K(uLow) * (.45 + .9 * v2) + K(uDeep) * smoothstep(.3, 1.3, rw) * (.4 + 1.5 * v1));
   A *= blooms * streaks * uBg * mix(.8, 1., smoothstep(.3, .5, fbm(q * 1.4 + wL + 20.) + .12));
   A += K(vec3(.62, .6, .66)) * uDull * .12 * (.5 + v2);
+  A *= mix(1., .26, uBare * smoothstep(.15, .8, q.y + wL.y * .4));   // the upper page left almost bare
 
   // glory going out from God in slow waves
   float wave = max(0., sin((rg - rG) * 16. - t * .9 + wM.x * 2.));
   A *= 1. - .3 * uWave * wave * wave * exp(-(rg - rG) * 2.6) * smoothstep(rG, rG + .05, rg);
 
-  A *= 1. - .93 * max(layers(dG, 11., .04, .0045, 0.), layers(dW, 17., .04, .0045, 0.));
+  A *= 1. - .93 * max(layers(dG, 11., .04, .0045, 0.) * pres, layers(dW, 17., .04, .0045, 0.));
   float ink = 0.;
 
   // ---------- the world ----------
@@ -140,6 +145,22 @@ void main(){
       c += smoothstep(.0105, .0085, length(p - (rW + .105) * vec2(sin(uHands.x), cos(uHands.x))));
       ink += min(c, 1.) * uClock;
     }
+
+    // the world as a closed system: a ruled lattice of law, with causes running on to their effects
+    if (uLat > .001) {
+      const float cs = .1;
+      vec2 gp = p + wM * .01;
+      vec2 cell = floor(gp / cs + .5);
+      vec2 gd = abs(gp - cell * cs);
+      float inside = smoothstep(-.012, -.03, dW);
+      float lat = (rule(gd.x, .0015) + rule(gd.y, .0015)) * .26;
+      lat += smoothstep(.003, 0., length(gp - cell * cs) - .0075) * step(.5, hash(cell)) * .7;
+      float ph = fract(gp.x / (cs * 4.) - t * .1 * (.6 + hash(vec2(cell.y, 3.))) + hash(vec2(cell.y, 7.)));
+      float pv = fract(-gp.y / (cs * 4.) - t * .1 * (.6 + hash(vec2(cell.x, 5.))) + hash(vec2(cell.x, 9.)));
+      float run = rule(gd.y, .0034) * smoothstep(0., .16, ph) * smoothstep(.2, .16, ph) * step(.3, hash(vec2(cell.y, 1.)));
+      run += rule(gd.x, .0034) * smoothstep(0., .16, pv) * smoothstep(.2, .16, pv) * step(.3, hash(vec2(cell.x, 2.)));
+      ink += (lat + run * .75 * uPulse) * inside * uLat;
+    }
   }
 
   // ---------- ripples through the world: light when God acts, shadow when sin spreads ----------
@@ -153,6 +174,7 @@ void main(){
   // ---------- the Ultimate ----------
   {
     float dens = layers(dG, 1., .03, .0045, tide) * uGodA;
+    float ink0 = ink;
     float core = mix(.42, 1.05, smoothstep(0., rG, rg + wM.x * .1));
     A += K(uGodC) * dens * core * bloom(q * 2.4, 31.) * (.85 + .6 * v2);
     A += K(uGodRim) * dens * smoothstep(rG * .5, rG, rg + wM.y * .15) * (.2 + .55 * v1);
@@ -165,6 +187,7 @@ void main(){
     float ruled = rule(rg - rG - .07, .0022) * .7;
     ruled += smoothstep(.005, .0025, abs(rg - rG - .13)) * step(.72, fract(ang * 60. / 6.2832 + uTick * .5)) * .55;
     ink += loose * uHaloL + ruled * uHaloR;
+    ink = mix(ink0, ink, pres);
   }
 
   // ---------- light lifted around man ----------
@@ -179,12 +202,12 @@ void main(){
 
   // ---------- man ----------
   {
-    float dens = layers(dS, 5., .01, .0035, tide);
-    A += K(mix(vec3(.9, .5, .3), vec3(.6, .42, .38), uDull * .8)) * dens * 1.1 + K(gold) * dens * .4 * (1. - uDull) * uRing;
+    float dens = layers(dS, 5., .01, .0035, tide) * uManA;
+    A += K(mix(uManC, vec3(.6, .42, .38), uDull * .8)) * dens * 1.1 + K(gold) * dens * .4 * (1. - uDull) * uRing;
     float ring = exp(-pow((dS - .024) / .009, 2.)) * (1. - .5 * uDull);
     A *= 1. - .85 * ring * uRing;
     A += K(vec3(.98, .72, .18)) * ring * (.85 + .25 * sin(t * 1.6)) * uRing;
-    ink += pen(dS - .012 + wob * .4) + pen(dS - .037 - wob * .3) * step(.4, noise(q * 14. + 3.)) * .7 * (1. - uClock);
+    ink += (pen(dS - .012 + wob * .4) + pen(dS - .037 - wob * .3) * step(.4, noise(q * 14. + 3.)) * .7 * (1. - uClock) * (1. - uBox)) * mix(.35, 1., uManA);
   }
 
   A += K(vec3(.2, .13, .1)) * min(ink, 1.) * (.5 + H);

@@ -12,6 +12,7 @@ const christianBase = {
   stainC: [0.13, 0.11, 0.22], stainS: 0,
   // what is present and what moves
   wave: 1, haloL: 1, haloR: 0, clock: 0, ring: 1,
+  box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0,
   stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
   bridge: 0.95, bw: 0.044, bbot: -0.12, crim: 0, cross: 0, snap: 0, flow: 1,
@@ -27,10 +28,25 @@ const deismBase = {
   godC: [0.97, 0.86, 0.56], godRim: [0.9, 0.74, 0.56], godA: 0.62,
   stainC: [0.46, 0.46, 0.54], stainS: 1,
   wave: 0, haloL: 0, haloR: 1, clock: 1, ring: 0,
+  box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0,
   stainR: 0.02, stainA: 0, glow: 0, dull: 0.15, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0.75, reason: 0, tick: 1, acc: [63, 98, 127],
   lGodK: 0.12, lSide: 0.2, lBrX: 0.2, lBrY: 0.14, tBrX: 0.035, tBrY: 0.12,
+};
+
+const naturalismBase = {
+  Gy: 0.56, rG: 0.19, Wy: -0.24, rW: 0.4, Sy: -0.2, bOff: 0,
+  glory: [0.95, 0.95, 0.93], sky: [0.87, 0.9, 0.9], far: [0.8, 0.84, 0.86], low: [0.8, 0.85, 0.8], deep: [0.62, 0.7, 0.76],
+  sea: [0.44, 0.58, 0.7], land: [0.5, 0.62, 0.5], warm: 0.4, bg: 0.42,
+  godC: [0.95, 0.94, 0.9], godRim: [0.86, 0.86, 0.84], godA: 0,
+  stainC: [0.34, 0.36, 0.42], stainS: 1,
+  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
+  box: 1, lat: 1, pulse: 1, bare: 1, manA: 1, manC: [0.3, 0.42, 0.54], empty: 0.8,
+  stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
+  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
+  ghost: 0, reason: 0, tick: 0, acc: [70, 100, 78],
+  lGodK: 0, lSide: 0.1, lBrX: 0.26, lBrY: 0.29, tBrX: 0.16, tBrY: 0.17,
 };
 
 const build = (base, acts) => acts.map((a) => ({ ...a, p: { ...base, ...a.p } }));
@@ -96,7 +112,7 @@ export const WORLDVIEWS = {
   deism: {
     name: 'Deism',
     tagline: 'God wound the clock and left it to run.',
-    move: { to: 'christian', q: 'What if God has spoken?' },
+    move: { to: 'naturalism', q: 'What if there is no clockmaker?' },
     acts: build(deismBase, [
       {
         slug: 'clockmaker',
@@ -145,6 +161,64 @@ export const WORLDVIEWS = {
           world: ['The world', 'Ticking on'],
           bridge: ['No promise', 'Nothing has been said'],
           self: ['Man', 'Hoping for a reward'],
+        },
+      },
+    ]),
+  },
+
+  naturalism: {
+    name: 'Naturalism',
+    tagline: 'Matter is all there is, and nobody made it.',
+    move: { to: 'christian', q: 'What if the cosmos has a Maker?' },
+    acts: build(naturalismBase, [
+      {
+        slug: 'matter',
+        name: 'Matter Alone',
+        text: 'The cosmos is all there is. No one made it, and nothing exists outside it.',
+        p: {},
+        labels: {
+          god: ['Nothing above', 'No God and no world beyond'],
+          world: ['The cosmos', 'Matter and energy, and nothing else'],
+          bridge: ['A closed system', 'Every event has a natural cause'],
+          self: ['Man', 'Made by chance and time'],
+        },
+      },
+      {
+        slug: 'suffering',
+        name: 'Suffering',
+        text: 'The world has not fallen. Pain, want and death are simply how nature works.',
+        p: { stainR: 0.15, stainA: 0.5, dull: 0.5, pulse: 0.8 },
+        labels: {
+          god: ['Nothing above', 'No one to blame'],
+          world: ['The cosmos', 'It does not care'],
+          bridge: ['A closed system', 'Every event has a natural cause'],
+          self: ['Man', 'He suffers and he dies'],
+          sin: ['Suffering', 'No one meant it'],
+        },
+      },
+      {
+        slug: 'science',
+        name: 'Science',
+        text: 'Man has only himself to rely on. Science explains nature, and technology puts it to work.',
+        p: { stainR: 0.07, stainA: 0.15, glow: 1, rip: 0.9 },
+        labels: {
+          god: ['Nothing above', 'No one to ask'],
+          world: ['The cosmos', 'Studied, measured and used'],
+          bridge: ['Still closed', 'No help comes from outside'],
+          self: ['Man', 'His reason is one more product of nature'],
+        },
+      },
+      {
+        slug: 'extinction',
+        name: 'Extinction',
+        text: 'Each person dies and is gone. In time the stars burn out and the cosmos goes cold.',
+        p: { dull: 1, warm: 0, manA: 0.22, pulse: 0.12, lat: 0.6, bg: 0.34, empty: 0.5,
+          sea: [0.52, 0.58, 0.66], land: [0.56, 0.6, 0.62] },
+        labels: {
+          god: ['Nothing above', 'No one to remember'],
+          world: ['The cosmos', 'Cold, dark and running down'],
+          bridge: ['No goal', 'History is heading nowhere'],
+          self: ['Man', 'Here briefly, then gone'],
         },
       },
     ]),

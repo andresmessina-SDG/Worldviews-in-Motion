@@ -89,7 +89,10 @@ export function createMenu(root, items, { isBuilt, onSelect }) {
     px = e.clientX; py = e.clientY;
     const wasOpen = openT > 0.6 && depth > 0.6;
     if (px < TOUCH_EDGE || (wasOpen && px < menuW + 20)) {
-      scrub = { y: py, t: performance.now(), moved: false, wasOpen };
+      // a tap chooses the name under the finger as it came down, however the lens moves afterwards
+      let hit = -1;
+      if (wasOpen) for (let i = 0; i < N; i++) if (py >= ys[i] && py < ys[i] + hs[i]) hit = i;
+      scrub = { y: py, t: performance.now(), moved: false, wasOpen, hit };
       e.preventDefault();
     } else if (wasOpen) holdUntil = 0;              // a tap elsewhere puts the tabs away
   }, { passive: false });
@@ -97,7 +100,8 @@ export function createMenu(root, items, { isBuilt, onSelect }) {
     if (!scrub) return;
     const s = scrub, held = performance.now() - s.t;
     scrub = null;
-    if (chooseIt && (s.wasOpen || s.moved || held > 350) && hot >= 0 && tabs[hot].built) choose(hot);
+    const pick = !s.moved && s.hit >= 0 ? s.hit : hot;
+    if (chooseIt && (s.wasOpen || s.moved || held > 350) && pick >= 0 && tabs[pick].built) choose(pick);
     else holdUntil = performance.now() + 4500;      // a first quick tap only opens the tabs
   };
   addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') { lastTouch = performance.now(); lift(true); } });

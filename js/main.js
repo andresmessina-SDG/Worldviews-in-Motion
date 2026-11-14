@@ -1,11 +1,11 @@
-import { createPainter } from './paint.js?v=7';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=7';
-import { CATALOGUE } from './catalogue.js?v=7';
-import { createMenu } from './menu.js?v=7';
+import { createPainter } from './paint.js?v=8';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=8';
+import { CATALOGUE } from './catalogue.js?v=8';
+import { createMenu } from './menu.js?v=8';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
-// halfway point of the move from the other worldview.
+// halfway point of the move from another worldview, named with &from=.
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -42,7 +42,7 @@ let from = live;
 let t0 = -1e9;
 let dur = 1;
 if (params.has('k')) {
-  const other = Object.keys(WORLDVIEWS).find((w) => w !== cur.wv);
+  const other = WORLDVIEWS[params.get('from')] ? params.get('from') : Object.keys(WORLDVIEWS).find((w) => w !== cur.wv);
   live = blendP({ ...WORLDVIEWS[other].acts[cur.act].p, act: cur.act }, target(), Number(params.get('k')));
 }
 
@@ -260,6 +260,11 @@ function drawConn(p, c) {
     g += `<path d="M-.022,${f(top)} V${f(bot)} M.022,${f(top)} V${f(bot)}" fill="none" stroke="${GREY}" stroke-width=".0042" stroke-linecap="round" stroke-dasharray=".016 .018" opacity="${f(p.ghost)}"/>`;
   }
 
+  // ----- where God would stand: an empty place, marked out and left blank -----
+  if (p.empty > 0.01) {
+    g += `<circle cx="0" cy="${f(-p.Gy)}" r="${f(p.rG)}" fill="none" stroke="${GREY}" stroke-width=".0042" stroke-linecap="round" stroke-dasharray=".016 .018" stroke-dashoffset="${f(c.t * 0.004)}" opacity="${f(p.empty)}"/>`;
+  }
+
   // ----- reason: a thin line climbing from man, with marks moving upward -----
   if (p.reason > 0.01) {
     const y0 = -(p.Wy + p.rW + 0.115), y1 = top + 0.035;
@@ -333,6 +338,7 @@ function frame(now) {
       uG: [p.Gy, p.rG], uW: [p.Wy, p.rW], uSy: p.Sy,
       uGlory: p.glory, uSky: p.sky, uFar: p.far, uLow: p.low, uDeep: p.deep, uSea: p.sea, uLand: p.land,
       uGodC: p.godC, uGodRim: p.godRim, uStainC: p.stainC, uBg: p.bg, uWarm: p.warm, uGodA: p.godA,
+      uBox: p.box, uLat: p.lat, uPulse: p.pulse, uBare: p.bare, uManA: p.manA, uManC: p.manC,
       uWave: p.wave, uHaloL: p.haloL, uHaloR: p.haloR, uClock: p.clock, uRing: p.ring, uStainS: p.stainS,
       uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
       uTick: hd.whole, uHands: [hd.sec, hd.min, hd.hour], 'uLab[0]': rects,
