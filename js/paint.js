@@ -23,6 +23,8 @@ uniform vec3 uSelfC;
 uniform float uOne, uMaya, uWorldA, uManI;           // all things as one ocean; the appearances rippling on it; how much of the world and of man is drawn
 uniform float uStainUp, uLit;   // the stain lifted from man onto the cross; the world lit by God's own light
 uniform float uScan;            // man measuring the lattice around him, by a light of his own
+uniform vec4 uSp[9];            // spirits: where each is, how dark, how present
+uniform float uSpA;
 uniform float uBi;              // the Ultimate as a jade disc of Heaven, with a round hole at its centre
 uniform float uYin, uMist;      // the world as yin and yang turning; a nameless source, painted as mist with no edge
 uniform float uFlux, uBundle, uScatter;   // things arising and passing away; a self made of five parts; those parts drifting apart
@@ -335,6 +337,20 @@ void main(){
     float inside = smoothstep(0., -.025, dW);
     A *= 1. - .55 * uSelfA * smoothstep(.03, -.06, d) * inside;
     A += K(uSelfC) * layers(d, 9., .035, .012, .6) * strokes * uSelfA * inside;
+  }
+
+  // ---------- spirits: small lights wandering the world, or dark presences pressing in ----------
+  if (uSpA > .001) {
+    for (int i = 0; i < 9; i++) {
+      vec4 s = uSp[i];
+      float d = length(q + hand * .3 - s.xy);
+      float g1 = exp(-pow(d / .022, 2.)), g2 = exp(-pow(d / .048, 2.)), g3 = exp(-pow(d / .085, 2.));
+      float lightA = s.w * (1. - s.z);
+      A *= 1. - lightA * min(.92, .62 * g3 + .4 * g2);
+      A += K(vec3(.99, .86, .5)) * lightA * (g1 * .55 + g2 * .12);
+      A += K(uStainC) * s.w * s.z * (g2 * 1.1 + g1 * .6);
+      ink += pen(d - .019 - wob * .4) * s.w * .55 * step(.3, noise(q * 20. + float(i) * 3.1 + t * .3));
+    }
   }
 
   // ---------- man ----------

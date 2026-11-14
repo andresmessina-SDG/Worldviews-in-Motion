@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=21';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=21';
-import { CATALOGUE } from './catalogue.js?v=21';
-import { createMenu } from './menu.js?v=21';
+import { createPainter } from './paint.js?v=22';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=22';
+import { CATALOGUE } from './catalogue.js?v=22';
+import { createMenu } from './menu.js?v=22';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -326,6 +326,17 @@ function drawConn(p, c) {
     g += `<g opacity="${f(p.push)}">${stroke(`M${f(x0)},${f(y)} L${f(x1 - dir * 0.02)},${f(y)}`, ACC, 0.007)}${shape(head, ACC)}</g>`;
   }
 
+  // ----- offerings: short lines from man out to the spirits that troubled him, with gifts travelling along them -----
+  if (p.offer > 0.01 && p.spirits > 0.01) {
+    let d = '';
+    for (let i = 0; i < 5; i++) {
+      const x = spirits[i * 4], y = spirits[i * 4 + 1], dx = x, dy = y - p.Sy, L = Math.hypot(dx, dy) || 1;
+      if (L < 0.11) continue;
+      d += `M${f(dx / L * 0.075)},${f(-(p.Sy + dy / L * 0.075))} L${f(x - dx / L * 0.03)},${f(-(y - dy / L * 0.03))} `;
+    }
+    g += `<g opacity="${f(p.offer)}">${stroke(d, ACC, 0.0045)}<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".0045" stroke-linecap="round" stroke-dasharray=".006 .022" stroke-dashoffset="${f(-c.t * 0.02)}"/></g>`;
+  }
+
   // ----- the five bonds: ruler, father and elder brother above man, a friend beside him, a wife below.
   //       Loosened, the people drift out of place and the lines break; at death they close into a line of
   //       generations, with offerings rising from the living to the dead. -----
@@ -401,6 +412,28 @@ function hands() {
 
 // ---------- loop ----------
 let lastT = 0, acc = 0, nF = 0, arrow = 0, accent = '';
+// ---------- spirits ----------
+// Nine small presences wander the world. The first five can turn dark and close in on man; the rest can
+// gather round him as the ancestors he joins. The painting and the connectors both read these places.
+const SPIRIT = [[0.55, 0.3, 0.07], [0.8, 1.6, -0.05], [0.4, 2.7, 0.06], [0.9, 3.9, -0.08], [0.65, 5.1, 0.05],
+  [0.85, 0.9, -0.06], [0.5, 2.1, 0.09], [0.75, 4.4, -0.07], [0.9, 5.7, 0.05]];
+const RING = [0.9, 1.75, 2.6, 4.1, 5.2, 0.4, 2.2, 3.4, 5.9];
+const spirits = new Float32Array(36);
+function spiritsAt(p, t) {
+  SPIRIT.forEach(([fr, a0, w], i) => {
+    const R = p.rW * (0.25 + 0.6 * fr), a = a0 + t * w;
+    let x = R * Math.cos(a), y = p.Wy + R * Math.sin(a) + 0.012 * Math.sin(t * 0.7 + i);
+    const k = i < 5 ? p.pull : p.near, rr = i < 5 ? 0.135 : 0.11;
+    const b = RING[i] + 0.15 * Math.sin(t * 0.3 + i);
+    x = lerp(x, rr * Math.cos(b), k);
+    y = lerp(y, p.Sy + rr * Math.sin(b), k);
+    const dark = i < 5 ? p.anger : 0;
+    const a1 = p.spirits * (i < 5 ? 1 : lerp(1, 0.55, p.near)) * (0.85 + 0.15 * Math.sin(t * 1.9 + i * 2.3));
+    spirits.set([x, y, dark, a1], i * 4);
+  });
+  return spirits;
+}
+
 function frame(now) {
   const dt = lastT ? Math.min(100, now - lastT) / 1000 : 0;
   // if frames come slowly, paint at a lower resolution rather than stutter
@@ -423,6 +456,7 @@ function frame(now) {
   if (css !== accent) { accent = css; document.documentElement.style.setProperty('--red', css); }
 
   layout(p);
+  if (p.spirits > 0.01) spiritsAt(p, t);
   if (painter) {
     const entry = p.Wy + p.rW - 0.02;
     painter.draw({
@@ -433,7 +467,7 @@ function frame(now) {
       uBox: p.box, uLat: p.lat, uPulse: p.pulse, uBare: p.bare, uManA: p.manA, uManC: p.manC, uDrain: p.drain, uPool: p.pool, uHollow: p.hollow, uSelfR: p.selfR, uSelfA: p.selfA, uSelfC: p.selfC,
       uOne: p.one, uMaya: p.maya, uWorldA: p.worldA, uManI: p.manI,
       uWave: p.wave, uHaloL: p.haloL, uHaloR: p.haloR, uClock: p.clock, uRing: p.ring, uStainS: p.stainS,
-      uStainUp: p.stainUp, uLit: p.lit, uScan: p.scan, uBi: p.bi, uYin: p.yin, uMist: p.mist, uFlux: p.flux, uBundle: p.bundle, uScatter: p.scatter, uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
+      uStainUp: p.stainUp, uLit: p.lit, uScan: p.scan, uSpA: p.spirits, 'uSp[0]': spirits, uBi: p.bi, uYin: p.yin, uMist: p.mist, uFlux: p.flux, uBundle: p.bundle, uScatter: p.scatter, uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
       uTick: hd.whole, uHands: [hd.sec, hd.min, hd.hour], 'uLab[0]': rects,
     });
   }
