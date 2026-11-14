@@ -115,11 +115,11 @@ export const WORLDVIEWS = {
       {
         slug: 'creation',
         name: 'Creation',
-        text: 'God made the world and called it good. He made man in his image and spoke with him.',
+        text: 'God made the world out of nothing and called it good. He made man in his image and spoke with him.',
         p: { rip: 0.9, ripAt: 0 },
         labels: {
           god: ['The triune God', 'Father, Son and Holy Spirit'],
-          world: ['Creation', 'Made by God, and good'],
+          world: ['Creation', 'Distinct from God, and good'],
           bridge: ['God speaks', 'His word and his covenant'],
           self: ['Man', 'Made in the image of God'],
         },
@@ -127,7 +127,7 @@ export const WORLDVIEWS = {
       {
         slug: 'fall',
         name: 'Fall',
-        text: 'Man rebelled against God. Sin took hold of the heart and spoiled the whole world.',
+        text: 'Man rebelled against God. Sin corrupted his heart and brought death and ruin into the world.',
         p: { snap: 1, stainR: 0.16, stainA: 0.62, dull: 1, rip: -0.8, lBrY: 0.075, tBrX: 0.02, tBrY: 0.045 },
         labels: {
           god: ['The triune God', 'Father, Son and Holy Spirit'],
@@ -140,25 +140,25 @@ export const WORLDVIEWS = {
       {
         slug: 'redemption',
         name: 'Redemption',
-        text: 'God came down. The Son became man, died on the cross for sin and rose again.',
+        text: 'God came down. The Son became man, died for sinners and rose again. All who trust him are forgiven.',
         p: { bridge: 1, bbot: -0.33, crim: 1, cross: 1, stainR: 0.1, stainA: 0.55, glow: 1, dull: 0.3, rip: 0.8, lBrY: 0.04, tBrY: -0.01 },
         labels: {
           god: ['The triune God', 'Father, Son and Holy Spirit'],
           world: ['Creation', 'Loved, and being restored'],
           bridge: ['Christ the Mediator', 'God comes down to man'],
-          self: ['Man', 'Forgiven through Christ'],
+          self: ['Man', 'Saved by grace, through faith'],
           sin: ['Sin', 'Paid for at the cross'],
         },
       },
       {
         slug: 'new-creation',
         name: 'New Creation',
-        text: 'God will live with his people in a world made new. He remains God, and they remain his creatures.',
+        text: 'Christ will return, raise the dead and judge the world. God will live with his people in a world made new.',
         p: { Gy: 0.2, rG: 0.36, Wy: -0.2, rW: 0.38, Sy: 0, bridge: 0, crim: 1, glow: 0.8, rip: 0.7 },
         labels: {
           god: ['The triune God', 'Father, Son and Holy Spirit'],
-          world: ['The new creation', 'The world made new'],
-          self: ['God’s people', 'At home with him'],
+          world: ['The new creation', 'No more sin or death'],
+          self: ['God’s people', 'Raised, and at home with him'],
         },
       },
     ]),
@@ -188,7 +188,7 @@ export const WORLDVIEWS = {
         p: { stainR: 0.15, stainA: 0.5, dull: 0.6 },
         labels: {
           god: ['The Creator', 'Distant and silent'],
-          world: ['The world', 'Still running as designed'],
+          world: ['The world', '“Whatever is, is right”'],
           bridge: ['No word from above', 'God has not spoken'],
           self: ['Man', 'His reason clouded'],
           sin: ['Ignorance', 'And superstition'],
@@ -241,7 +241,7 @@ export const WORLDVIEWS = {
       {
         slug: 'suffering',
         name: 'Suffering',
-        text: 'The world has not fallen. Pain, want and death are simply how nature works.',
+        text: 'The world has not fallen. Pain and death are simply how nature works. Good and evil are human ideas.',
         p: { stainR: 0.15, stainA: 0.5, dull: 0.5, pulse: 0.8 },
         labels: {
           god: ['Nothing above', 'No one to blame'],
@@ -348,7 +348,7 @@ export const WORLDVIEWS = {
         labels: {
           god: ['Nothing above', 'No God to give a purpose'],
           world: ['The world', 'Solid, silent and absurd'],
-          self: ['Man', 'He exists before he is anything'],
+          self: ['Man', 'Existence comes before essence'],
         },
       },
       {
@@ -409,11 +409,11 @@ export const WORLDVIEWS = {
       {
         slug: 'ignorance',
         name: 'Ignorance',
-        text: 'The many things we see are maya, an appearance. Taking them for real, the self is reborn again and again.',
+        text: 'The many things we see are maya, an appearance. Mistaking them for real, the self is reborn again and again.',
         p: { maya: 1, wheel: 1, hollow: 0, stainR: 0.12, stainA: 0.5 },
         labels: {
           god: ['Brahman', 'The only reality'],
-          world: ['Maya', 'The world of appearances'],
+          world: ['Maya', 'An illusion, but whose?'],
           bridge: ['Samsara', 'The wheel of rebirth, driven by karma'],
           self: ['Atman', 'It believes it is separate'],
           sin: ['Avidya', 'Ignorance of what the self is'],
