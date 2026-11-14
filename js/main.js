@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=18';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=18';
-import { CATALOGUE } from './catalogue.js?v=18';
-import { createMenu } from './menu.js?v=18';
+import { createPainter } from './paint.js?v=19';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=19';
+import { CATALOGUE } from './catalogue.js?v=19';
+import { createMenu } from './menu.js?v=19';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -326,6 +326,37 @@ function drawConn(p, c) {
     g += `<g opacity="${f(p.push)}">${stroke(`M${f(x0)},${f(y)} L${f(x1 - dir * 0.02)},${f(y)}`, ACC, 0.007)}${shape(head, ACC)}</g>`;
   }
 
+  // ----- the five bonds: ruler, father and elder brother above man, a friend beside him, a wife below.
+  //       Loosened, the people drift out of place and the lines break; at death they close into a line of
+  //       generations, with offerings rising from the living to the dead. -----
+  if (p.bonds > 0.01) {
+    const BOND = [[0, 0.21], [-0.15, 0.14], [0.15, 0.14], [-0.2, 0.02], [0, -0.18]];
+    const LINE = [[0, 0.33], [0, 0.19], [0.06, 0.12], [-0.06, 0.12], [0, -0.17]];
+    const LOP = [0.3, 0.6, 0, 0, 1];
+    const sy = -p.Sy;
+    let lines = '', dots = '', rite = '';
+    BOND.forEach(([bx, by], i) => {
+      const drift = 0.05 * p.loose;
+      const ox = drift * Math.sin(c.t * (0.21 + 0.07 * i) + i * 2.3), oy = drift * Math.cos(c.t * (0.17 + 0.05 * i) + i * 1.7);
+      const x = lerp(bx, LINE[i][0], p.lineage) + ox, y = sy - (lerp(by, LINE[i][1], p.lineage) + oy);
+      const op = p.bonds * lerp(1, LOP[i], p.lineage);
+      if (op < 0.01) return;
+      const dx = x, dy = y - sy, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
+      const a = 0.078, b = L - 0.034;
+      if (b > a) {
+        const d = `M${f(ux * a)},${f(sy + uy * a)} L${f(ux * b)},${f(sy + uy * b)}`;
+        const dash = p.loose > 0.02 ? ` stroke-dasharray="${f(0.03 * (1 - p.loose) + 0.012)} ${f(0.03 * p.loose)}"` : '';
+        lines += `<g opacity="${f(op)}"><path d="${d}" fill="none" stroke="${PAP}" stroke-width=".0145" stroke-linecap="round" opacity=".92"${dash}/><path d="${d}" fill="none" stroke="${ACC}" stroke-width=".0055" stroke-linecap="round"${dash}/></g>`;
+        if (i === 4 && p.lineage > 0.01) {
+          // offerings: marks rising from the descendant to the one he remembers
+          rite = `<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".005" stroke-linecap="round" stroke-dasharray=".008 .03" stroke-dashoffset="${f(c.t * 0.025)}" opacity="${f(op * p.lineage)}"/>`;
+        }
+      }
+      dots += `<circle cx="${f(x)}" cy="${f(y)}" r=".028" fill="${PAP}" stroke="${ACC}" stroke-width=".0055" opacity="${f(op)}"/>`;
+    });
+    g += lines + rite + dots;
+  }
+
   // ----- reason: a thin line climbing from man, with marks moving upward -----
   if (p.reason > 0.01) {
     const y0 = -(p.Wy + p.rW + 0.115), y1 = top + 0.035;
@@ -402,7 +433,7 @@ function frame(now) {
       uBox: p.box, uLat: p.lat, uPulse: p.pulse, uBare: p.bare, uManA: p.manA, uManC: p.manC, uDrain: p.drain, uPool: p.pool, uHollow: p.hollow, uSelfR: p.selfR, uSelfA: p.selfA, uSelfC: p.selfC,
       uOne: p.one, uMaya: p.maya, uWorldA: p.worldA, uManI: p.manI,
       uWave: p.wave, uHaloL: p.haloL, uHaloR: p.haloR, uClock: p.clock, uRing: p.ring, uStainS: p.stainS,
-      uStainUp: p.stainUp, uLit: p.lit, uScan: p.scan, uYin: p.yin, uMist: p.mist, uFlux: p.flux, uBundle: p.bundle, uScatter: p.scatter, uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
+      uStainUp: p.stainUp, uLit: p.lit, uScan: p.scan, uBi: p.bi, uYin: p.yin, uMist: p.mist, uFlux: p.flux, uBundle: p.bundle, uScatter: p.scatter, uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
       uTick: hd.whole, uHands: [hd.sec, hd.min, hd.hour], 'uLab[0]': rects,
     });
   }

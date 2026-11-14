@@ -23,6 +23,7 @@ uniform vec3 uSelfC;
 uniform float uOne, uMaya, uWorldA, uManI;           // all things as one ocean; the appearances rippling on it; how much of the world and of man is drawn
 uniform float uStainUp, uLit;   // the stain lifted from man onto the cross; the world lit by God's own light
 uniform float uScan;            // man measuring the lattice around him, by a light of his own
+uniform float uBi;              // the Ultimate as a jade disc of Heaven, with a round hole at its centre
 uniform float uYin, uMist;      // the world as yin and yang turning; a nameless source, painted as mist with no edge
 uniform float uFlux, uBundle, uScatter;   // things arising and passing away; a self made of five parts; those parts drifting apart
 uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
@@ -285,6 +286,8 @@ void main(){
   // ---------- the Ultimate ----------
   {
     float dens = layers(dG, 1., mix(.03, .1, uOne), mix(.0045, .03, uOne), mix(tide, .25, uOne)) * uGodA;
+    float hole = length(q + hand - G) - rG * .34;
+    dens *= mix(1., smoothstep(-.012, .014, hole), uBi);
     float ink0 = ink;
     float bandsG = mix(1., .6 + .5 * sin(rg * 15. + wM.x * 7. + wL.y * 5. - t * .15), uMaya);
     float core = mix(.42, 1.05, smoothstep(0., rG, rg + wM.x * .1));
@@ -292,6 +295,7 @@ void main(){
     A += K(uGodRim) * dens * smoothstep(rG * .5, rG, rg + wM.y * .15) * (.2 + .55 * v1) * bandsG;
     A *= 1. - .35 * uOne * exp(-rg * rg / .03);
     ink += (pen(dG + .012 + wob) + pen(dG - .02 - wob * 1.4) * step(.45, noise(q * 6. + 2.))) * (1. - uOne);
+    ink += pen(hole + .004 - wob * .6) * uBi;
     // the many things: rings drawn on the surface, moving outward and never arriving
     if (uMaya > .001) {
       float rr = length(q + hand - G);
