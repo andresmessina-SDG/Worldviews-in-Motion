@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Christian Theism · Worldviews in Motion</title>
-<meta name="description" content="An animated watercolor visualizer of the world's major worldviews, beginning with Christian theism.">
+<title>Worldviews in Motion</title>
+<meta name="description" content="An animated watercolor visualizer of the world's major worldviews, beginning with Christian theism and deism.">
 <meta name="theme-color" content="#f6f1e7">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='9' r='7' fill='%23e9b548'/%3E%3Ccircle cx='16' cy='23' r='7' fill='%233c9aa0'/%3E%3Cpath d='M16 12v9' stroke='%23a3262b' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,16 +20,16 @@
 <div class="t">
   <div class="head">
     <p class="k">Worldviews in Motion</p>
-    <h1>Christian Theism</h1>
-    <p class="tag">God made the world, and he came down to save it.</p>
+    <h1 id="name"></h1>
+    <p class="tag" id="tag"></p>
   </div>
-  <div class="act" aria-live="polite"><h2 id="actName"></h2><p id="actText"></p></div>
+  <div class="act" aria-live="polite"><h2 id="actName"></h2><p id="actText"></p><div id="moves"></div></div>
 </div>
 
 <div id="labels" aria-hidden="true"></div>
 <nav id="marks" aria-label="The four acts"></nav>
 <p id="nogl" hidden>This painting needs WebGL, which your browser has switched off.</p>
 
-<script type="module" src="js/christian.js"></script>
+<script type="module" src="js/main.js"></script>
 </body>
 </html>

@@ -36,7 +36,27 @@ h1 { margin: 2px 0 0; font-size: clamp(2rem, 5.5vmin, 3.6rem); font-weight: 600;
 .act { margin-top: 3.2vh; padding-top: 2vh; border-top: 1.5px solid rgba(43, 33, 29, .35); transition: opacity .45s ease; }
 .act h2 { margin: 0; font-size: clamp(1.3rem, 3.2vmin, 2rem); font-weight: 600; color: var(--red); line-height: 1; }
 .act p { margin: 6px 0 0; font-size: clamp(1.05rem, 2.4vmin, 1.4rem); font-weight: 500; line-height: 1.22; }
-.swap .act { opacity: 0; }
+.head { transition: opacity .45s ease; }
+.swap .act, .swap-all .act, .swap-all .head { opacity: 0; }
+:root { transition: --red .6s; }
+
+/* the question that leads to another worldview */
+#moves { margin-top: 2.4vh; }
+#moves button {
+  padding: 7px 16px 8px;
+  border: 1.4px solid var(--ink);
+  border-radius: 999px;
+  background: rgba(248, 242, 228, .55);
+  font-family: var(--soft);
+  font-variation-settings: 'SOFT' 100, 'WONK' 0;
+  font-style: italic;
+  font-size: clamp(.95rem, 2.1vmin, 1.2rem);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background .3s, color .3s, border-color .3s;
+}
+#moves button::after { content: '  \2192'; font-style: normal; }
+#moves button:hover { background: var(--ink); color: var(--paper); }
 
 /* ---------- lettering in the painting ---------- */
 .l {
@@ -77,6 +97,7 @@ h1 { margin: 2px 0 0; font-size: clamp(2rem, 5.5vmin, 3.6rem); font-weight: 600;
 }
 #marks button:hover { opacity: 1; }
 #marks button[aria-current='true'] { opacity: 1; color: var(--red); font-weight: 600; }
+#marks button { transition: opacity .3s, color .6s; }
 button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; border-radius: 6px; }
 
 #nogl { position: fixed; inset: 45% 10% auto; text-align: center; font-size: 1.2rem; }
@@ -92,7 +113,7 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
   left: 9vw;
   right: 9vw;
   bottom: max(7.5vw, 26px);
-  min-height: 6.2em;
+  min-height: 9.4em;
   margin: 0;
   padding: 0;
   border: 0;
@@ -100,5 +121,7 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 }
 .narrow .act h2 { font-size: 1.35rem; }
 .narrow .act p { font-size: 1.05rem; }
+.narrow #moves { margin-top: 10px; }
+.narrow #moves button { font-size: .92rem; padding: 5px 14px 6px; }
 .narrow .l { font-size: .82rem; }
 .narrow #marks button { font-size: .72rem; padding: 6px 2px; }

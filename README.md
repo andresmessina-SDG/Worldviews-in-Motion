@@ -1,7 +1,7 @@
 # Worldviews-in-Motion
 An animated watercolor visualizer of the world's major worldviews.
 
-Each worldview is shown as one painting that answers four questions in turn: where we came from, what went wrong, what puts it right, and where it all ends. The first worldview built is Christian theism, told as Creation, Fall, Redemption and New Creation.
+Each worldview is shown as one painting that answers four questions in turn: where we came from, what went wrong, what puts it right, and where it all ends. Two worldviews are built so far: Christian theism, and deism, which is one question away from it ("What if God never spoke?"). Asking the question turns one painting into the other.
 
 Two layers make up every page. The painting shows what the worldview says exists. Plain strokes drawn over it show how those things relate: what joins them, which way it runs, and where we are in history.
 
@@ -18,5 +18,11 @@ Then open http://localhost:8000. Click a mark on the line of history, or use the
 ## Layout
 
 - `index.html`, `css/style.css`: the page, its lettering and its layout
-- `js/christian.js`: Christian theism: the words for each act, the watercolor shader, and the connectors
+- `js/worldviews.js`: the worldviews: their words, and the values the painting reads for each act
+- `js/paint.js`: the watercolor shader
+- `js/main.js`: moving between acts and worldviews, lettering, connectors and the clock
 - `studies/`: earlier style studies and prototypes for other worldviews
+
+## Adding a worldview
+
+Add an entry to `WORLDVIEWS` in `js/worldviews.js`: a base set of values, then what changes in each of its four acts. Any value left out of an act keeps its base value. Give it a `move` naming the worldview it leads to and the question that leads there.
