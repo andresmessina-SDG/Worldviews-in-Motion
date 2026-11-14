@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=24';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=24';
-import { CATALOGUE } from './catalogue.js?v=24';
-import { createMenu } from './menu.js?v=24';
+import { createPainter } from './paint.js?v=25';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=25';
+import { CATALOGUE } from './catalogue.js?v=25';
+import { createMenu } from './menu.js?v=25';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -408,7 +408,7 @@ function drawConn(p, c, G) {
 
   // ----- God's orbit round man: the near half drawn plainly, the far half faint and hidden by the world -----
   if (p.orbit > 0.01) {
-    const R = G.R, Ry = R * p.oTilt, rot = f((-G.rot * 180) / Math.PI);
+    const R = G.R, Ry = orbitRy(p, R), rot = f((-G.rot * 180) / Math.PI);
     const [ax, ay] = orbitAt(p, 0, R, G.rot), [bx, by] = orbitAt(p, Math.PI, R, G.rot);
     const near = `M${f(ax)},${f(-ay)} A${f(R)} ${f(Ry)} ${rot} 0 0 ${f(bx)},${f(-by)}`;
     const far = `M${f(bx)},${f(-by)} A${f(R)} ${f(Ry)} ${rot} 0 0 ${f(ax)},${f(-ay)}`;
@@ -417,10 +417,13 @@ function drawConn(p, c, G) {
     for (let i = 1; i <= 2; i++) {
       const a = c.orb + i * 2.094, sa = Math.sin(a), ca = Math.cos(a);
       const [x, y] = orbitAt(p, a, R, G.rot);
-      if (sa < 0 && Math.hypot(x, y - p.Wy) < p.rW + 0.01) continue;
+      // fading, never popping: fainter on the far side, and gone as it slips behind the world
+      const hide = Math.min(1, Math.max(0, (p.rW + 0.04 - Math.hypot(x, y - p.Wy)) / 0.05)) * Math.min(1, Math.max(0, -sa / 0.15));
+      const op = (0.45 + 0.55 * Math.min(1, Math.max(0, (sa + 0.15) / 0.3))) * (1 - hide);
+      if (op < 0.01) continue;
       const tx = -R * sa * co - Ry * ca * si, ty = -R * sa * si + Ry * ca * co;     // the way he is going
       const deg = (Math.atan2(-ty, tx) * 180) / Math.PI;
-      heads += `<path transform="translate(${f(x)},${f(-y)}) rotate(${f(deg)})" d="M.019,0 L-.011,-.015 L-.011,.015Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round" opacity="${f(sa > 0 ? 1 : 0.45)}"/>`;
+      heads += `<path transform="translate(${f(x)},${f(-y)}) rotate(${f(deg)})" d="M.019,0 L-.011,-.015 L-.011,.015Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round" opacity="${f(op)}"/>`;
     }
     g += `<defs><mask id="behind"><rect x="-3" y="-3" width="6" height="6" fill="#fff"/><circle cx="0" cy="${f(-p.Wy)}" r="${f(p.rW + 0.008)}" fill="#000"/></mask></defs>`;
     g += `<g opacity="${f(p.orbit * 0.85)}"><g mask="url(#behind)" opacity=".5"><path d="${far}" fill="none" stroke="${ACC}" stroke-width=".004" stroke-linecap="round" stroke-dasharray=".012 .016"/></g>`;
@@ -475,34 +478,59 @@ let lastT = 0, acc = 0, nF = 0, arrow = 0, orb = Math.PI / 2, accent = '';
 // Where God actually is. Most worldviews keep him in his place above; one sends him round man,
 // a little larger and in front of the world on the near side, smaller and behind it on the far side.
 // The orbit is a tilted ellipse round man; a is the angle along it, and its near half is where sin(a) > 0.
+// Its depth never lets God, passing in front of or behind man, touch man's own rings.
+// (rounded maximum and minimum, so the depth never changes course abruptly as an act blends into the next)
+const smax = (a, b, k = 0.03) => (a + b + Math.sqrt((a - b) * (a - b) + k * k)) / 2;
+const smin = (a, b, k = 0.03) => (a + b - Math.sqrt((a - b) * (a - b) + k * k)) / 2;
+const orbitRy = (p, R) => smin(R, smax(R * p.oTilt, p.rG * 1.2 + 0.11));
 function orbitAt(p, a, R, rot) {
-  const ca = Math.cos(a), sa = Math.sin(a), Ry = R * p.oTilt, c = Math.cos(rot), s = Math.sin(rot);
+  const ca = Math.cos(a), sa = Math.sin(a), Ry = orbitRy(p, R), c = Math.cos(rot), s = Math.sin(rot);
   return [R * ca * c - Ry * sa * s, p.Sy + R * ca * s + Ry * sa * c, sa];
 }
 // As wide and as level as asked, unless that would carry God into the words on the left, off the page or into his own name.
 // Where room is short the orbit first tips up more steeply, and only then grows smaller.
 function orbitFits(p, R, rot) {
-  for (let i = 0; i < 24; i++) {
-    const [x, y, sa] = orbitAt(p, (i * Math.PI) / 12, R, rot), r = p.rG * (1 + 0.2 * sa) + 0.03;
+  for (let i = 0; i < 48; i++) {
+    const [x, y, sa] = orbitAt(p, (i * Math.PI) / 24, R, rot), r = p.rG * (1 + 0.2 * sa) + 0.03;
     if ((x - r < wordsRight && y + r > wordsBottom) || Math.abs(x) + r > ext + 0.04 || y + r > p.Gy - 0.09) return false;
   }
   return true;
 }
+// Found by halving the interval each time rather than by steps, so the shape changes smoothly as an act blends into the next.
 function orbitShape(p) {
-  const steep = Math.max(p.oRot, 1);
-  for (let rot = p.oRot; rot < steep + 0.01; rot += 0.05) if (orbitFits(p, p.oR, rot)) return [p.oR, rot];
-  let R = p.oR;
-  while (R > p.rW + 0.05 && !orbitFits(p, R, steep)) R *= 0.95;
-  return [Math.max(R, p.rW + 0.05), steep];
+  // never smaller than the world while man stands in it; once he has left it, only clear of man himself
+  const out = Math.min(1, Math.max(0, (Math.abs(p.Sy - p.Wy) - p.rW * 0.5) / (p.rW * 0.5)));
+  const steep = Math.max(p.oRot, 1), floor = lerp(p.rW + 0.05, 0.27, out);
+  if (orbitFits(p, p.oR, p.oRot)) return [p.oR, p.oRot];
+  if (orbitFits(p, p.oR, steep)) {
+    let lo = p.oRot, hi = steep;                 // the least tilt that fits
+    for (let n = 0; n < 14; n++) { const m = (lo + hi) / 2; if (orbitFits(p, p.oR, m)) hi = m; else lo = m; }
+    return [p.oR, hi];
+  }
+  let lo = floor, hi = p.oR;                     // the widest orbit that fits, at the steepest tilt
+  if (!orbitFits(p, lo, steep)) return [floor, steep];
+  for (let n = 0; n < 14; n++) { const m = (lo + hi) / 2; if (orbitFits(p, m, steep)) lo = m; else hi = m; }
+  return [lo, steep];
 }
-let oShape = null;     // the orbit's size and tilt, eased toward what fits so that God never jumps
+// The orbit's size and tilt follow what fits on a damped spring: when the room changes all at once
+// (the words of a new act arrive), God's speed still changes smoothly and he never jerks.
+let oShape = null, oVel = [0, 0];
 function godAt(p, dt) {
   const k = p.orbit;
-  if (k < 0.001) return { x: 0, y: p.Gy, r: p.rG, front: 0, back: 0, R: p.oR, rot: p.oRot };
-  const want = orbitShape(p), e = Math.min(1, dt * 2.5);
-  oShape = !oShape || frozen !== null ? want : [oShape[0] + (want[0] - oShape[0]) * e, oShape[1] + (want[1] - oShape[1]) * e];
+  if (k < 0.001) { oShape = null; return { x: 0, y: p.Gy, r: p.rG, front: 0, back: 0, R: p.oR, rot: p.oRot, want: [p.oR, p.oRot] }; }
+  const want = orbitShape(p);
+  if (!oShape || frozen !== null) { oShape = want.slice(); oVel = [0, 0]; }
+  else {
+    const w = 3.2, n = Math.ceil(dt / 0.01), h = dt / Math.max(1, n);
+    for (let i = 0; i < n; i++) for (const j of [0, 1]) {
+      oVel[j] += (w * w * (want[j] - oShape[j]) - 2 * w * oVel[j]) * h;
+      oShape[j] += oVel[j] * h;
+    }
+  }
   const [R, rot] = oShape, [x, y, s] = orbitAt(p, orb, R, rot);
-  return { x: k * x, y: lerp(p.Gy, y, k), r: p.rG * (1 + 0.2 * s * k), front: k * Math.max(0, s), back: k * Math.max(0, -s), R, rot };
+  // in front of the world or behind it, with only a quick crossfade where he crosses its edge
+  const nearSide = Math.min(1, Math.max(0, (s + 0.1) / 0.2)), ns = nearSide * nearSide * (3 - 2 * nearSide);
+  return { x: k * x, y: lerp(p.Gy, y, k), r: p.rG * (1 + 0.2 * s * k), front: k * ns, back: k * (1 - ns), R, rot, want };
 }
 // ---------- spirits ----------
 // Nine small presences wander the world. The first five can turn dark and close in on man; the rest can

@@ -292,7 +292,7 @@ void main(){
     // going round: in front of the world it covers what lies under it; behind, the world hides it
     float inG = smoothstep(.012, -.02, dG) * pres, inW = smoothstep(.004, -.02, dW) * uWorldA;
     A *= 1. - .88 * uGf * inG;
-    ink *= 1. - .92 * uGf * inG;
+    ink *= 1. - uGf * inG;
     dens *= 1. - .93 * uGb * inW;
     float hole = length(q + hand - G) - rG * .34;
     dens *= mix(1., smoothstep(-.012, .014, hole), uBi);
