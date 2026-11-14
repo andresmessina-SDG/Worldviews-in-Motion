@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=9';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=9';
-import { CATALOGUE } from './catalogue.js?v=9';
-import { createMenu } from './menu.js?v=9';
+import { createPainter } from './paint.js?v=10';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=10';
+import { CATALOGUE } from './catalogue.js?v=10';
+import { createMenu } from './menu.js?v=10';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -350,7 +350,7 @@ function frame(now) {
       uG: [p.Gy, p.rG], uW: [p.Wy, p.rW], uSy: p.Sy,
       uGlory: p.glory, uSky: p.sky, uFar: p.far, uLow: p.low, uDeep: p.deep, uSea: p.sea, uLand: p.land,
       uGodC: p.godC, uGodRim: p.godRim, uStainC: p.stainC, uBg: p.bg, uWarm: p.warm, uGodA: p.godA,
-      uBox: p.box, uLat: p.lat, uPulse: p.pulse, uBare: p.bare, uManA: p.manA, uManC: p.manC,
+      uBox: p.box, uLat: p.lat, uPulse: p.pulse, uBare: p.bare, uManA: p.manA, uManC: p.manC, uDrain: p.drain, uPool: p.pool, uHollow: p.hollow,
       uWave: p.wave, uHaloL: p.haloL, uHaloR: p.haloR, uClock: p.clock, uRing: p.ring, uStainS: p.stainS,
       uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
       uTick: hd.whole, uHands: [hd.sec, hd.min, hd.hour], 'uLab[0]': rects,

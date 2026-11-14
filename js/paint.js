@@ -17,6 +17,7 @@ uniform float uBg, uWarm, uGodA;
 uniform float uWave, uHaloL, uHaloR, uClock, uRing, uStainS;
 uniform float uBox, uLat, uPulse, uBare, uManA;   // a squared, sealed world; its lattice of law; an empty upper page
 uniform vec3 uManC;
+uniform float uDrain, uPool, uHollow;                // the world's pigment running off, gathering below, and a self left empty
 uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
 uniform vec3 uHands;            // second, minute and hour hands, radians clockwise from the top
 uniform vec4 uLab[3];
@@ -119,6 +120,9 @@ void main(){
   {
     float dens = layers(dW, 2., .03, .0045, tide);
     vec2 p = q - Wc;
+    // drained: the wash thin at the top, heavier where it gathered
+    dens *= mix(1., mix(.1, 1., smoothstep(.75, -1., p.y / rW + (v2 - .5) * 1.2)), uDrain);
+    float gaveOut = mix(1., step(.5, noise(q * 4. + 2.)), uDrain);
     float m1 = smoothstep(.35, .65, fbm(p * 1.9 + wL * 1.2 + 4. + t * .02));
     float m2 = smoothstep(.45, .7, fbm(p * 2.6 - wL + 13. - t * .015));
     vec3 sea = mix(uSea, vec3(.42, .52, .58), uDull * .7);
@@ -127,7 +131,32 @@ void main(){
     A += K(land) * dens * m1 * (.6 + .5 * v1);
     A += K(vec3(.86, .66, .3)) * dens * m2 * uWarm * (1. - .6 * uDull);
     A += K(vec3(.14, .28, .5)) * dens * smoothstep(-.3, 1., dot(p, vec2(.45, -.9)) / rW) * (.4 + .5 * v1);
-    ink += pen(dW + .01 - wob) + pen(dW - .024 + wob * 1.3) * step(.5, noise(q * 5. + 8.)) * (1. - uClock);
+    ink += pen(dW + .01 - wob) * gaveOut + pen(dW - .024 + wob * 1.3) * step(.5, noise(q * 5. + 8.)) * (1. - uClock) * mix(1., .6, uDrain);
+
+    // what ran off: drips from the foot of the world, drops falling from them, and a pool beneath
+    if (uDrain > .001) {
+      float y0 = Wc.y - rW, poolY = y0 - .3;
+      vec2 dp = q + wM * .012;
+      float cw = .07, cid = floor(dp.x / cw), drip = 0.;
+      for (int i = -1; i <= 1; i++){
+        float id = cid + float(i);
+        float hx = hash(vec2(id, 7.));
+        float dx = (id + .25 + .5 * hash(vec2(id, 3.))) * cw;
+        if (abs(dx) > rW - .04 || hx < .3) continue;
+        float L = (.05 + .24 * hx * hash(vec2(id, 5.))) * uDrain * (.88 + .12 * sin(t * .35 + hx * 40.));
+        float wd = .004 + .008 * hash(vec2(id, 9.));
+        float bulb = smoothstep(y0 - L + .04, y0 - L, dp.y);
+        float d = sdSeg(dp, vec2(dx, y0 + .03), vec2(dx, y0 - L)) - wd * (1. + .9 * bulb);
+        drip = max(drip, smoothstep(.003, -.003, d) * (.45 + .6 * bulb));
+        float fall = fract(t * (.05 + .05 * hx) + hx * 9.);
+        float fy = mix(y0 - L, poolY, fall * fall);
+        drip = max(drip, smoothstep(.003, -.002, length((dp - vec2(dx, fy)) * vec2(1., .6)) - wd * .8) * (1. - fall) * step(.5, hash(vec2(id, 11.))) * .8);
+      }
+      A += K(mix(uSea, vec3(.3, .32, .4), .5)) * drip * 1.1;
+      float th = .034 * uPool * smoothstep(rW + .22, rW * .2, abs(q.x + wL.x * .2));
+      float dPool = abs(q.y - poolY + (v2 - .5) * .05 + wM.x * .02) - th * (1. + .12 * sin(t * .3 + q.x * 7.)) + .012;
+      A += K(vec3(.34, .36, .44)) * layers(dPool, 8., .02, .005, .9) * (.4 + .6 * v1) * bloom(q * 3., 9.) * smoothstep(0., .15, uPool);
+    }
 
     // the world as a clock: a ruled ring, sixty divisions, and three hands
     if (uClock > .001) {
@@ -207,7 +236,8 @@ void main(){
     float ring = exp(-pow((dS - .024) / .009, 2.)) * (1. - .5 * uDull);
     A *= 1. - .85 * ring * uRing;
     A += K(vec3(.98, .72, .18)) * ring * (.85 + .25 * sin(t * 1.6)) * uRing;
-    ink += (pen(dS - .012 + wob * .4) + pen(dS - .037 - wob * .3) * step(.4, noise(q * 14. + 3.)) * .7 * (1. - uClock) * (1. - uBox)) * mix(.35, 1., uManA);
+    float hollow = mix(1., step(.42, fract(atan(q.y - Sc.y, q.x) * 14. / 6.2832 + t * .012)), uHollow);
+    ink += (pen(dS - .012 + wob * .4) * hollow + pen(dS - .037 - wob * .3) * step(.4, noise(q * 14. + 3.)) * .7 * (1. - uClock) * (1. - uBox)) * mix(mix(.35, .8, uHollow), 1., uManA);
   }
 
   A += K(vec3(.2, .13, .1)) * min(ink, 1.) * (.5 + H);

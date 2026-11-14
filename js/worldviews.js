@@ -12,7 +12,7 @@ const christianBase = {
   stainC: [0.13, 0.11, 0.22], stainS: 0,
   // what is present and what moves
   wave: 1, haloL: 1, haloR: 0, clock: 0, ring: 1,
-  box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0,
+  box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
   stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
   bridge: 0.95, bw: 0.044, bbot: -0.12, crim: 0, cross: 0, snap: 0, flow: 1,
@@ -28,7 +28,7 @@ const deismBase = {
   godC: [0.97, 0.86, 0.56], godRim: [0.9, 0.74, 0.56], godA: 0.62,
   stainC: [0.46, 0.46, 0.54], stainS: 1,
   wave: 0, haloL: 0, haloR: 1, clock: 1, ring: 0,
-  box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0,
+  box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
   stainR: 0.02, stainA: 0, glow: 0, dull: 0.15, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0.75, reason: 0, tick: 1, acc: [63, 98, 127],
@@ -42,11 +42,25 @@ const naturalismBase = {
   godC: [0.95, 0.94, 0.9], godRim: [0.86, 0.86, 0.84], godA: 0,
   stainC: [0.34, 0.36, 0.42], stainS: 1,
   wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
-  box: 1, lat: 1, pulse: 1, bare: 1, manA: 1, manC: [0.3, 0.42, 0.54], empty: 0.8,
+  box: 1, lat: 1, pulse: 1, bare: 1, manA: 1, manC: [0.3, 0.42, 0.54], empty: 0.8, drain: 0, pool: 0, hollow: 0,
   stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, tick: 0, acc: [70, 100, 78],
   lGodK: 0, lSide: 0.1, lBrX: 0.26, lBrY: 0.29, tBrX: 0.16, tBrY: 0.17,
+};
+
+const nihilismBase = {
+  Gy: 0.62, rG: 0.15, Wy: 0, rW: 0.34, Sy: 0.04, bOff: 0,
+  glory: [0.95, 0.95, 0.94], sky: [0.9, 0.9, 0.9], far: [0.84, 0.84, 0.86], low: [0.86, 0.85, 0.84], deep: [0.76, 0.76, 0.79],
+  sea: [0.4, 0.43, 0.5], land: [0.5, 0.5, 0.55], warm: 0.12, bg: 0.34,
+  godC: [0.95, 0.94, 0.9], godRim: [0.86, 0.86, 0.84], godA: 0,
+  stainC: [0.3, 0.3, 0.36], stainS: 1,
+  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
+  box: 1, lat: 0.45, pulse: 0.3, bare: 0.6, manA: 1, manC: [0.42, 0.44, 0.5], empty: 0.45, drain: 0.35, pool: 0.25, hollow: 0,
+  stainR: 0.02, stainA: 0, glow: 0, dull: 0.6, rip: 0, ripAt: 1,
+  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
+  ghost: 0, reason: 0, tick: 0, acc: [86, 82, 100],
+  lGodK: 0, lSide: 0.1, lBrX: 0.27, lBrY: -0.52, tBrX: 0.15, tBrY: -0.44,
 };
 
 const build = (base, acts) => acts.map((a) => ({ ...a, p: { ...base, ...a.p } }));
@@ -169,7 +183,7 @@ export const WORLDVIEWS = {
   naturalism: {
     name: 'Naturalism',
     tagline: 'Matter is all there is, and nobody made it.',
-    move: { to: 'christian', q: 'What if the cosmos has a Maker?' },
+    move: { to: 'nihilism', q: 'What if none of it matters?' },
     acts: build(naturalismBase, [
       {
         slug: 'matter',
@@ -219,6 +233,62 @@ export const WORLDVIEWS = {
           world: ['The cosmos', 'Cold, dark and running down'],
           bridge: ['No goal', 'History is heading nowhere'],
           self: ['Man', 'Here briefly, then gone'],
+        },
+      },
+    ]),
+  },
+
+  nihilism: {
+    name: 'Nihilism',
+    tagline: 'No God above, and no meaning below.',
+    move: { to: 'christian', q: 'What if we were made on purpose?' },
+    acts: build(nihilismBase, [
+      {
+        slug: 'accident',
+        name: 'An Accident',
+        text: 'The cosmos is here for no reason, and so is man. Nobody intended either.',
+        p: {},
+        labels: {
+          god: ['Nothing above', 'No God and no purpose'],
+          world: ['The cosmos', 'Here for no reason'],
+          bridge: ['Meaning drains away', 'Nothing is left to hold it'],
+          self: ['Man', 'An accident'],
+        },
+      },
+      {
+        slug: 'no-meaning',
+        name: 'No Meaning',
+        text: 'Nothing is good or evil, and nothing is worth more than anything else. Even truth is in doubt.',
+        p: { drain: 0.6, pool: 0.5, lat: 0.2, pulse: 0, empty: 0.38 },
+        labels: {
+          god: ['Nothing above', 'No one to judge'],
+          world: ['The cosmos', 'Empty of value'],
+          bridge: ['Meaning drains away', 'Nothing is left to hold it'],
+          self: ['Man', 'He cannot trust his own mind'],
+        },
+      },
+      {
+        slug: 'no-remedy',
+        name: 'No Remedy',
+        text: 'Nothing is wrong, so nothing can be put right. Few people manage to live as if this were true.',
+        p: { drain: 0.8, pool: 0.75, lat: 0, pulse: 0, empty: 0.3, hollow: 1, manA: 0.3 },
+        labels: {
+          god: ['Nothing above', 'No one to save'],
+          world: ['The cosmos', 'It offers nothing'],
+          bridge: ['No way out', 'And nowhere to go'],
+          self: ['Man', 'Hollow, with no reason to act'],
+        },
+      },
+      {
+        slug: 'nothing',
+        name: 'Nothing',
+        text: 'Death ends every life, and the cosmos will not notice. It makes no difference that anyone lived.',
+        p: { drain: 1, pool: 1, lat: 0, pulse: 0, empty: 0.2, hollow: 1, manA: 0, dull: 1, lBrY: -0.62, tBrX: 0.13, tBrY: -0.64 },
+        labels: {
+          god: ['Nothing above', 'Nothing ahead'],
+          world: ['The cosmos', 'Emptied'],
+          bridge: ['All of it runs off', 'Nothing is kept'],
+          self: ['Man', 'Gone, and it did not matter'],
         },
       },
     ]),
