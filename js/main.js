@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=19';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=19';
-import { CATALOGUE } from './catalogue.js?v=19';
-import { createMenu } from './menu.js?v=19';
+import { createPainter } from './paint.js?v=21';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=21';
+import { CATALOGUE } from './catalogue.js?v=21';
+import { createMenu } from './menu.js?v=21';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the

@@ -118,7 +118,7 @@ const buddhistBase = {
   bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 1, bundle: 1, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, tick: 0, acc: [140, 47, 47],
-  lGodK: 1.75, lSide: 0.08, lBrX: 0.27, lBrY: 0.53, tBrX: 0.2, tBrY: 0.386,
+  lGodK: 1.75, lSide: 0.08, lBrX: 0.3, lBrY: -0.38, tBrX: 0.26, tBrY: -0.26,
 };
 
 const taoistBase = {
@@ -530,7 +530,7 @@ export const WORLDVIEWS = {
         slug: 'the-path',
         name: 'The Path',
         text: 'Craving can be ended. The Eightfold Path of wisdom, conduct and meditation leads there, and each must walk it himself.',
-        p: { wheel: 0.35, spokes: 1, flux: 0.7, stainR: 0.07, stainA: 0.2, glow: 0.5, lBrX: 0.3, lBrY: -0.38, tBrX: 0.26, tBrY: -0.26 },
+        p: { wheel: 0.35, spokes: 1, flux: 0.7, stainR: 0.07, stainA: 0.2, glow: 0.5 },
         labels: {
           god: ['No creator', 'No grace from outside'],
           bridge: ['The Eightfold Path', 'Wisdom, conduct and meditation'],
@@ -651,11 +651,11 @@ export const WORLDVIEWS = {
         slug: 'remembrance',
         name: 'Remembrance',
         text: 'Confucius said little of death: “Not yet knowing life, how can we know death?” The living honour the dead with rites.',
-        p: { lineage: 1, manA: 0.25, hollow: 1, manI: 0.6, lBrX: 0.42, lBrY: -0.42, tBrX: 0.012, tBrY: -0.14 },
+        p: { lineage: 1, manA: 0.25, hollow: 1, manI: 0.6, tBrX: 0.03, tBrY: 0.14 },
         labels: {
           god: ['Heaven', 'Says nothing of death'],
           world: ['All under Heaven', 'Order handed down'],
-          bridge: ['Rites for the dead', 'Offered by the living'],
+          bridge: ['The ancestors', 'Honoured by the living'],
           self: ['Man', 'Remembered while the rites go on'],
         },
       },
