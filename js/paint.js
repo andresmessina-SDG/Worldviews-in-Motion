@@ -238,6 +238,8 @@ void main(){
 export function createPainter(canvas) {
   const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
   if (!gl) return null;
+  let locs = {};
+  let lost = false;
   const sh = (type, src) => {
     const s = gl.createShader(type);
     gl.shaderSource(s, src);
@@ -245,7 +247,9 @@ export function createPainter(canvas) {
     if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
     return s;
   };
-  const prog = gl.createProgram();
+  let prog;
+  const init = () => {
+  prog = gl.createProgram();
   gl.attachShader(prog, sh(gl.VERTEX_SHADER, 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }'));
   gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FRAG));
   gl.bindAttribLocation(prog, 0, 'p');
@@ -255,8 +259,14 @@ export function createPainter(canvas) {
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   gl.enableVertexAttribArray(0);
   gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+  gl.viewport(0, 0, canvas.width, canvas.height);
+  locs = {};
+  };
+  init();
+  // a phone may take the graphics context away while the page is in the background
+  canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); lost = true; });
+  canvas.addEventListener('webglcontextrestored', () => { init(); lost = false; });
 
-  const locs = {};
   const loc = (n) => (n in locs ? locs[n] : (locs[n] = gl.getUniformLocation(prog, n)));
 
   return {
@@ -269,6 +279,7 @@ export function createPainter(canvas) {
     },
     // values: { name: number | [x, y] | [x, y, z] | Float32Array (vec4 array) }
     draw(values) {
+      if (lost) return;
       for (const name in values) {
         const v = values[name];
         const l = loc(name);

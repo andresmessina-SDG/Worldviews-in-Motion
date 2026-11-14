@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=8';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=8';
-import { CATALOGUE } from './catalogue.js?v=8';
-import { createMenu } from './menu.js?v=8';
+import { createPainter } from './paint.js?v=9';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=9';
+import { CATALOGUE } from './catalogue.js?v=9';
+import { createMenu } from './menu.js?v=9';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -107,6 +107,7 @@ function renderText(instant, wholePage) {
     marks.forEach((b, i) => { b.textContent = wv.acts[i].name; });
     moveBtn.textContent = wv.move.q;
     document.body.classList.remove('swap', 'swap-all');
+    if (!instant) resize();                     // new words may take a different amount of room
   };
   clearTimeout(swapTimer);
   if (instant) return fill();
@@ -147,12 +148,14 @@ addEventListener('keydown', (e) => {
 setInterval(() => { if (auto && !document.hidden) go(cur.wv, (cur.act + 1) % 4); }, 14000);
 
 // ---------- layout ----------
-let unit = 1, ext = 1, cx = 0, cy = 0, scale = 1, quality = 1;
+let unit = 1, ext = 1, cx = 0, cy = 0, scale = 1, quality = 1, markH = 0;
 const rects = new Float32Array(12);
 function resize() {
   const W = innerWidth, Hh = innerHeight;
   const narrow = W / Hh < 1.3;
   document.body.classList.toggle('narrow', narrow);
+  const short = !narrow && Hh < 520;
+  document.body.classList.toggle('short', short);
   if (narrow) {
     // title above, painting in the middle, the act's words below
     const topH = document.querySelector('.head').getBoundingClientRect().bottom + 4;
@@ -177,6 +180,14 @@ function resize() {
   labels.bridge.el.style.maxWidth = room(0.22);
   labels.self.el.style.maxWidth = room(0.56);
   labels.sin.el.style.maxWidth = room(0.56);
+  // in a short window the words on the left reach down beside the painting: keep clear of them
+  if (short) labels.sin.el.style.maxWidth = `${Math.max(60, cx - 0.52 * unit - document.querySelector('.t').getBoundingClientRect().right - 10)}px`;
+  // if the four names cannot sit side by side, only the open act keeps its name
+  const gap = 0.48 * ext * unit;
+  $('marks').classList.remove('tight');
+  $('marks').classList.toggle('tight', marks.some((b, i) => i < 3 && (b.offsetWidth + marks[i + 1].offsetWidth) / 2 - 6 > gap));
+  $('marks').style.setProperty('--gap', `${Math.max(24, gap - 4).toFixed(0)}px`);
+  markH = marks[0].offsetHeight / unit;
   measure();
 }
 function measure() {
@@ -201,7 +212,8 @@ function place(k, x, y, tx, ty) {
 }
 
 function layout(p) {
-  const godY = p.Gy + p.rG * p.lGodK, worldY = p.Wy - p.rW * 0.6;
+  // the world's name sits low in its shape, but never down among the names of the acts
+  const godY = p.Gy + p.rG * p.lGodK, worldY = Math.max(p.Wy - p.rW * 0.6, -0.795 + markH / 2 + labels.world.h / 2);
   place('god', 0, godY);
   place('world', 0, worldY);
   place('bridge', p.lBrX, p.lBrY, p.tBrX, p.tBrY);
@@ -312,7 +324,7 @@ let lastT = 0, acc = 0, nF = 0, arrow = 0, accent = '';
 function frame(now) {
   const dt = lastT ? Math.min(100, now - lastT) / 1000 : 0;
   // if frames come slowly, paint at a lower resolution rather than stutter
-  if (frozen === null && lastT) {
+  if (frozen === null && lastT && now - lastT < 250) {      // a long gap means the page was hidden, not slow
     acc += now - lastT;
     if (++nF === 40) {
       if (acc / nF > 36 && quality > 0.5) { quality -= 0.25; resize(); }

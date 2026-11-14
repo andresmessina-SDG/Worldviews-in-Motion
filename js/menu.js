@@ -31,7 +31,8 @@ export function createMenu(root, items, { isBuilt, onSelect }) {
     b.style.setProperty('--c2', it.c[1]);
     b.innerHTML = `<span class="tab-stroke"></span>${built ? '' : '<span class="tab-note">not yet painted</span>'}<span class="tab-name">${it.name}</span><span class="tab-dab"></span>`;
     if (!built) b.setAttribute('aria-disabled', 'true');
-    b.addEventListener('click', () => { choose(i); b.blur(); });
+    // a finger's choice is made when it lifts; the click the browser adds afterwards may land on a neighbour
+    b.addEventListener('click', () => { if (performance.now() - lastTouch < 900) return; choose(i); b.blur(); });
     // only a keyboard's focus should hold the menu open, not the focus a click leaves behind
     b.addEventListener('focus', () => { if (b.matches(':focus-visible')) keyFocus = i; });
     b.addEventListener('blur', () => { if (keyFocus === i) keyFocus = -1; });
@@ -64,7 +65,8 @@ export function createMenu(root, items, { isBuilt, onSelect }) {
     holdUntil = performance.now() + 250;
     if (i !== cur) onSelect(items[i].id);
   }
-  const inReach = () => px < EDGE || (openT > 0.05 && px < menuW + 34);
+  // a passing glimpse is not an invitation: only the edge, or tabs already in use, hold the pointer
+  const inReach = () => px < EDGE || (openT > 0.05 && depth > 0.6 && px < menuW + 34);
 
   // ---------- mouse ----------
   addEventListener('pointermove', (e) => {
@@ -209,7 +211,11 @@ export function createMenu(root, items, { isBuilt, onSelect }) {
       t.el.classList.toggle('hot', i === shown);
       t.el.classList.toggle('cur', isCur);
       t.el.tabIndex = isCur || (openT > 0.5 && depth > 0.6) ? 0 : -1;
-      widest = Math.max(widest, 44 + out * (t.w * k + 20));
+      // a tab takes clicks only while it is out, and only across the part that can be seen
+      const reach = 44 + out * (t.w * k + 20);
+      t.el.style.width = `${reach.toFixed(0)}px`;
+      t.el.style.pointerEvents = openT > 0.3 && depth > 0.6 ? 'auto' : 'none';
+      widest = Math.max(widest, reach);
     }
     menuW = widest;
     root.style.setProperty('--mopen', (openT * clamp(depth * 1.6 - 0.6, 0, 1)).toFixed(3));

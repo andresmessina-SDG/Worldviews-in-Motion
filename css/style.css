@@ -14,6 +14,7 @@ html, body {
   color: var(--ink);
   font-family: var(--title);
   -webkit-font-smoothing: antialiased;
+  touch-action: pinch-zoom;       /* nothing scrolls, so a sliding finger belongs to the page */
 }
 
 canvas, svg#lines, svg#conn {
@@ -130,7 +131,10 @@ h1 { margin: 2px 0 0; font-size: clamp(2rem, 5.5vmin, 3.6rem); font-weight: 600;
   opacity: .45;
   transform: translate(5px, 1.5px) scale(.93, .7);
 }
+.tab { box-sizing: border-box; pointer-events: none; }
+.tab > * { pointer-events: none; }
 .tab-name, .tab-note { opacity: var(--ink-in, 0); }
+.tab-name, .tab-note { flex: none; }
 .tab-name {
   order: 1;
   position: relative;
@@ -226,6 +230,9 @@ h1 { margin: 2px 0 0; font-size: clamp(2rem, 5.5vmin, 3.6rem); font-weight: 600;
 #marks button:hover { opacity: 1; }
 #marks button[aria-current='true'] { opacity: 1; color: var(--red); font-weight: 600; }
 #marks button { transition: opacity .3s, color .6s; }
+/* too little room for four names: only the open act keeps its name */
+#marks.tight button:not([aria-current='true']) { width: var(--gap, 40px); overflow: hidden; color: transparent; }
+#marks.tight button[aria-current='true'] { z-index: 1; }
 button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; border-radius: 6px; }
 
 #nogl { position: fixed; inset: 45% 10% auto; text-align: center; font-size: 1.2rem; }
@@ -253,3 +260,16 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 .narrow #moves button { font-size: .92rem; padding: 5px 14px 6px; }
 .narrow .l { font-size: .82rem; }
 .narrow #marks button { font-size: .72rem; padding: 6px 2px; }
+
+/* ---------- wide but short screens, such as a phone held sideways ---------- */
+.short .t { left: 4vw; top: 6vh; width: 23vw; }
+.short h1 { font-size: 1.6rem; }
+.short .k { font-size: .62rem; }
+.short .tag { display: none; }
+.short .act { margin-top: 9px; padding-top: 8px; }
+.short .act h2 { font-size: 1.1rem; }
+.short .act p { font-size: .9rem; margin-top: 4px; }
+.short #moves { margin-top: 8px; }
+.short #moves button { font-size: .8rem; padding: 4px 11px 5px; }
+.short .l { font-size: .78rem; }
+.short #marks button { font-size: .72rem; }
