@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=13';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=13';
-import { CATALOGUE } from './catalogue.js?v=13';
-import { createMenu } from './menu.js?v=13';
+import { createPainter } from './paint.js?v=14';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=14';
+import { CATALOGUE } from './catalogue.js?v=14';
+import { createMenu } from './menu.js?v=14';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -224,9 +224,10 @@ function layout(p) {
   place('bridge', p.lBrX, p.lBrY, p.tBrX, p.tBrY);
   place('self', p.rW + p.lSide, p.Sy + 0.03, 0.105, p.Sy);
   // lettering on the left drops below the words there if it would run into them
-  const sinX = -(p.rW + p.lSide);
-  const sinY = sinX - labels.sin.w < wordsRight + 0.03 ? Math.min(p.Sy - 0.08, wordsBottom - labels.sin.h / 2 - 0.03) : p.Sy - 0.08;
-  place('sin', sinX, sinY, -0.02 - p.stainR * 0.8, p.Sy - 0.06);
+  // (once the stain has been lifted onto the cross, its name moves up beside it)
+  const sinX = lerp(-(p.rW + p.lSide), -0.15, p.stainUp), sinY0 = lerp(p.Sy - 0.08, 0.03, p.stainUp);
+  const sinY = sinX - labels.sin.w < wordsRight + 0.03 ? Math.min(sinY0, wordsBottom - labels.sin.h / 2 - 0.03) : sinY0;
+  place('sin', sinX, sinY, lerp(-0.02 - p.stainR * 0.8, -0.115, p.stainUp), lerp(p.Sy - 0.06, 0.03, p.stainUp));
   const bl = labels.bridge;
   rects.set([0, godY, labels.god.w / 2 + 0.02, labels.god.h / 2 + 0.012, 0, worldY, labels.world.w / 2 + 0.02, labels.world.h / 2 + 0.012,
     p.lBrX + bl.w / 2, p.lBrY, bl.on ? bl.w / 2 + 0.02 : 0, bl.h / 2 + 0.012]);
@@ -372,7 +373,7 @@ function frame(now) {
       uBox: p.box, uLat: p.lat, uPulse: p.pulse, uBare: p.bare, uManA: p.manA, uManC: p.manC, uDrain: p.drain, uPool: p.pool, uHollow: p.hollow, uSelfR: p.selfR, uSelfA: p.selfA, uSelfC: p.selfC,
       uOne: p.one, uMaya: p.maya, uWorldA: p.worldA, uManI: p.manI,
       uWave: p.wave, uHaloL: p.haloL, uHaloR: p.haloR, uClock: p.clock, uRing: p.ring, uStainS: p.stainS,
-      uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
+      uStainUp: p.stainUp, uLit: p.lit, uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
       uTick: hd.whole, uHands: [hd.sec, hd.min, hd.hour], 'uLab[0]': rects,
     });
   }

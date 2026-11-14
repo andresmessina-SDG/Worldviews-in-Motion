@@ -20,7 +20,8 @@ uniform vec3 uManC;
 uniform float uDrain, uPool, uHollow;
 uniform float uSelfR, uSelfA;                        // colour that man spreads around himself, by his own hand
 uniform vec3 uSelfC;
-uniform float uOne, uMaya, uWorldA, uManI;           // all things as one ocean; the appearances rippling on it; how much of the world and of man is drawn                // the world's pigment running off, gathering below, and a self left empty
+uniform float uOne, uMaya, uWorldA, uManI;           // all things as one ocean; the appearances rippling on it; how much of the world and of man is drawn
+uniform float uStainUp, uLit;   // the stain lifted from man onto the cross; the world lit by God's own light
 uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
 uniform vec3 uHands;            // second, minute and hour hands, radians clockwise from the top
 uniform vec4 uLab[3];
@@ -138,10 +139,16 @@ void main(){
     float m2 = smoothstep(.45, .7, fbm(p * 2.6 - wL + 13. - t * .015));
     vec3 sea = mix(uSea, vec3(.42, .52, .58), uDull * .7);
     vec3 land = mix(uLand, vec3(.44, .51, .5), uDull * .7);
+    // lit by God himself: his gold falling on the world from above, while the world keeps its own colours below
+    float lit = uLit * smoothstep(-.75, .35, p.y / rW + (v1 - .5) * .7 + wM.x * .3);
+    A *= 1. - .85 * lit * smoothstep(.02, -.04, dW);
+    dens *= 1. - .5 * lit;
+    sea = mix(sea, vec3(.99, .8, .42), lit);
+    land = mix(land, vec3(.99, .9, .62), lit);
     A += K(sea) * dens * (1. - m1 * .7) * bloom(q * 2.6, 47.) * (.75 + .7 * v2);
     A += K(land) * dens * m1 * (.6 + .5 * v1);
     A += K(vec3(.86, .66, .3)) * dens * m2 * uWarm * (1. - .6 * uDull);
-    A += K(vec3(.14, .28, .5)) * dens * smoothstep(-.3, 1., dot(p, vec2(.45, -.9)) / rW) * (.4 + .5 * v1);
+    A += K(mix(vec3(.14, .28, .5), vec3(.95, .6, .3), lit)) * dens * smoothstep(-.3, 1., dot(p, vec2(.45, -.9)) / rW) * (.4 + .5 * v1);
     ink += pen(dW + .01 - wob) * gaveOut + pen(dW - .024 + wob * 1.3) * step(.5, noise(q * 5. + 8.)) * (1. - uClock) * mix(1., .6, uDrain);
 
     // what ran off: drips from the foot of the world, drops falling from them, and a pool beneath
@@ -247,7 +254,8 @@ void main(){
   // ---------- the problem: a stain, or a haze ----------
   {
     float creep = fbm(q * 5. + vec2(t * .05, -t * .04)) - .5;
-    float d = length(q + wL * .12 + wM * .05 - Sc - vec2(-.02, -.02)) - uStainR * (1. + .07 * sin(t * .8)) - wM.x * .06 - creep * .07;
+    vec2 sc = mix(Sc + vec2(-.02, -.02), vec2(0., .03), uStainUp);
+    float d = length(q + wL * .12 + wM * .05 - sc) - uStainR * (1. + .07 * sin(t * .8)) - wM.x * .06 - creep * .07;
     A += K(uStainC) * layers(d, 6., mix(.03, .05, uStainS), mix(.012, .03, uStainS), mix(.5, .3, uStainS)) * uStainA;
   }
 
