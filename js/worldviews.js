@@ -13,6 +13,7 @@ const christianBase = {
   // what is present and what moves
   wave: 1, haloL: 1, haloR: 0, clock: 0, ring: 1,
   box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
+  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
   bridge: 0.95, bw: 0.044, bbot: -0.12, crim: 0, cross: 0, snap: 0, flow: 1,
@@ -29,6 +30,7 @@ const deismBase = {
   stainC: [0.46, 0.46, 0.54], stainS: 1,
   wave: 0, haloL: 0, haloR: 1, clock: 1, ring: 0,
   box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
+  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   stainR: 0.02, stainA: 0, glow: 0, dull: 0.15, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0.75, reason: 0, tick: 1, acc: [63, 98, 127],
@@ -43,6 +45,7 @@ const naturalismBase = {
   stainC: [0.34, 0.36, 0.42], stainS: 1,
   wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
   box: 1, lat: 1, pulse: 1, bare: 1, manA: 1, manC: [0.3, 0.42, 0.54], empty: 0.8, drain: 0, pool: 0, hollow: 0,
+  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, tick: 0, acc: [70, 100, 78],
@@ -57,10 +60,26 @@ const nihilismBase = {
   stainC: [0.3, 0.3, 0.36], stainS: 1,
   wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
   box: 1, lat: 0.45, pulse: 0.3, bare: 0.6, manA: 1, manC: [0.42, 0.44, 0.5], empty: 0.45, drain: 0.35, pool: 0.25, hollow: 0,
+  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   stainR: 0.02, stainA: 0, glow: 0, dull: 0.6, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, tick: 0, acc: [86, 82, 100],
   lGodK: 0, lSide: 0.1, lBrX: 0.27, lBrY: -0.52, tBrX: 0.15, tBrY: -0.44,
+};
+
+const existentialismBase = {
+  Gy: 0.62, rG: 0.15, Wy: -0.06, rW: 0.38, Sy: -0.02, bOff: 0,
+  glory: [0.95, 0.95, 0.94], sky: [0.9, 0.89, 0.88], far: [0.83, 0.83, 0.85], low: [0.85, 0.84, 0.83], deep: [0.74, 0.74, 0.77],
+  sea: [0.38, 0.4, 0.46], land: [0.47, 0.47, 0.51], warm: 0.1, bg: 0.36,
+  godC: [0.95, 0.94, 0.9], godRim: [0.86, 0.86, 0.84], godA: 0,
+  stainC: [0.26, 0.26, 0.32], stainS: 1,
+  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
+  box: 1, lat: 0.35, pulse: 0.3, bare: 0.6, manA: 1, manC: [0.85, 0.3, 0.2], empty: 0.4, drain: 0.4, pool: 0, hollow: 0,
+  selfR: 0.09, selfA: 0.3, selfC: [0.86, 0.33, 0.24],
+  stainR: 0.02, stainA: 0, glow: 0, dull: 0.7, rip: 0, ripAt: 1,
+  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
+  ghost: 0, reason: 0, tick: 0, acc: [190, 66, 44],
+  lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.42, tBrX: 0.13, tBrY: 0.11,
 };
 
 const build = (base, acts) => acts.map((a) => ({ ...a, p: { ...base, ...a.p } }));
@@ -241,7 +260,7 @@ export const WORLDVIEWS = {
   nihilism: {
     name: 'Nihilism',
     tagline: 'No God above, and no meaning below.',
-    move: { to: 'christian', q: 'What if we were made on purpose?' },
+    move: { to: 'existentialism', q: 'What if man makes his own meaning?' },
     acts: build(nihilismBase, [
       {
         slug: 'accident',
@@ -289,6 +308,61 @@ export const WORLDVIEWS = {
           world: ['The cosmos', 'Emptied'],
           bridge: ['All of it runs off', 'Nothing is kept'],
           self: ['Man', 'Gone, and it did not matter'],
+        },
+      },
+    ]),
+  },
+
+  existentialism: {
+    name: 'Existentialism',
+    tagline: 'The world has no meaning, so man must make his own.',
+    move: { to: 'christian', q: 'What if meaning is given, not made?' },
+    acts: build(existentialismBase, [
+      {
+        slug: 'thrown',
+        name: 'Thrown In',
+        text: 'Man finds himself in a world with no meaning. He exists first, and what he is has yet to be decided.',
+        p: {},
+        labels: {
+          god: ['Nothing above', 'No God to give a purpose'],
+          world: ['The world', 'Solid, silent and absurd'],
+          self: ['Man', 'He exists before he is anything'],
+        },
+      },
+      {
+        slug: 'absurd',
+        name: 'The Absurd',
+        text: 'Man wants meaning and the world has none to give. Living by other people’s rules only hides the fact.',
+        p: { stainR: 0.13, stainA: 0.4, selfA: 0.15, selfR: 0.07 },
+        labels: {
+          god: ['Nothing above', 'No one to answer'],
+          world: ['The world', 'It answers nothing'],
+          self: ['Man', 'Free, anxious and alone'],
+          sin: ['Bad faith', 'Hiding from his own freedom'],
+        },
+      },
+      {
+        slug: 'choice',
+        name: 'Choice',
+        text: 'He must choose, and his choices make him what he is. Whatever meaning his life has, he gives it.',
+        p: { selfA: 1, selfR: 0.2, glow: 0.35, rip: 0.5 },
+        labels: {
+          god: ['Nothing above', 'No one to correct him'],
+          world: ['The world', 'Still silent'],
+          bridge: ['Meaning of his own making', 'Any choice will do, if it is truly his'],
+          self: ['Man', 'What he chooses, he becomes'],
+        },
+      },
+      {
+        slug: 'death',
+        name: 'Death',
+        text: 'Death ends what he was making of himself. His meaning lasts no longer than he does.',
+        p: { selfA: 0.3, selfR: 0.13, hollow: 1, manA: 0.22, dull: 1, lBrY: 0.4, tBrX: 0.1, tBrY: 0.07 },
+        labels: {
+          god: ['Nothing above', 'No one to keep what he made'],
+          world: ['The world', 'It goes on unchanged'],
+          bridge: ['Meaning of his own making', 'It fades when he does'],
+          self: ['Man', 'His work ends with him'],
         },
       },
     ]),

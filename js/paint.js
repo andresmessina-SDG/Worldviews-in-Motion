@@ -17,7 +17,9 @@ uniform float uBg, uWarm, uGodA;
 uniform float uWave, uHaloL, uHaloR, uClock, uRing, uStainS;
 uniform float uBox, uLat, uPulse, uBare, uManA;   // a squared, sealed world; its lattice of law; an empty upper page
 uniform vec3 uManC;
-uniform float uDrain, uPool, uHollow;                // the world's pigment running off, gathering below, and a self left empty
+uniform float uDrain, uPool, uHollow;
+uniform float uSelfR, uSelfA;                        // colour that man spreads around himself, by his own hand
+uniform vec3 uSelfC;                // the world's pigment running off, gathering below, and a self left empty
 uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
 uniform vec3 uHands;            // second, minute and hour hands, radians clockwise from the top
 uniform vec4 uLab[3];
@@ -227,6 +229,18 @@ void main(){
     float creep = fbm(q * 5. + vec2(t * .05, -t * .04)) - .5;
     float d = length(q + wL * .12 + wM * .05 - Sc - vec2(-.02, -.02)) - uStainR * (1. + .07 * sin(t * .8)) - wM.x * .06 - creep * .07;
     A += K(uStainC) * layers(d, 6., mix(.03, .05, uStainS), mix(.012, .03, uStainS), mix(.5, .3, uStainS)) * uStainA;
+  }
+
+  // ---------- meaning of man's own making: his colour brushed outward into a world that has none ----------
+  if (uSelfA > .001) {
+    vec2 sp = q + wL * .05 - Sc;
+    float r = length(sp);
+    vec2 dir = sp / max(r, 1e-4);
+    float d = r - uSelfR * (1. + .07 * sin(t * .5)) - (noise(dir * 2.2 + t * .06) - .5) * .11 - wM.x * .05;
+    float strokes = .5 + 1. * smoothstep(.3, .75, noise(dir * 3.4 + vec2(r * 8. - t * .28, wL.x * 2.)));
+    float inside = smoothstep(0., -.025, dW);
+    A *= 1. - .55 * uSelfA * smoothstep(.03, -.06, d) * inside;
+    A += K(uSelfC) * layers(d, 9., .035, .012, .6) * strokes * uSelfA * inside;
   }
 
   // ---------- man ----------

@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=10';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=10';
-import { CATALOGUE } from './catalogue.js?v=10';
-import { createMenu } from './menu.js?v=10';
+import { createPainter } from './paint.js?v=11';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=11';
+import { CATALOGUE } from './catalogue.js?v=11';
+import { createMenu } from './menu.js?v=11';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -63,7 +63,7 @@ for (const k of KEYS) {
   if (ALIGN[k] !== 'center') $('lines').appendChild(g);
   labels[k] = { el, g, path, dot, on: false, timer: null, w: 0, h: 0 };
 }
-function setLabel(k, content, instant) {
+function setLabel(k, content, instant, wait = 550) {
   const L = labels[k];
   const html = content ? `${content[0]}<small>${content[1]}</small>` : '';
   if (L.html === html) return;
@@ -79,7 +79,7 @@ function setLabel(k, content, instant) {
   if (instant) return apply();
   L.el.style.opacity = 0;
   L.g.style.opacity = 0;
-  L.timer = setTimeout(apply, 550);
+  L.timer = setTimeout(apply, wait);
 }
 
 const marks = [0, 1, 2, 3].map((i) => {
@@ -97,7 +97,8 @@ function renderText(instant, wholePage) {
   const wv = WORLDVIEWS[cur.wv];
   const a = actOf();
   marks.forEach((b, i) => b.setAttribute('aria-current', i === cur.act));
-  KEYS.forEach((k) => setLabel(k, a.labels[k], instant));
+  // between worldviews the lettering stays away until the shapes have nearly settled
+  KEYS.forEach((k) => setLabel(k, a.labels[k], instant, wholePage && !reduced ? 2900 : 550));
   const fill = () => {
     document.title = `${wv.name} · Worldviews in Motion`;
     $('name').textContent = wv.name;
@@ -149,6 +150,7 @@ setInterval(() => { if (auto && !document.hidden) go(cur.wv, (cur.act + 1) % 4);
 
 // ---------- layout ----------
 let unit = 1, ext = 1, cx = 0, cy = 0, scale = 1, quality = 1, markH = 0;
+let wordsRight = -1e9, wordsBottom = 1e9;       // the corner of the words on the left, in scene units
 const rects = new Float32Array(12);
 function resize() {
   const W = innerWidth, Hh = innerHeight;
@@ -188,6 +190,9 @@ function resize() {
   $('marks').classList.toggle('tight', marks.some((b, i) => i < 3 && (b.offsetWidth + marks[i + 1].offsetWidth) / 2 - 6 > gap));
   $('marks').style.setProperty('--gap', `${Math.max(24, gap - 4).toFixed(0)}px`);
   markH = marks[0].offsetHeight / unit;
+  const words = narrow ? null : $('moves').getBoundingClientRect();
+  wordsRight = words ? (words.right - cx) / unit : -1e9;
+  wordsBottom = words ? (cy - words.bottom) / unit : 1e9;
   measure();
 }
 function measure() {
@@ -218,7 +223,10 @@ function layout(p) {
   place('world', 0, worldY);
   place('bridge', p.lBrX, p.lBrY, p.tBrX, p.tBrY);
   place('self', p.rW + p.lSide, p.Sy + 0.03, 0.105, p.Sy);
-  place('sin', -(p.rW + p.lSide), p.Sy - 0.08, -0.02 - p.stainR * 0.8, p.Sy - 0.06);
+  // lettering on the left drops below the words there if it would run into them
+  const sinX = -(p.rW + p.lSide);
+  const sinY = sinX - labels.sin.w < wordsRight + 0.03 ? Math.min(p.Sy - 0.08, wordsBottom - labels.sin.h / 2 - 0.03) : p.Sy - 0.08;
+  place('sin', sinX, sinY, -0.02 - p.stainR * 0.8, p.Sy - 0.06);
   const bl = labels.bridge;
   rects.set([0, godY, labels.god.w / 2 + 0.02, labels.god.h / 2 + 0.012, 0, worldY, labels.world.w / 2 + 0.02, labels.world.h / 2 + 0.012,
     p.lBrX + bl.w / 2, p.lBrY, bl.on ? bl.w / 2 + 0.02 : 0, bl.h / 2 + 0.012]);
@@ -350,7 +358,7 @@ function frame(now) {
       uG: [p.Gy, p.rG], uW: [p.Wy, p.rW], uSy: p.Sy,
       uGlory: p.glory, uSky: p.sky, uFar: p.far, uLow: p.low, uDeep: p.deep, uSea: p.sea, uLand: p.land,
       uGodC: p.godC, uGodRim: p.godRim, uStainC: p.stainC, uBg: p.bg, uWarm: p.warm, uGodA: p.godA,
-      uBox: p.box, uLat: p.lat, uPulse: p.pulse, uBare: p.bare, uManA: p.manA, uManC: p.manC, uDrain: p.drain, uPool: p.pool, uHollow: p.hollow,
+      uBox: p.box, uLat: p.lat, uPulse: p.pulse, uBare: p.bare, uManA: p.manA, uManC: p.manC, uDrain: p.drain, uPool: p.pool, uHollow: p.hollow, uSelfR: p.selfR, uSelfA: p.selfA, uSelfC: p.selfC,
       uWave: p.wave, uHaloL: p.haloL, uHaloR: p.haloR, uClock: p.clock, uRing: p.ring, uStainS: p.stainS,
       uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
       uTick: hd.whole, uHands: [hd.sec, hd.min, hd.hour], 'uLab[0]': rects,
