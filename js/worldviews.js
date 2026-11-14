@@ -7,7 +7,7 @@ const christianBase = {
   Gy: 0.445, rG: 0.29, Wy: -0.43, rW: 0.36, Sy: -0.4, bOff: 0.03,
   // palette
   glory: [1, 0.94, 0.66], sky: [0.97, 0.76, 0.56], far: [0.8, 0.7, 0.82], low: [0.72, 0.88, 0.85], deep: [0.5, 0.68, 0.8],
-  sea: [0.22, 0.6, 0.66], land: [0.3, 0.62, 0.42], warm: 0.55, bg: 0.5,
+  sea: [0.22, 0.6, 0.66], land: [0.3, 0.62, 0.42], shade: [0.14, 0.28, 0.5], warm: 0.55, bg: 0.5,
   godC: [0.98, 0.78, 0.3], godRim: [0.9, 0.46, 0.34], godA: 1,
   stainC: [0.13, 0.11, 0.22], stainS: 0,
   // what is present and what moves
@@ -18,7 +18,7 @@ const christianBase = {
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
   bridge: 0.95, bw: 0.044, bbot: -0.12, crim: 0, cross: 0, snap: 0, flow: 1,
-  ghost: 0, reason: 0, tick: 0, acc: [163, 38, 43],
+  ghost: 0, reason: 0, call: 0, rise: 0, tick: 0, acc: [163, 38, 43],
   // lettering
   lGodK: 0.38, lSide: 0.1, lBrX: 0.22, lBrY: 0.145, tBrX: 0.05, tBrY: 0.095,
 };
@@ -26,7 +26,7 @@ const christianBase = {
 const deismBase = {
   Gy: 0.56, rG: 0.2, Wy: -0.35, rW: 0.31, Sy: -0.35, bOff: -0.1,
   glory: [0.98, 0.96, 0.86], sky: [0.94, 0.9, 0.78], far: [0.8, 0.81, 0.86], low: [0.82, 0.88, 0.9], deep: [0.6, 0.7, 0.8],
-  sea: [0.36, 0.56, 0.72], land: [0.46, 0.62, 0.66], warm: 0.25, bg: 0.42,
+  sea: [0.36, 0.56, 0.72], land: [0.46, 0.62, 0.66], shade: [0.14, 0.28, 0.5], warm: 0.25, bg: 0.42,
   godC: [0.97, 0.86, 0.56], godRim: [0.9, 0.74, 0.56], godA: 0.62,
   stainC: [0.46, 0.46, 0.54], stainS: 1,
   wave: 0, haloL: 0, haloR: 1, clock: 1, ring: 0,
@@ -35,14 +35,31 @@ const deismBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.15, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0.75, reason: 0, tick: 1, acc: [63, 98, 127],
+  ghost: 0.75, reason: 0, call: 0, rise: 0, tick: 1, acc: [63, 98, 127],
   lGodK: 0.12, lSide: 0.2, lBrX: 0.2, lBrY: 0.14, tBrX: 0.035, tBrY: 0.12,
+};
+
+const mtdBase = {
+  // a kindly God, pale and soft-edged, well above a pastel world; man at its centre
+  Gy: 0.52, rG: 0.2, Wy: -0.3, rW: 0.34, Sy: -0.26, bOff: 0,
+  glory: [1, 0.96, 0.8], sky: [0.98, 0.88, 0.87], far: [0.88, 0.84, 0.93], low: [0.96, 0.92, 0.84], deep: [0.9, 0.84, 0.88],
+  sea: [0.95, 0.72, 0.76], land: [0.96, 0.87, 0.56], shade: [0.66, 0.5, 0.64], warm: 0.25, bg: 0.4,
+  godC: [0.98, 0.91, 0.58], godRim: [0.96, 0.74, 0.76], godA: 0.8,
+  stainC: [0.48, 0.5, 0.6], stainS: 1,
+  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
+  box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.52, 0.6], empty: 0, drain: 0, pool: 0, hollow: 0,
+  selfR: 0.05, selfA: 0.18, selfC: [0.95, 0.56, 0.64],
+  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
+  spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
+  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
+  ghost: 0, reason: 0, call: 0, rise: 0, tick: 0, acc: [182, 72, 108],
+  lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: -0.02, tBrX: 0.07, tBrY: -0.06,
 };
 
 const naturalismBase = {
   Gy: 0.56, rG: 0.19, Wy: -0.24, rW: 0.4, Sy: -0.2, bOff: 0,
   glory: [0.95, 0.95, 0.93], sky: [0.87, 0.9, 0.9], far: [0.8, 0.84, 0.86], low: [0.8, 0.85, 0.8], deep: [0.62, 0.7, 0.76],
-  sea: [0.44, 0.58, 0.7], land: [0.5, 0.62, 0.5], warm: 0.4, bg: 0.42,
+  sea: [0.44, 0.58, 0.7], land: [0.5, 0.62, 0.5], shade: [0.14, 0.28, 0.5], warm: 0.4, bg: 0.42,
   godC: [0.95, 0.94, 0.9], godRim: [0.86, 0.86, 0.84], godA: 0,
   stainC: [0.34, 0.36, 0.42], stainS: 1,
   wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
@@ -51,14 +68,14 @@ const naturalismBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, tick: 0, acc: [70, 100, 78],
+  ghost: 0, reason: 0, call: 0, rise: 0, tick: 0, acc: [70, 100, 78],
   lGodK: 0, lSide: 0.1, lBrX: 0.26, lBrY: 0.29, tBrX: 0.16, tBrY: 0.17,
 };
 
 const nihilismBase = {
   Gy: 0.62, rG: 0.15, Wy: 0, rW: 0.34, Sy: 0.04, bOff: 0,
   glory: [0.95, 0.95, 0.94], sky: [0.9, 0.9, 0.9], far: [0.84, 0.84, 0.86], low: [0.86, 0.85, 0.84], deep: [0.76, 0.76, 0.79],
-  sea: [0.4, 0.43, 0.5], land: [0.5, 0.5, 0.55], warm: 0.12, bg: 0.34,
+  sea: [0.4, 0.43, 0.5], land: [0.5, 0.5, 0.55], shade: [0.14, 0.28, 0.5], warm: 0.12, bg: 0.34,
   godC: [0.95, 0.94, 0.9], godRim: [0.86, 0.86, 0.84], godA: 0,
   stainC: [0.3, 0.3, 0.36], stainS: 1,
   wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
@@ -67,14 +84,14 @@ const nihilismBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.6, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, tick: 0, acc: [86, 82, 100],
+  ghost: 0, reason: 0, call: 0, rise: 0, tick: 0, acc: [86, 82, 100],
   lGodK: 0, lSide: 0.1, lBrX: 0.27, lBrY: -0.52, tBrX: 0.15, tBrY: -0.44,
 };
 
 const existentialismBase = {
   Gy: 0.62, rG: 0.15, Wy: -0.06, rW: 0.38, Sy: -0.02, bOff: 0,
   glory: [0.95, 0.95, 0.94], sky: [0.9, 0.89, 0.88], far: [0.83, 0.83, 0.85], low: [0.85, 0.84, 0.83], deep: [0.74, 0.74, 0.77],
-  sea: [0.38, 0.4, 0.46], land: [0.47, 0.47, 0.51], warm: 0.1, bg: 0.36,
+  sea: [0.38, 0.4, 0.46], land: [0.47, 0.47, 0.51], shade: [0.14, 0.28, 0.5], warm: 0.1, bg: 0.36,
   godC: [0.95, 0.94, 0.9], godRim: [0.86, 0.86, 0.84], godA: 0,
   stainC: [0.26, 0.26, 0.32], stainS: 1,
   wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
@@ -83,7 +100,7 @@ const existentialismBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.7, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, tick: 0, acc: [190, 66, 44],
+  ghost: 0, reason: 0, call: 0, rise: 0, tick: 0, acc: [190, 66, 44],
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.42, tBrX: 0.13, tBrY: 0.11,
 };
 
@@ -91,7 +108,7 @@ const hinduBase = {
   // the Ultimate and the world are one shape: the world's own circle is not drawn
   Gy: 0.08, rG: 0.36, Wy: 0.08, rW: 0.46, Sy: -0.02, bOff: 0,
   glory: [0.99, 0.76, 0.34], sky: [0.9, 0.42, 0.58], far: [0.66, 0.5, 0.76], low: [0.92, 0.6, 0.6], deep: [0.7, 0.52, 0.76],
-  sea: [0.9, 0.5, 0.4], land: [0.92, 0.6, 0.3], warm: 0.3, bg: 0.46,
+  sea: [0.9, 0.5, 0.4], land: [0.92, 0.6, 0.3], shade: [0.14, 0.28, 0.5], warm: 0.3, bg: 0.46,
   godC: [0.96, 0.52, 0.16], godRim: [0.9, 0.4, 0.42], godA: 1,
   stainC: [0.36, 0.22, 0.4], stainS: 1,
   wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
@@ -100,7 +117,7 @@ const hinduBase = {
   one: 1, maya: 0.5, worldA: 0, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, tick: 0, acc: [172, 44, 100],
+  ghost: 0, reason: 0, call: 0, rise: 0, tick: 0, acc: [172, 44, 100],
   lGodK: 0.45, lSide: 0.06, lBrX: 0.28, lBrY: 0.63, tBrX: 0.23, tBrY: 0.478,
 };
 
@@ -108,7 +125,7 @@ const buddhistBase = {
   // no Ultimate drawn: its place and size only centre the wheel on the self
   Gy: 0.04, rG: 0.3, Wy: 0.04, rW: 0.33, Sy: 0.04, bOff: 0,
   glory: [0.97, 0.93, 0.84], sky: [0.92, 0.86, 0.78], far: [0.8, 0.77, 0.76], low: [0.9, 0.85, 0.78], deep: [0.8, 0.74, 0.72],
-  sea: [0.93, 0.67, 0.32], land: [0.88, 0.55, 0.3], warm: 0.35, bg: 0.36,
+  sea: [0.93, 0.67, 0.32], land: [0.88, 0.55, 0.3], shade: [0.14, 0.28, 0.5], warm: 0.35, bg: 0.36,
   godC: [0.95, 0.9, 0.8], godRim: [0.86, 0.8, 0.76], godA: 0,
   stainC: [0.32, 0.12, 0.13], stainS: 1,
   wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
@@ -117,7 +134,7 @@ const buddhistBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 1, bundle: 1, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, tick: 0, acc: [140, 47, 47],
+  ghost: 0, reason: 0, call: 0, rise: 0, tick: 0, acc: [140, 47, 47],
   lGodK: 1.75, lSide: 0.08, lBrX: 0.3, lBrY: -0.38, tBrX: 0.26, tBrY: -0.26,
 };
 
@@ -125,7 +142,7 @@ const taoistBase = {
   // the source is painted as mist above, with no edge and no outline
   Gy: 0.5, rG: 0.28, Wy: -0.14, rW: 0.36, Sy: 0.02, bOff: 0,
   glory: [0.97, 0.96, 0.93], sky: [0.9, 0.91, 0.9], far: [0.82, 0.84, 0.84], low: [0.88, 0.9, 0.88], deep: [0.78, 0.82, 0.8],
-  sea: [0.32, 0.34, 0.36], land: [0.8, 0.89, 0.85], warm: 0, bg: 0.34,
+  sea: [0.32, 0.34, 0.36], land: [0.8, 0.89, 0.85], shade: [0.14, 0.28, 0.5], warm: 0, bg: 0.34,
   godC: [0.58, 0.6, 0.61], godRim: [0.7, 0.72, 0.72], godA: 0,
   stainC: [0.24, 0.2, 0.18], stainS: 1,
   wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
@@ -134,7 +151,7 @@ const taoistBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 1, mist: 1, current: 0.5, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, tick: 0, acc: [46, 112, 98],
+  ghost: 0, reason: 0, call: 0, rise: 0, tick: 0, acc: [46, 112, 98],
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.3, tBrX: 0.113, tBrY: -0.027,
 };
 
@@ -142,7 +159,7 @@ const confucianBase = {
   // round Heaven above, square Earth below
   Gy: 0.565, rG: 0.215, Wy: -0.13, rW: 0.38, Sy: -0.05, bOff: 0,
   glory: [0.97, 0.96, 0.92], sky: [0.86, 0.9, 0.9], far: [0.8, 0.84, 0.86], low: [0.94, 0.89, 0.8], deep: [0.86, 0.79, 0.68],
-  sea: [0.87, 0.72, 0.44], land: [0.8, 0.64, 0.42], warm: 0.3, bg: 0.38,
+  sea: [0.87, 0.72, 0.44], land: [0.8, 0.64, 0.42], shade: [0.14, 0.28, 0.5], warm: 0.3, bg: 0.38,
   godC: [0.74, 0.86, 0.83], godRim: [0.52, 0.7, 0.7], godA: 0.85,
   stainC: [0.38, 0.32, 0.27], stainS: 1,
   wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
@@ -151,7 +168,7 @@ const confucianBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 1, bonds: 1, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, tick: 0, acc: [160, 58, 42],
+  ghost: 0, reason: 0, call: 0, rise: 0, tick: 0, acc: [160, 58, 42],
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.35, tBrX: 0.17, tBrY: 0.11,
 };
 
@@ -159,7 +176,7 @@ const animistBase = {
   // the High God is small, faint and far off; the world below is full of spirits
   Gy: 0.66, rG: 0.085, Wy: -0.1, rW: 0.4, Sy: -0.1, bOff: 0,
   glory: [0.96, 0.93, 0.85], sky: [0.89, 0.87, 0.79], far: [0.79, 0.8, 0.74], low: [0.87, 0.85, 0.75], deep: [0.72, 0.73, 0.63],
-  sea: [0.6, 0.72, 0.52], land: [0.8, 0.66, 0.45], warm: 0.45, bg: 0.4,
+  sea: [0.6, 0.72, 0.52], land: [0.8, 0.66, 0.45], shade: [0.14, 0.28, 0.5], warm: 0.45, bg: 0.4,
   godC: [0.96, 0.86, 0.6], godRim: [0.86, 0.7, 0.5], godA: 0.35,
   stainC: [0.19, 0.16, 0.14], stainS: 1,
   wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
@@ -168,7 +185,7 @@ const animistBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 1, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, tick: 0, acc: [150, 90, 45],
+  ghost: 0, reason: 0, call: 0, rise: 0, tick: 0, acc: [150, 90, 45],
   lGodK: -2.25, lSide: 0.1, lBrX: 0.3, lBrY: 0.32, tBrX: 0.06, tBrY: -0.03,
 };
 
@@ -236,7 +253,7 @@ export const WORLDVIEWS = {
   deism: {
     name: 'Deism',
     tagline: 'God wound the clock and left it to run.',
-    move: { to: 'naturalism', q: 'What if there is no clockmaker?' },
+    move: { to: 'mtd', q: 'What if the distant God is there when we need him?' },
     acts: build(deismBase, [
       {
         slug: 'clockmaker',
@@ -285,6 +302,61 @@ export const WORLDVIEWS = {
           world: ['The world', 'Ticking on'],
           bridge: ['No promise', 'Nothing has been said'],
           self: ['Man', 'Hoping for a reward'],
+        },
+      },
+    ]),
+  },
+
+  mtd: {
+    name: 'Moralistic Therapeutic Deism',
+    tagline: 'Be nice, be happy, and call on God when you need him.',
+    move: { to: 'naturalism', q: 'What if no one is up there at all?' },
+    acts: build(mtdBase, [
+      {
+        slug: 'a-kindly-god',
+        name: 'A Kindly God',
+        text: 'A God exists who made the world and watches over it. He wants people to be good, nice and fair to each other.',
+        p: {},
+        labels: {
+          god: ['God', 'Kind, and watching from afar'],
+          world: ['The world', 'Watched over'],
+          self: ['Man', 'Basically good'],
+        },
+      },
+      {
+        slug: 'feeling-bad',
+        name: 'Feeling Bad',
+        text: 'No one is really bad. What goes wrong is unhappiness: stress, hurt feelings and low self-esteem.',
+        p: { selfA: 0.06, selfR: 0.03, stainR: 0.12, stainA: 0.45, dull: 0.4 },
+        labels: {
+          god: ['God', 'Out of mind until needed'],
+          world: ['The world', 'Stressful'],
+          self: ['Man', 'Still good, but unhappy'],
+          sin: ['Unhappiness', 'Hurt feelings, not sin'],
+        },
+      },
+      {
+        slug: 'help',
+        name: 'Help',
+        text: 'God need not be involved in daily life, but he can be called on to solve a problem. The goal of life is to be happy and to feel good about oneself.',
+        p: { Gy: 0.31, rG: 0.17, call: 1, selfA: 0.5, selfR: 0.11, stainR: 0.05, stainA: 0.15, glow: 0.6, dull: 0.05, rip: 0.5, lBrY: 0.02, tBrX: 0.07, tBrY: -0.03 },
+        labels: {
+          god: ['God', 'On call, like a butler'],
+          world: ['The world', 'Bearable again'],
+          bridge: ['Prayer', 'A call for help'],
+          self: ['Man', 'Feeling good about himself'],
+          sin: ['Unhappiness', 'Soothed, with nothing to forgive'],
+        },
+      },
+      {
+        slug: 'heaven',
+        name: 'Heaven',
+        text: 'Good people go to heaven when they die, and nearly everyone is good enough.',
+        p: { Gy: 0.55, rG: 0.2, Wy: -0.36, worldA: 0.6, Sy: 0.22, rise: 1, selfA: 0, glow: 0.5 },
+        labels: {
+          god: ['God', 'Asking only that we be nice'],
+          world: ['The world', 'Left behind'],
+          self: ['Good people', 'Good enough by their own measure'],
         },
       },
     ]),

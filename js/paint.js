@@ -11,7 +11,7 @@ uniform float uT, uUnit;
 uniform vec2 uG, uW;            // y and radius of the Ultimate and of the world
 uniform float uSy;              // man
 // palette
-uniform vec3 uGlory, uSky, uFar, uLow, uDeep, uSea, uLand, uGodC, uGodRim, uStainC;
+uniform vec3 uGlory, uSky, uFar, uLow, uDeep, uSea, uLand, uShade, uGodC, uGodRim, uStainC;
 uniform float uBg, uWarm, uGodA;
 // what is present, and what moves
 uniform float uWave, uHaloL, uHaloR, uClock, uRing, uStainS;
@@ -184,7 +184,7 @@ void main(){
     vec3 Aw = K(sea) * dens * (1. - m1 * .7) * bloom(q * 2.6, 47.) * (.75 + .7 * v2);
     Aw += K(land) * dens * m1 * (.6 + .5 * v1);
     Aw += K(vec3(.86, .66, .3)) * dens * m2 * uWarm * (1. - .6 * uDull);
-    Aw += K(mix(vec3(.14, .28, .5), vec3(.95, .6, .3), lit)) * dens * smoothstep(-.3, 1., dot(p, vec2(.45, -.9)) / rW) * (.4 + .5 * v1);
+    Aw += K(mix(uShade, vec3(.95, .6, .3), lit)) * dens * smoothstep(-.3, 1., dot(p, vec2(.45, -.9)) / rW) * (.4 + .5 * v1);
     if (uYin > .001) {
       // yin and yang: two halves, each with a seed of the other, turning slowly for ever
       vec2 u = rot(p + wM * .012, t * .06);

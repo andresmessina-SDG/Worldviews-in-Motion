@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=22';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=22';
-import { CATALOGUE } from './catalogue.js?v=22';
-import { createMenu } from './menu.js?v=22';
+import { createPainter } from './paint.js?v=23';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=23';
+import { CATALOGUE } from './catalogue.js?v=23';
+import { createMenu } from './menu.js?v=23';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -188,7 +188,9 @@ function resize() {
   // if the four names cannot sit side by side, only the open act keeps its name
   const gap = 0.48 * ext * unit;
   $('marks').classList.remove('tight');
-  $('marks').classList.toggle('tight', marks.some((b, i) => i < 3 && (b.offsetWidth + marks[i + 1].offsetWidth) / 2 - 6 > gap));
+  // (names need at least 10px of clear space between them, whatever padding their buttons have)
+  const pad = 2 * parseFloat(getComputedStyle(marks[0]).paddingLeft);
+  $('marks').classList.toggle('tight', marks.some((b, i) => i < 3 && (b.offsetWidth + marks[i + 1].offsetWidth) / 2 - pad + 10 > gap));
   $('marks').style.setProperty('--gap', `${Math.max(24, gap - 4).toFixed(0)}px`);
   markH = marks[0].offsetHeight / unit;
   const words = narrow ? null : $('moves').getBoundingClientRect();
@@ -376,6 +378,28 @@ function drawConn(p, c) {
       <path d="M0,${f(y1 - 0.04)} L-.021,${f(y1 + 0.004)} L.021,${f(y1 + 0.004)}Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/></g>`;
   }
 
+  // ----- a call for help: arcs going up from man to a God who comes when called -----
+  if (p.call > 0.01) {
+    const y0 = p.Sy + 0.095, y1 = p.Gy - p.rG - 0.03, span = Math.max(0.02, y1 - y0);
+    let arcs = '';
+    for (let i = 0; i < 3; i++) {
+      const ph = (c.t * 0.22 + i / 3) % 1, r = 0.095 + ph * span, op = Math.sin(Math.PI * ph);
+      const w = Math.min(0.14, 0.05 + r * 0.32), h = Math.sqrt(Math.max(0, r * r - w * w));
+      const d = `M${f(-w)},${f(-(p.Sy + h))} A${f(r)} ${f(r)} 0 0 1 ${f(w)},${f(-(p.Sy + h))}`;
+      arcs += `<g opacity="${f(op)}">${stroke(d, ACC, 0.0055)}</g>`;
+    }
+    g += `<g opacity="${f(p.call)}">${arcs}</g>`;
+  }
+
+  // ----- the way up to heaven: a dotted trail from the world to man, who has left it -----
+  if (p.rise > 0.01) {
+    const y0 = p.Wy + p.rW + 0.02, y1 = p.Sy - 0.095;
+    if (y1 > y0) {
+      const d = `M0,${f(-y0)} V${f(-y1)}`;
+      g += `<g opacity="${f(p.rise)}"><path d="${d}" fill="none" stroke="${PAP}" stroke-width=".0145" stroke-linecap="round" stroke-dasharray=".001 .024" stroke-dashoffset="${f(-c.t * 0.02)}" opacity=".92"/><path d="${d}" fill="none" stroke="${ACC}" stroke-width=".0065" stroke-linecap="round" stroke-dasharray=".001 .024" stroke-dashoffset="${f(-c.t * 0.02)}"/></g>`;
+    }
+  }
+
   // ----- the line of history -----
   const ty = 0.87, bx = ext * (-0.72 + 0.48 * p.act);
   g += stroke(`M${f(-ext)},${ty} H${f(ext + 0.04)}`, DARK, 0.0055);
@@ -462,7 +486,7 @@ function frame(now) {
     painter.draw({
       uRes: [canvas.width, canvas.height], uCen: [cx * scale, canvas.height - cy * scale], uUnit: unit * scale, uT: t,
       uG: [p.Gy, p.rG], uW: [p.Wy, p.rW], uSy: p.Sy,
-      uGlory: p.glory, uSky: p.sky, uFar: p.far, uLow: p.low, uDeep: p.deep, uSea: p.sea, uLand: p.land,
+      uGlory: p.glory, uSky: p.sky, uFar: p.far, uLow: p.low, uDeep: p.deep, uSea: p.sea, uLand: p.land, uShade: p.shade,
       uGodC: p.godC, uGodRim: p.godRim, uStainC: p.stainC, uBg: p.bg, uWarm: p.warm, uGodA: p.godA,
       uBox: p.box, uLat: p.lat, uPulse: p.pulse, uBare: p.bare, uManA: p.manA, uManC: p.manC, uDrain: p.drain, uPool: p.pool, uHollow: p.hollow, uSelfR: p.selfR, uSelfA: p.selfA, uSelfC: p.selfC,
       uOne: p.one, uMaya: p.maya, uWorldA: p.worldA, uManI: p.manI,
