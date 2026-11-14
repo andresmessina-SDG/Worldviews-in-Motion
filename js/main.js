@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=23';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=23';
-import { CATALOGUE } from './catalogue.js?v=23';
-import { createMenu } from './menu.js?v=23';
+import { createPainter } from './paint.js?v=24';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=24';
+import { CATALOGUE } from './catalogue.js?v=24';
+import { createMenu } from './menu.js?v=24';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -61,7 +61,7 @@ for (const k of KEYS) {
   const dot = document.createElementNS(NS, 'circle');
   dot.setAttribute('r', 2.6);
   g.append(path, dot);
-  if (ALIGN[k] !== 'center') $('lines').appendChild(g);
+  if (ALIGN[k] !== 'center' || k === 'god') $('lines').appendChild(g);
   labels[k] = { el, g, path, dot, on: false, timer: null, w: 0, h: 0 };
 }
 function setLabel(k, content, instant, wait = 550) {
@@ -219,10 +219,24 @@ function place(k, x, y, tx, ty) {
   L.dot.setAttribute('cy', Y(ty));
 }
 
-function layout(p) {
+function layout(p, G) {
   // the world's name sits low in its shape, but never down among the names of the acts
   const godY = p.Gy + p.rG * p.lGodK, worldY = Math.max(p.Wy - p.rW * 0.6, -0.795 + markH / 2 + labels.world.h / 2);
   place('god', 0, godY);
+  // when God goes round man, his name keeps its place and a line follows him, dropped while he is behind
+  // the world or below man, where it would have to cut across them
+  const lg = labels.god;
+  const show = p.orbit * Math.max(0, Math.min(1, 1 - 1.6 * G.back, (G.y - p.Sy) / 0.12));
+  lg.g.style.display = show > 0.01 ? '' : 'none';
+  if (show > 0.01) {
+    const y0 = godY - lg.h / 2 - 0.012, dx = -G.x, dy = y0 - G.y, L = Math.hypot(dx, dy) || 1;
+    const ex = G.x + (dx / L) * G.r * 0.92, ey = G.y + (dy / L) * G.r * 0.92;
+    lg.path.setAttribute('d', `M${X(0)},${Y(y0)} L${X(ex)},${Y(ey)}`);
+    lg.dot.setAttribute('cx', X(ex));
+    lg.dot.setAttribute('cy', Y(ey));
+    lg.path.setAttribute('opacity', show.toFixed(3));
+    lg.dot.setAttribute('opacity', show.toFixed(3));
+  }
   place('world', 0, worldY);
   place('bridge', p.lBrX, p.lBrY, p.tBrX, p.tBrY);
   place('self', p.rW + p.lSide, p.Sy + 0.03, 0.105, p.Sy);
@@ -246,7 +260,7 @@ const rgb = (c) => `rgb(${c.map(Math.round).join(',')})`;
 const stroke = (d, col, wd) => `<path d="${d}" fill="none" stroke="${PAP}" stroke-width="${f(wd + 0.012)}" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="none" stroke="${col}" stroke-width="${f(wd)}" stroke-linecap="round" stroke-linejoin="round"/>`;
 const shape = (d, col) => `<path d="${d}" fill="${col}" stroke="${PAP}" stroke-width=".012" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="${col}"/>`;
 
-function drawConn(p, c) {
+function drawConn(p, c, G) {
   const bTop = p.Gy - p.rG + p.bOff;
   const top = -bTop, bot = -p.bbot;              // svg y grows downward
   const ACC = rgb(p.acc);
@@ -378,9 +392,10 @@ function drawConn(p, c) {
       <path d="M0,${f(y1 - 0.04)} L-.021,${f(y1 + 0.004)} L.021,${f(y1 + 0.004)}Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/></g>`;
   }
 
-  // ----- a call for help: arcs going up from man to a God who comes when called -----
+  // ----- a call for help: arcs going out from man toward God, wherever he has got to -----
   if (p.call > 0.01) {
-    const y0 = p.Sy + 0.095, y1 = p.Gy - p.rG - 0.03, span = Math.max(0.02, y1 - y0);
+    const dx = G.x, dy = G.y - p.Sy, dist = Math.hypot(dx, dy) || 1;
+    const span = Math.max(0.02, dist - G.r - 0.125), deg = (Math.atan2(dx, dy) * 180) / Math.PI;
     let arcs = '';
     for (let i = 0; i < 3; i++) {
       const ph = (c.t * 0.22 + i / 3) % 1, r = 0.095 + ph * span, op = Math.sin(Math.PI * ph);
@@ -388,7 +403,28 @@ function drawConn(p, c) {
       const d = `M${f(-w)},${f(-(p.Sy + h))} A${f(r)} ${f(r)} 0 0 1 ${f(w)},${f(-(p.Sy + h))}`;
       arcs += `<g opacity="${f(op)}">${stroke(d, ACC, 0.0055)}</g>`;
     }
-    g += `<g opacity="${f(p.call)}">${arcs}</g>`;
+    g += `<g opacity="${f(p.call)}" transform="rotate(${f(deg)} 0 ${f(-p.Sy)})">${arcs}</g>`;
+  }
+
+  // ----- God's orbit round man: the near half drawn plainly, the far half faint and hidden by the world -----
+  if (p.orbit > 0.01) {
+    const R = G.R, Ry = R * p.oTilt, rot = f((-G.rot * 180) / Math.PI);
+    const [ax, ay] = orbitAt(p, 0, R, G.rot), [bx, by] = orbitAt(p, Math.PI, R, G.rot);
+    const near = `M${f(ax)},${f(-ay)} A${f(R)} ${f(Ry)} ${rot} 0 0 ${f(bx)},${f(-by)}`;
+    const far = `M${f(bx)},${f(-by)} A${f(R)} ${f(Ry)} ${rot} 0 0 ${f(ax)},${f(-ay)}`;
+    const co = Math.cos(G.rot), si = Math.sin(G.rot);
+    let heads = '';
+    for (let i = 1; i <= 2; i++) {
+      const a = c.orb + i * 2.094, sa = Math.sin(a), ca = Math.cos(a);
+      const [x, y] = orbitAt(p, a, R, G.rot);
+      if (sa < 0 && Math.hypot(x, y - p.Wy) < p.rW + 0.01) continue;
+      const tx = -R * sa * co - Ry * ca * si, ty = -R * sa * si + Ry * ca * co;     // the way he is going
+      const deg = (Math.atan2(-ty, tx) * 180) / Math.PI;
+      heads += `<path transform="translate(${f(x)},${f(-y)}) rotate(${f(deg)})" d="M.019,0 L-.011,-.015 L-.011,.015Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round" opacity="${f(sa > 0 ? 1 : 0.45)}"/>`;
+    }
+    g += `<defs><mask id="behind"><rect x="-3" y="-3" width="6" height="6" fill="#fff"/><circle cx="0" cy="${f(-p.Wy)}" r="${f(p.rW + 0.008)}" fill="#000"/></mask></defs>`;
+    g += `<g opacity="${f(p.orbit * 0.85)}"><g mask="url(#behind)" opacity=".5"><path d="${far}" fill="none" stroke="${ACC}" stroke-width=".004" stroke-linecap="round" stroke-dasharray=".012 .016"/></g>`;
+    g += `${stroke(near, ACC, 0.0045)}${heads}</g>`;
   }
 
   // ----- the way up to heaven: a dotted trail from the world to man, who has left it -----
@@ -435,7 +471,39 @@ function hands() {
 }
 
 // ---------- loop ----------
-let lastT = 0, acc = 0, nF = 0, arrow = 0, accent = '';
+let lastT = 0, acc = 0, nF = 0, arrow = 0, orb = Math.PI / 2, accent = '';
+// Where God actually is. Most worldviews keep him in his place above; one sends him round man,
+// a little larger and in front of the world on the near side, smaller and behind it on the far side.
+// The orbit is a tilted ellipse round man; a is the angle along it, and its near half is where sin(a) > 0.
+function orbitAt(p, a, R, rot) {
+  const ca = Math.cos(a), sa = Math.sin(a), Ry = R * p.oTilt, c = Math.cos(rot), s = Math.sin(rot);
+  return [R * ca * c - Ry * sa * s, p.Sy + R * ca * s + Ry * sa * c, sa];
+}
+// As wide and as level as asked, unless that would carry God into the words on the left, off the page or into his own name.
+// Where room is short the orbit first tips up more steeply, and only then grows smaller.
+function orbitFits(p, R, rot) {
+  for (let i = 0; i < 24; i++) {
+    const [x, y, sa] = orbitAt(p, (i * Math.PI) / 12, R, rot), r = p.rG * (1 + 0.2 * sa) + 0.03;
+    if ((x - r < wordsRight && y + r > wordsBottom) || Math.abs(x) + r > ext + 0.04 || y + r > p.Gy - 0.09) return false;
+  }
+  return true;
+}
+function orbitShape(p) {
+  const steep = Math.max(p.oRot, 1);
+  for (let rot = p.oRot; rot < steep + 0.01; rot += 0.05) if (orbitFits(p, p.oR, rot)) return [p.oR, rot];
+  let R = p.oR;
+  while (R > p.rW + 0.05 && !orbitFits(p, R, steep)) R *= 0.95;
+  return [Math.max(R, p.rW + 0.05), steep];
+}
+let oShape = null;     // the orbit's size and tilt, eased toward what fits so that God never jumps
+function godAt(p, dt) {
+  const k = p.orbit;
+  if (k < 0.001) return { x: 0, y: p.Gy, r: p.rG, front: 0, back: 0, R: p.oR, rot: p.oRot };
+  const want = orbitShape(p), e = Math.min(1, dt * 2.5);
+  oShape = !oShape || frozen !== null ? want : [oShape[0] + (want[0] - oShape[0]) * e, oShape[1] + (want[1] - oShape[1]) * e];
+  const [R, rot] = oShape, [x, y, s] = orbitAt(p, orb, R, rot);
+  return { x: k * x, y: lerp(p.Gy, y, k), r: p.rG * (1 + 0.2 * s * k), front: k * Math.max(0, s), back: k * Math.max(0, -s), R, rot };
+}
 // ---------- spirits ----------
 // Nine small presences wander the world. The first five can turn dark and close in on man; the rest can
 // gather round him as the ancestors he joins. The painting and the connectors both read these places.
@@ -475,17 +543,20 @@ function frame(now) {
   const t = frozen !== null ? frozen : reduced ? 0 : now / 1000;
   const hd = hands();
   arrow = frozen !== null ? frozen * 0.04 * p.flow : arrow + dt * 0.04 * p.flow * (reduced ? 0 : 1);
+  orb = frozen !== null ? Math.PI / 2 + frozen * p.oSpd : orb + dt * p.oSpd * (reduced ? 0 : 1);
+  const G = godAt(p, dt);
+  window.__G = { ...G, cx, cy, unit };                // for tests of where God has got to
 
   const css = rgb(p.acc);
   if (css !== accent) { accent = css; document.documentElement.style.setProperty('--red', css); }
 
-  layout(p);
+  layout(p, G);
   if (p.spirits > 0.01) spiritsAt(p, t);
   if (painter) {
     const entry = p.Wy + p.rW - 0.02;
     painter.draw({
       uRes: [canvas.width, canvas.height], uCen: [cx * scale, canvas.height - cy * scale], uUnit: unit * scale, uT: t,
-      uG: [p.Gy, p.rG], uW: [p.Wy, p.rW], uSy: p.Sy,
+      uG: [G.y, G.r], uGx: G.x, uGf: G.front, uGb: G.back, uW: [p.Wy, p.rW], uSy: p.Sy,
       uGlory: p.glory, uSky: p.sky, uFar: p.far, uLow: p.low, uDeep: p.deep, uSea: p.sea, uLand: p.land, uShade: p.shade,
       uGodC: p.godC, uGodRim: p.godRim, uStainC: p.stainC, uBg: p.bg, uWarm: p.warm, uGodA: p.godA,
       uBox: p.box, uLat: p.lat, uPulse: p.pulse, uBare: p.bare, uManA: p.manA, uManC: p.manC, uDrain: p.drain, uPool: p.pool, uHollow: p.hollow, uSelfR: p.selfR, uSelfA: p.selfA, uSelfC: p.selfC,
@@ -495,7 +566,7 @@ function frame(now) {
       uTick: hd.whole, uHands: [hd.sec, hd.min, hd.hour], 'uLab[0]': rects,
     });
   }
-  drawConn(p, { t, arrow, tock: hd.tock });
+  drawConn(p, { t, arrow, orb, tock: hd.tock }, G);
   requestAnimationFrame(frame);
 }
 

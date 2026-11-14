@@ -9,6 +9,7 @@ uniform float uT, uUnit;
 
 // where things stand
 uniform vec2 uG, uW;            // y and radius of the Ultimate and of the world
+uniform float uGx, uGf, uGb;    // the Ultimate's x, and how far it stands in front of the world or behind it
 uniform float uSy;              // man
 // palette
 uniform vec3 uGlory, uSky, uFar, uLow, uDeep, uSea, uLand, uShade, uGodC, uGodRim, uStainC;
@@ -98,7 +99,7 @@ void main(){
   vec2 hand = wL * .06;
   const float tide = .8;
 
-  vec2 G = vec2(0., uG.x);  float rG = uG.y;
+  vec2 G = vec2(uGx, uG.x);  float rG = uG.y;
   vec2 Wc = vec2(0., uW.x); float rW = uW.y;
   vec2 Sc = vec2(0., uSy);  float rS = .066;
   float dG = length(q + hand - G) - rG;
@@ -288,6 +289,11 @@ void main(){
   // ---------- the Ultimate ----------
   {
     float dens = layers(dG, 1., mix(.03, .1, uOne), mix(.0045, .03, uOne), mix(tide, .25, uOne)) * uGodA;
+    // going round: in front of the world it covers what lies under it; behind, the world hides it
+    float inG = smoothstep(.012, -.02, dG) * pres, inW = smoothstep(.004, -.02, dW) * uWorldA;
+    A *= 1. - .88 * uGf * inG;
+    ink *= 1. - .92 * uGf * inG;
+    dens *= 1. - .93 * uGb * inW;
     float hole = length(q + hand - G) - rG * .34;
     dens *= mix(1., smoothstep(-.012, .014, hole), uBi);
     float ink0 = ink;
@@ -296,7 +302,7 @@ void main(){
     A += K(uGodC) * dens * core * bloom(q * 2.4, 31.) * (.85 + .6 * v2);
     A += K(uGodRim) * dens * smoothstep(rG * .5, rG, rg + wM.y * .15) * (.2 + .55 * v1) * bandsG;
     A *= 1. - .35 * uOne * exp(-rg * rg / .03);
-    ink += (pen(dG + .012 + wob) + pen(dG - .02 - wob * 1.4) * step(.45, noise(q * 6. + 2.))) * (1. - uOne);
+    ink += (pen(dG + .012 + wob) + pen(dG - .02 - wob * 1.4) * step(.45, noise(q * 6. + 2.))) * (1. - uOne) * (1. - .93 * uGb * inW);
     ink += pen(hole + .004 - wob * .6) * uBi;
     // the many things: rings drawn on the surface, moving outward and never arriving
     if (uMaya > .001) {
