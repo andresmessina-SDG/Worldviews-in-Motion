@@ -15,7 +15,7 @@ const christianBase = {
   box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
+  yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
   bridge: 0.95, bw: 0.044, bbot: -0.12, crim: 0, cross: 0, snap: 0, flow: 1,
   ghost: 0, reason: 0, tick: 0, acc: [163, 38, 43],
@@ -33,7 +33,7 @@ const deismBase = {
   box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.15, rip: 0, ripAt: 1,
+  yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.15, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0.75, reason: 0, tick: 1, acc: [63, 98, 127],
   lGodK: 0.12, lSide: 0.2, lBrX: 0.2, lBrY: 0.14, tBrX: 0.035, tBrY: 0.12,
@@ -49,7 +49,7 @@ const naturalismBase = {
   box: 1, lat: 1, pulse: 1, bare: 1, manA: 1, manC: [0.3, 0.42, 0.54], empty: 0.8, drain: 0, pool: 0, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
+  yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, tick: 0, acc: [70, 100, 78],
   lGodK: 0, lSide: 0.1, lBrX: 0.26, lBrY: 0.29, tBrX: 0.16, tBrY: 0.17,
@@ -65,7 +65,7 @@ const nihilismBase = {
   box: 1, lat: 0.45, pulse: 0.3, bare: 0.6, manA: 1, manC: [0.42, 0.44, 0.5], empty: 0.45, drain: 0.35, pool: 0.25, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.6, rip: 0, ripAt: 1,
+  yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.6, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, tick: 0, acc: [86, 82, 100],
   lGodK: 0, lSide: 0.1, lBrX: 0.27, lBrY: -0.52, tBrX: 0.15, tBrY: -0.44,
@@ -81,7 +81,7 @@ const existentialismBase = {
   box: 1, lat: 0.35, pulse: 0.3, bare: 0.6, manA: 1, manC: [0.85, 0.3, 0.2], empty: 0.4, drain: 0.4, pool: 0, hollow: 0,
   selfR: 0.09, selfA: 0.3, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.7, rip: 0, ripAt: 1,
+  yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.7, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, tick: 0, acc: [190, 66, 44],
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.42, tBrX: 0.13, tBrY: 0.11,
@@ -98,7 +98,7 @@ const hinduBase = {
   box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.74, 0.16, 0.24], empty: 0, drain: 0, pool: 0, hollow: 1,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 1, maya: 0.5, worldA: 0, manI: 1, wheel: 0,
-  flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
+  yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, tick: 0, acc: [172, 44, 100],
   lGodK: 0.45, lSide: 0.06, lBrX: 0.28, lBrY: 0.63, tBrX: 0.23, tBrY: 0.478,
@@ -115,10 +115,27 @@ const buddhistBase = {
   box: 0, lat: 0, pulse: 0, bare: 0.35, manA: 1, manC: [0.55, 0.18, 0.18], empty: 0, drain: 0, pool: 0, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  flux: 1, bundle: 1, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
+  yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 1, bundle: 1, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, tick: 0, acc: [140, 47, 47],
   lGodK: 1.75, lSide: 0.08, lBrX: 0.27, lBrY: 0.53, tBrX: 0.2, tBrY: 0.386,
+};
+
+const taoistBase = {
+  // the source is painted as mist above, with no edge and no outline
+  Gy: 0.5, rG: 0.28, Wy: -0.14, rW: 0.36, Sy: 0.02, bOff: 0,
+  glory: [0.97, 0.96, 0.93], sky: [0.9, 0.91, 0.9], far: [0.82, 0.84, 0.84], low: [0.88, 0.9, 0.88], deep: [0.78, 0.82, 0.8],
+  sea: [0.32, 0.34, 0.36], land: [0.8, 0.89, 0.85], warm: 0, bg: 0.34,
+  godC: [0.58, 0.6, 0.61], godRim: [0.7, 0.72, 0.72], godA: 0,
+  stainC: [0.24, 0.2, 0.18], stainS: 1,
+  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
+  box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.76, 0.22, 0.15], empty: 0, drain: 0, pool: 0, hollow: 0,
+  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
+  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
+  yin: 1, mist: 1, current: 0.5, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
+  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
+  ghost: 0, reason: 0, tick: 0, acc: [46, 112, 98],
+  lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.3, tBrX: 0.113, tBrY: -0.027,
 };
 
 const build = (base, acts) => acts.map((a) => ({ ...a, p: { ...base, ...a.p } }));
@@ -466,7 +483,7 @@ export const WORLDVIEWS = {
   buddhism: {
     name: 'Buddhism',
     tagline: 'Life is suffering, and the cure is to stop craving.',
-    move: { to: 'christian', q: 'What if we cannot save ourselves, but God can?' },
+    move: { to: 'taoism', q: 'What if we should flow with change, not escape it?' },
     acts: build(buddhistBase, [
       {
         slug: 'impermanence',
@@ -513,6 +530,59 @@ export const WORLDVIEWS = {
           god: ['No creator', 'Nothing above to meet'],
           world: ['Nirvana', 'The flame blown out'],
           self: ['The self', 'Was anyone ever there?'],
+        },
+      },
+    ]),
+  },
+  taoism: {
+    name: 'Taoism',
+    tagline: 'Go with the Way of nature, and never force it.',
+    move: { to: 'christian', q: 'What if the Way is a person?' },
+    acts: build(taoistBase, [
+      {
+        slug: 'the-way',
+        name: 'The Way',
+        text: 'The Tao is the nameless source of all things. From it come yin and yang, and from their turning, everything else.',
+        p: {},
+        labels: {
+          god: ['The Tao', 'The Way that cannot be named'],
+          world: ['The ten thousand things', 'Yin and yang, always turning'],
+          self: ['Man', 'One thing among ten thousand'],
+        },
+      },
+      {
+        slug: 'forcing',
+        name: 'Forcing',
+        text: 'Trouble comes when man forces things by grasping, scheming and making rules. He falls out of step with the Way.',
+        p: { push: 1, stainR: 0.12, stainA: 0.5, dull: 0.25 },
+        labels: {
+          god: ['The Tao', 'It does not take sides'],
+          world: ['The ten thousand things', 'Still turning'],
+          self: ['Man', 'Pushing against the current'],
+          sin: ['Forcing', 'Grasping, scheming, rules'],
+        },
+      },
+      {
+        slug: 'not-forcing',
+        name: 'Not Forcing',
+        text: 'Stop striving and yield, like water: soft, yet it wears away stone. Live simply and let things take their course.',
+        p: { current: 1, push: 0, along: 1, stainR: 0.05, stainA: 0.12, glow: 0.4 },
+        labels: {
+          god: ['The Tao', 'Followed, but never met'],
+          world: ['The ten thousand things', 'Light and dark, both needed'],
+          bridge: ['Wu wei', 'Moving with the current'],
+          self: ['Man', 'Yielding, like water'],
+        },
+      },
+      {
+        slug: 'return',
+        name: 'Return',
+        text: 'At death a person changes back into the Way, as autumn gives way to winter. There is nothing to mourn.',
+        p: { Gy: 0.22, rG: 0.5, lGodK: 0.62, current: 0.6, manA: 0, hollow: 1, manI: 0.35, mist: 1.2 },
+        labels: {
+          god: ['The Tao', 'Unaware that he has gone'],
+          world: ['The ten thousand things', 'Turning on without end'],
+          self: ['Man', 'Changed back into the Way'],
         },
       },
     ]),

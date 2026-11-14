@@ -23,6 +23,7 @@ uniform vec3 uSelfC;
 uniform float uOne, uMaya, uWorldA, uManI;           // all things as one ocean; the appearances rippling on it; how much of the world and of man is drawn
 uniform float uStainUp, uLit;   // the stain lifted from man onto the cross; the world lit by God's own light
 uniform float uScan;            // man measuring the lattice around him, by a light of his own
+uniform float uYin, uMist;      // the world as yin and yang turning; a nameless source, painted as mist with no edge
 uniform float uFlux, uBundle, uScatter;   // things arising and passing away; a self made of five parts; those parts drifting apart
 uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
 uniform vec3 uHands;            // second, minute and hour hands, radians clockwise from the top
@@ -133,6 +134,13 @@ void main(){
   A *= blooms * streaks * uBg * mix(.8, 1., smoothstep(.3, .5, fbm(q * 1.4 + wL + 20.) + .12));
   A += K(vec3(.62, .6, .66)) * uDull * .12 * (.5 + v2);
   A *= mix(1., .26, uBare * smoothstep(.15, .8, q.y + wL.y * .4));   // the upper page left almost bare
+  if (uMist > .001) {
+    // a source that cannot be named: ink mist with no edge, drifting
+    float mr = length((q - G) * vec2(.72, 1.)) + (noise(q * 2.4 + vec2(t * .04, -t * .03)) - .5) * .4 * rG;
+    float m = smoothstep(rG * 1.7, -rG * .3, mr);
+    m *= m * (3. - 2. * m);
+    A += K(uGodC) * m * uMist * (.4 + .5 * v1 + .3 * fbm(q * 3. + t * .02)) * mix(1., bloom(q * 1.7, 71.), .5);
+  }
 
   // glory going out from God in slow waves
   float wave = max(0., sin((rg - rG) * 16. - t * .9 + wM.x * 2.));
@@ -170,10 +178,24 @@ void main(){
     dens *= 1. - .5 * lit;
     sea = mix(sea, vec3(.99, .8, .42), lit);
     land = mix(land, vec3(.99, .9, .62), lit);
-    A += K(sea) * dens * (1. - m1 * .7) * bloom(q * 2.6, 47.) * (.75 + .7 * v2);
-    A += K(land) * dens * m1 * (.6 + .5 * v1);
-    A += K(vec3(.86, .66, .3)) * dens * m2 * uWarm * (1. - .6 * uDull);
-    A += K(mix(vec3(.14, .28, .5), vec3(.95, .6, .3), lit)) * dens * smoothstep(-.3, 1., dot(p, vec2(.45, -.9)) / rW) * (.4 + .5 * v1);
+    vec3 Aw = K(sea) * dens * (1. - m1 * .7) * bloom(q * 2.6, 47.) * (.75 + .7 * v2);
+    Aw += K(land) * dens * m1 * (.6 + .5 * v1);
+    Aw += K(vec3(.86, .66, .3)) * dens * m2 * uWarm * (1. - .6 * uDull);
+    Aw += K(mix(vec3(.14, .28, .5), vec3(.95, .6, .3), lit)) * dens * smoothstep(-.3, 1., dot(p, vec2(.45, -.9)) / rW) * (.4 + .5 * v1);
+    if (uYin > .001) {
+      // yin and yang: two halves, each with a seed of the other, turning slowly for ever
+      vec2 u = rot(p + wM * .012, t * .06);
+      float R = rW, sw = .014;
+      float jag = (noise(u * 11. + 5.) - .5) * .018;
+      float dark = smoothstep(-sw, sw, u.x + jag);
+      dark = mix(dark, 0., smoothstep(sw, -sw, length(u - vec2(0., R * .5)) - R * .5 + jag));
+      dark = mix(dark, 1., smoothstep(sw, -sw, length(u + vec2(0., R * .5)) - R * .5 + jag));
+      dark = mix(dark, 1., smoothstep(sw, -sw, length(u - vec2(0., R * .5)) - R * .13 + jag));
+      dark = mix(dark, 0., smoothstep(sw, -sw, length(u + vec2(0., R * .5)) - R * .13 + jag));
+      vec3 At = K(uSea) * dens * dark * (.8 + .6 * v1) * bloom(q * 2.2, 13.) + K(uLand) * dens * (1. - dark) * (.5 + .6 * v2);
+      Aw = mix(Aw, At, uYin);
+    }
+    A += Aw;
     ink += pen(dW + .01 - wob) * gaveOut + pen(dW - .024 + wob * 1.3) * step(.5, noise(q * 5. + 8.)) * (1. - uClock) * mix(1., .6, uDrain);
 
     // what ran off: drips from the foot of the world, drops falling from them, and a pool beneath

@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=16';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=16';
-import { CATALOGUE } from './catalogue.js?v=16';
-import { createMenu } from './menu.js?v=16';
+import { createPainter } from './paint.js?v=17';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=17';
+import { CATALOGUE } from './catalogue.js?v=17';
+import { createMenu } from './menu.js?v=17';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -307,6 +307,24 @@ function drawConn(p, c) {
     g += `<g opacity="${f(wr)}"><circle cx="0" cy="${f(wy)}" r="${f(R)}" fill="none" stroke="${PAP}" stroke-width=".0195" opacity=".92"/><circle cx="0" cy="${f(wy)}" r="${f(R)}" fill="none" stroke="${ACC}" stroke-width=".0075"/>${spokes}<g opacity="${f(p.wheel / wr)}">${heads}</g></g>`;
   }
 
+  // ----- the current: the line where yin meets yang, turning with them, and the stream that carries man round.
+  //       Man either pushes against it, straining, or goes along with it. -----
+  if (p.current > 0.01) {
+    const R = p.rW, wy = -p.Wy, deg = (c.t * 0.06 * 180) / Math.PI;
+    const s = `M0,${f(-R)} A${f(R / 2)} ${f(R / 2)} 0 0 1 0,0 A${f(R / 2)} ${f(R / 2)} 0 0 0 0,${f(R)}`;
+    const r0 = Math.abs(p.Sy - p.Wy);
+    g += `<g opacity="${f(p.current)}"><g transform="translate(0 ${f(wy)}) rotate(${f(deg)})">${stroke(s, ACC, 0.006)}</g>`;
+    g += `<circle cx="0" cy="${f(wy)}" r="${f(r0)}" fill="none" stroke="${ACC}" stroke-width=".0065" stroke-linecap="round" stroke-dasharray=".014 .026" stroke-dashoffset="${f(-c.t * 0.012)}" opacity=".85"/></g>`;
+  }
+  if (p.push > 0.01) {
+    // at man's place on the stream the current runs right; against it is leftward
+    const strain = 1 - p.along, jit = 0.012 * strain * Math.sin(c.t * 7.3) * Math.sin(c.t * 2.1);
+    const dir = p.along > 0.5 ? 1 : -1, x0 = dir * 0.085, x1 = dir * (0.085 + 0.1 + 0.02 * Math.sin(c.t * 1.3));
+    const y = -p.Sy + jit;
+    const head = `M${f(x1)},${f(y)} L${f(x1 - dir * 0.03)},${f(y - 0.02)} L${f(x1 - dir * 0.03)},${f(y + 0.02)}Z`;
+    g += `<g opacity="${f(p.push)}">${stroke(`M${f(x0)},${f(y)} L${f(x1 - dir * 0.02)},${f(y)}`, ACC, 0.007)}${shape(head, ACC)}</g>`;
+  }
+
   // ----- reason: a thin line climbing from man, with marks moving upward -----
   if (p.reason > 0.01) {
     const y0 = -(p.Wy + p.rW + 0.115), y1 = top + 0.035;
@@ -383,7 +401,7 @@ function frame(now) {
       uBox: p.box, uLat: p.lat, uPulse: p.pulse, uBare: p.bare, uManA: p.manA, uManC: p.manC, uDrain: p.drain, uPool: p.pool, uHollow: p.hollow, uSelfR: p.selfR, uSelfA: p.selfA, uSelfC: p.selfC,
       uOne: p.one, uMaya: p.maya, uWorldA: p.worldA, uManI: p.manI,
       uWave: p.wave, uHaloL: p.haloL, uHaloR: p.haloR, uClock: p.clock, uRing: p.ring, uStainS: p.stainS,
-      uStainUp: p.stainUp, uLit: p.lit, uScan: p.scan, uFlux: p.flux, uBundle: p.bundle, uScatter: p.scatter, uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
+      uStainUp: p.stainUp, uLit: p.lit, uScan: p.scan, uYin: p.yin, uMist: p.mist, uFlux: p.flux, uBundle: p.bundle, uScatter: p.scatter, uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
       uTick: hd.whole, uHands: [hd.sec, hd.min, hd.hour], 'uLab[0]': rects,
     });
   }
