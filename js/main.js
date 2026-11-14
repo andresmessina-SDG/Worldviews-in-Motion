@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=15';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=15';
-import { CATALOGUE } from './catalogue.js?v=15';
-import { createMenu } from './menu.js?v=15';
+import { createPainter } from './paint.js?v=16';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=16';
+import { CATALOGUE } from './catalogue.js?v=16';
+import { createMenu } from './menu.js?v=16';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -286,15 +286,25 @@ function drawConn(p, c) {
     g += `<circle cx="0" cy="${f(-p.Gy)}" r="${f(p.rG)}" fill="none" stroke="${GREY}" stroke-width=".0042" stroke-linecap="round" stroke-dasharray=".016 .018" stroke-dashoffset="${f(c.t * 0.004)}" opacity="${f(p.empty)}"/>`;
   }
 
-  // ----- the wheel of rebirth: a ring around everything, turning without end -----
-  if (p.wheel > 0.01) {
+  // ----- the wheel of rebirth: a ring around everything, turning without end.
+  //       With spokes it becomes the wheel of the teaching, turning about the self at its hub. -----
+  const wr = Math.max(p.wheel, p.spokes);
+  if (wr > 0.01) {
     const R = p.rG + 0.1, wy = -p.Gy;
-    let heads = '';
+    let heads = '', spokes = '';
     for (let i = 0; i < 4; i++) {
       const a = c.t * 0.07 + (i * Math.PI) / 2, deg = (a * 180) / Math.PI;
       heads += `<path transform="translate(${f(R * Math.cos(a))},${f(wy + R * Math.sin(a))}) rotate(${f(deg + 90)})" d="M.026,0 L-.014,-.021 L-.014,.021Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/>`;
     }
-    g += `<g opacity="${f(p.wheel)}"><circle cx="0" cy="${f(wy)}" r="${f(R)}" fill="none" stroke="${PAP}" stroke-width=".0195" opacity=".92"/><circle cx="0" cy="${f(wy)}" r="${f(R)}" fill="none" stroke="${ACC}" stroke-width=".0075"/>${heads}</g>`;
+    if (p.spokes > 0.01) {
+      let d = '';
+      for (let i = 0; i < 8; i++) {
+        const a = c.t * 0.035 + (i * Math.PI) / 4, ca = Math.cos(a), sa = Math.sin(a);
+        d += `M${f(0.125 * ca)},${f(wy + 0.125 * sa)} L${f((R - 0.012) * ca)},${f(wy + (R - 0.012) * sa)} `;
+      }
+      spokes = `<g opacity="${f(p.spokes / wr)}">${stroke(d, ACC, 0.0055)}<circle cx="0" cy="${f(wy)}" r=".125" fill="none" stroke="${PAP}" stroke-width=".0175" opacity=".92"/><circle cx="0" cy="${f(wy)}" r=".125" fill="none" stroke="${ACC}" stroke-width=".0055"/></g>`;
+    }
+    g += `<g opacity="${f(wr)}"><circle cx="0" cy="${f(wy)}" r="${f(R)}" fill="none" stroke="${PAP}" stroke-width=".0195" opacity=".92"/><circle cx="0" cy="${f(wy)}" r="${f(R)}" fill="none" stroke="${ACC}" stroke-width=".0075"/>${spokes}<g opacity="${f(p.wheel / wr)}">${heads}</g></g>`;
   }
 
   // ----- reason: a thin line climbing from man, with marks moving upward -----
@@ -373,7 +383,7 @@ function frame(now) {
       uBox: p.box, uLat: p.lat, uPulse: p.pulse, uBare: p.bare, uManA: p.manA, uManC: p.manC, uDrain: p.drain, uPool: p.pool, uHollow: p.hollow, uSelfR: p.selfR, uSelfA: p.selfA, uSelfC: p.selfC,
       uOne: p.one, uMaya: p.maya, uWorldA: p.worldA, uManI: p.manI,
       uWave: p.wave, uHaloL: p.haloL, uHaloR: p.haloR, uClock: p.clock, uRing: p.ring, uStainS: p.stainS,
-      uStainUp: p.stainUp, uLit: p.lit, uScan: p.scan, uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
+      uStainUp: p.stainUp, uLit: p.lit, uScan: p.scan, uFlux: p.flux, uBundle: p.bundle, uScatter: p.scatter, uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
       uTick: hd.whole, uHands: [hd.sec, hd.min, hd.hour], 'uLab[0]': rects,
     });
   }

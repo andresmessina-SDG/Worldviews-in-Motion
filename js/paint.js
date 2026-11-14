@@ -23,6 +23,7 @@ uniform vec3 uSelfC;
 uniform float uOne, uMaya, uWorldA, uManI;           // all things as one ocean; the appearances rippling on it; how much of the world and of man is drawn
 uniform float uStainUp, uLit;   // the stain lifted from man onto the cross; the world lit by God's own light
 uniform float uScan;            // man measuring the lattice around him, by a light of his own
+uniform float uFlux, uBundle, uScatter;   // things arising and passing away; a self made of five parts; those parts drifting apart
 uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
 uniform vec3 uHands;            // second, minute and hour hands, radians clockwise from the top
 uniform vec4 uLab[3];
@@ -101,6 +102,17 @@ void main(){
   float dW = mix(length(q + hand.yx - Wc) - rW, length(max(bq, 0.)) + min(max(bq.x, bq.y), 0.) - .035, uBox);
   float pres = smoothstep(0., .3, uGodA);                       // is there anything above at all
   float dS = length(q + hand * .4 - Sc) - rS;
+  if (uBundle > .001) {
+    // no single self: five small parts held loosely together, each going its own way
+    float db = 1e3;
+    for (int i = 0; i < 5; i++) {
+      float fi = float(i);
+      float a = fi * 1.2566 + t * (.04 + .025 * fi);
+      float rr = (.056 + .01 * sin(t * .23 + fi * 2.1)) * (1. + 3.5 * uScatter);
+      db = min(db, length(q + hand * .4 - Sc - vec2(cos(a), sin(a)) * rr) - (.021 + .003 * sin(t * .6 + fi)));
+    }
+    dS = mix(dS, db, uBundle);
+  }
   float rg = length(q - G), rw = length(q - Wc);
   float ang = atan(q.y - G.y, q.x - G.x);
   vec3 gold = vec3(.98, .78, .3);
@@ -136,6 +148,18 @@ void main(){
     // drained: the wash thin at the top, heavier where it gathered
     dens *= mix(1., mix(.1, 1., smoothstep(.75, -1., p.y / rW + (v2 - .5) * 1.2)), uDrain);
     float gaveOut = mix(1., step(.5, noise(q * 4. + 2.)), uDrain);
+    // nothing lasts: the wash gathers and thins by turns, and small rings open and vanish all over it
+    if (uFlux > .001) {
+      float ph = .5 + .5 * sin(t * .3 + 6.2832 * fbm(p * 2.2 + 31.));
+      dens *= mix(1., .35 + .8 * smoothstep(.2, .8, ph), uFlux);
+      vec2 fp = p + wM * .01;
+      const float fc = .11;
+      vec2 c = floor(fp / fc);
+      float h = hash(c + 41.), life = fract(t * (.05 + .05 * h) + h * 7.);
+      vec2 ctr = (c + .3 + .4 * vec2(hash(c + 3.), hash(c + 9.))) * fc;
+      float ringF = smoothstep(.0032, .0012, abs(length(fp - ctr) - .006 - .03 * life)) * (1. - life) * smoothstep(0., .1, life) * step(.4, h);
+      ink += ringF * smoothstep(-.012, -.04, dW) * uFlux * .75;
+    }
     float m1 = smoothstep(.35, .65, fbm(p * 1.9 + wL * 1.2 + 4. + t * .02));
     float m2 = smoothstep(.45, .7, fbm(p * 2.6 - wL + 13. - t * .015));
     vec3 sea = mix(uSea, vec3(.42, .52, .58), uDull * .7);

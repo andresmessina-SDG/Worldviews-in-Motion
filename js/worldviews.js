@@ -15,7 +15,7 @@ const christianBase = {
   box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
+  flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
   bridge: 0.95, bw: 0.044, bbot: -0.12, crim: 0, cross: 0, snap: 0, flow: 1,
   ghost: 0, reason: 0, tick: 0, acc: [163, 38, 43],
@@ -33,7 +33,7 @@ const deismBase = {
   box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.15, rip: 0, ripAt: 1,
+  flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.15, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0.75, reason: 0, tick: 1, acc: [63, 98, 127],
   lGodK: 0.12, lSide: 0.2, lBrX: 0.2, lBrY: 0.14, tBrX: 0.035, tBrY: 0.12,
@@ -49,7 +49,7 @@ const naturalismBase = {
   box: 1, lat: 1, pulse: 1, bare: 1, manA: 1, manC: [0.3, 0.42, 0.54], empty: 0.8, drain: 0, pool: 0, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
+  flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, tick: 0, acc: [70, 100, 78],
   lGodK: 0, lSide: 0.1, lBrX: 0.26, lBrY: 0.29, tBrX: 0.16, tBrY: 0.17,
@@ -65,7 +65,7 @@ const nihilismBase = {
   box: 1, lat: 0.45, pulse: 0.3, bare: 0.6, manA: 1, manC: [0.42, 0.44, 0.5], empty: 0.45, drain: 0.35, pool: 0.25, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.6, rip: 0, ripAt: 1,
+  flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.6, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, tick: 0, acc: [86, 82, 100],
   lGodK: 0, lSide: 0.1, lBrX: 0.27, lBrY: -0.52, tBrX: 0.15, tBrY: -0.44,
@@ -81,7 +81,7 @@ const existentialismBase = {
   box: 1, lat: 0.35, pulse: 0.3, bare: 0.6, manA: 1, manC: [0.85, 0.3, 0.2], empty: 0.4, drain: 0.4, pool: 0, hollow: 0,
   selfR: 0.09, selfA: 0.3, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.7, rip: 0, ripAt: 1,
+  flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.7, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, tick: 0, acc: [190, 66, 44],
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.42, tBrX: 0.13, tBrY: 0.11,
@@ -98,10 +98,27 @@ const hinduBase = {
   box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.74, 0.16, 0.24], empty: 0, drain: 0, pool: 0, hollow: 1,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 1, maya: 0.5, worldA: 0, manI: 1, wheel: 0,
-  scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
+  flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, tick: 0, acc: [172, 44, 100],
   lGodK: 0.45, lSide: 0.06, lBrX: 0.28, lBrY: 0.63, tBrX: 0.23, tBrY: 0.478,
+};
+
+const buddhistBase = {
+  // no Ultimate drawn: its place and size only centre the wheel on the self
+  Gy: 0.04, rG: 0.3, Wy: 0.04, rW: 0.33, Sy: 0.04, bOff: 0,
+  glory: [0.97, 0.93, 0.84], sky: [0.92, 0.86, 0.78], far: [0.8, 0.77, 0.76], low: [0.9, 0.85, 0.78], deep: [0.8, 0.74, 0.72],
+  sea: [0.93, 0.67, 0.32], land: [0.88, 0.55, 0.3], warm: 0.35, bg: 0.36,
+  godC: [0.95, 0.9, 0.8], godRim: [0.86, 0.8, 0.76], godA: 0,
+  stainC: [0.32, 0.12, 0.13], stainS: 1,
+  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
+  box: 0, lat: 0, pulse: 0, bare: 0.35, manA: 1, manC: [0.55, 0.18, 0.18], empty: 0, drain: 0, pool: 0, hollow: 0,
+  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
+  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
+  flux: 1, bundle: 1, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
+  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
+  ghost: 0, reason: 0, tick: 0, acc: [140, 47, 47],
+  lGodK: 1.75, lSide: 0.08, lBrX: 0.27, lBrY: 0.53, tBrX: 0.2, tBrY: 0.386,
 };
 
 const build = (base, acts) => acts.map((a) => ({ ...a, p: { ...base, ...a.p } }));
@@ -394,7 +411,7 @@ export const WORLDVIEWS = {
   'hindu-monism': {
     name: 'Hindu Monism',
     tagline: 'All is one, and the one is Brahman.',
-    move: { to: 'christian', q: 'What if God is someone, not everything?' },
+    move: { to: 'buddhism', q: 'What if there is no self, and no One either?' },
     acts: build(hinduBase, [
       {
         slug: 'the-one',
@@ -442,6 +459,60 @@ export const WORLDVIEWS = {
           god: ['Brahman', 'All that there ever was'],
           world: ['Moksha', 'Release from the wheel'],
           self: ['The self', 'No one is left to enjoy it'],
+        },
+      },
+    ]),
+  },
+  buddhism: {
+    name: 'Buddhism',
+    tagline: 'Life is suffering, and the cure is to stop craving.',
+    move: { to: 'christian', q: 'What if we cannot save ourselves, but God can?' },
+    acts: build(buddhistBase, [
+      {
+        slug: 'impermanence',
+        name: 'Impermanence',
+        text: 'Everything arises from causes and passes away. Nothing lasts: there is no creator and no lasting self.',
+        p: {},
+        labels: {
+          god: ['No creator', 'Even the gods are born and die'],
+          world: ['All things', 'Arising and passing away'],
+          self: ['The self', 'Five passing parts, and no soul'],
+        },
+      },
+      {
+        slug: 'suffering',
+        name: 'Suffering',
+        text: 'Life is suffering, because we crave what cannot last. Craving makes karma, and karma brings rebirth.',
+        p: { wheel: 1, stainR: 0.13, stainA: 0.55, dull: 0.3 },
+        labels: {
+          god: ['No creator', 'No one above to help'],
+          world: ['Samsara', 'Birth, death and birth again'],
+          bridge: ['Rebirth', 'Though no self is reborn'],
+          self: ['The self', 'Grasping at what cannot last'],
+          sin: ['Craving', 'Thirst for what passes'],
+        },
+      },
+      {
+        slug: 'the-path',
+        name: 'The Path',
+        text: 'Craving can be ended. The Eightfold Path of wisdom, conduct and meditation leads there, and each must walk it himself.',
+        p: { wheel: 0.35, spokes: 1, flux: 0.7, stainR: 0.07, stainA: 0.2, glow: 0.5, lBrX: 0.3, lBrY: -0.38, tBrX: 0.26, tBrY: -0.26 },
+        labels: {
+          god: ['No creator', 'No grace from outside'],
+          bridge: ['The Eightfold Path', 'Wisdom, conduct and meditation'],
+          self: ['The self', 'At the hub, by its own effort'],
+          sin: ['Craving', 'Cooling'],
+        },
+      },
+      {
+        slug: 'nirvana',
+        name: 'Nirvana',
+        text: 'When craving ends, rebirth ends and the flame goes out. The Buddha would not say whether anyone remains.',
+        p: { wheel: 0, spokes: 0, flux: 0.3, worldA: 0.45, warm: 0, sea: [0.86, 0.84, 0.82], land: [0.88, 0.86, 0.84], scatter: 1, hollow: 1, manA: 0, manI: 0.7, glow: 0.3, bare: 0.6 },
+        labels: {
+          god: ['No creator', 'Nothing above to meet'],
+          world: ['Nirvana', 'The flame blown out'],
+          self: ['The self', 'Was anyone ever there?'],
         },
       },
     ]),
