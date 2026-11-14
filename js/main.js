@@ -14,19 +14,22 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const canvas = $('c');
 let painter = null;
-try { painter = createPainter(canvas); } catch (err) { console.error(err); }
-if (!painter) $('nogl').hidden = false;
+// ?nopaint leaves the sheet blank, so tests of the controls run at full speed
+if (!params.has('nopaint')) {
+  try { painter = createPainter(canvas); } catch (err) { console.error(err); }
+  if (!painter) $('nogl').hidden = false;
+}
 
 // ---------- where we are ----------
 const cur = { wv: HOME, act: 0 };
-{
+function readHash() {
   const [a, b] = location.hash.slice(1).split('/');
   const wv = WORLDVIEWS[a] ? a : WORLDVIEWS[params.get('wv')] ? params.get('wv') : HOME;
   const slug = WORLDVIEWS[a] ? b : a;
   const bySlug = WORLDVIEWS[wv].acts.findIndex((x) => x.slug === slug);
-  cur.wv = wv;
-  cur.act = bySlug >= 0 ? bySlug : Math.min(3, Math.max(0, (Number(params.get('act')) || 1) - 1));
+  return { wv, act: bySlug >= 0 ? bySlug : Math.min(3, Math.max(0, (Number(params.get('act')) || 1) - 1)) };
 }
+Object.assign(cur, readHash());
 const actOf = (c = cur) => WORLDVIEWS[c.wv].acts[c.act];
 const target = () => ({ ...actOf().p, act: cur.act });
 
@@ -130,6 +133,9 @@ const menu = createMenu($('menu'), CATALOGUE, {
   onSelect: (id) => { auto = false; go(id, cur.act); },
 });
 menu.setCurrent(cur.wv);
+window.__menu = menu;
+// an address typed or pasted while the page is open
+addEventListener('hashchange', () => { const h = readHash(); auto = false; go(h.wv, h.act); });
 if (frozen === null) menu.peek(2800);
 
 let auto = frozen === null && !location.hash && !params.has('act') && !reduced;

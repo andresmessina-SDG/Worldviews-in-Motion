@@ -38,7 +38,6 @@ h1 { margin: 2px 0 0; font-size: clamp(2rem, 5.5vmin, 3.6rem); font-weight: 600;
 .act p { margin: 6px 0 0; font-size: clamp(1.05rem, 2.4vmin, 1.4rem); font-weight: 500; line-height: 1.22; }
 .head { transition: opacity .45s ease; }
 .swap .act, .swap-all .act, .swap-all .head { opacity: 0; }
-:root { transition: --red .6s; }
 
 /* the question that leads to another worldview */
 #moves { margin-top: 2.4vh; }
@@ -90,6 +89,17 @@ h1 { margin: 2px 0 0; font-size: clamp(2rem, 5.5vmin, 3.6rem); font-weight: 600;
   -webkit-tap-highlight-color: transparent;
   touch-action: none;
 }
+.tab-name, .tab-note { opacity: var(--ink-in, 0); }
+.tab-note {                     /* a pencilled aside on tabs not yet built */
+  font-size: 12px;
+  font-style: normal;
+  letter-spacing: .04em;
+  white-space: nowrap;
+  max-width: 0;
+  overflow: hidden;
+  transition: max-width .35s ease;
+}
+.tab.hot .tab-note { max-width: 9em; }
 .tab-name {
   position: relative;
   white-space: nowrap;
