@@ -22,6 +22,7 @@ uniform float uSelfR, uSelfA;                        // colour that man spreads 
 uniform vec3 uSelfC;
 uniform float uOne, uMaya, uWorldA, uManI;           // all things as one ocean; the appearances rippling on it; how much of the world and of man is drawn
 uniform float uStainUp, uLit;   // the stain lifted from man onto the cross; the world lit by God's own light
+uniform float uScan;            // man measuring the lattice around him, by a light of his own
 uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
 uniform vec3 uHands;            // second, minute and hour hands, radians clockwise from the top
 uniform vec4 uLab[3];
@@ -207,6 +208,21 @@ void main(){
       float run = rule(gd.y, .0034) * smoothstep(0., .16, ph) * smoothstep(.2, .16, ph) * step(.3, hash(vec2(cell.y, 1.)));
       run += rule(gd.x, .0034) * smoothstep(0., .16, pv) * smoothstep(.2, .16, pv) * step(.3, hash(vec2(cell.x, 2.)));
       ink += (lat + run * .75 * uPulse) * inside * uLat;
+
+      // science: the stretch of the lattice man has measured, lit by his own small lamp and no other.
+      // Rings go out from him, stop where his reach ends, and never pass the walls.
+      if (uScan > .001) {
+        vec2 sp = gp - vec2(0., uSy - Wc.y);
+        float sr = length(sp), R = .25 + .015 * sin(t * .4);
+        float reach = smoothstep(R, R - .09, sr + (noise(gp * 9. + t * .05) - .5) * .04) * inside * uScan;
+        A *= 1. - .6 * reach;
+        A += K(vec3(.97, .93, .8)) * reach * .18;
+        float node = step(.5, hash(cell)) * smoothstep(R, R - .05, length(cell * cs - vec2(0., uSy - Wc.y)));
+        ink += smoothstep(.0028, .001, abs(length(gp - cell * cs) - .017)) * node * inside * uScan * .9;
+        float sweep = fract(t * .12);
+        ink += smoothstep(.0026, .0008, abs(sr - .07 - sweep * (R - .07))) * step(.45, fract(atan(sp.y, sp.x) * 18. / 6.2832))
+             * (1. - sweep) * inside * uScan * .8;
+      }
     }
   }
 
