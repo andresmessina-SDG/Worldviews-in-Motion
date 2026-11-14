@@ -19,7 +19,8 @@ uniform float uBox, uLat, uPulse, uBare, uManA;   // a squared, sealed world; it
 uniform vec3 uManC;
 uniform float uDrain, uPool, uHollow;
 uniform float uSelfR, uSelfA;                        // colour that man spreads around himself, by his own hand
-uniform vec3 uSelfC;                // the world's pigment running off, gathering below, and a self left empty
+uniform vec3 uSelfC;
+uniform float uOne, uMaya, uWorldA, uManI;           // all things as one ocean; the appearances rippling on it; how much of the world and of man is drawn                // the world's pigment running off, gathering below, and a self left empty
 uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
 uniform vec3 uHands;            // second, minute and hour hands, radians clockwise from the top
 uniform vec4 uLab[3];
@@ -107,6 +108,14 @@ void main(){
   float nearG = exp(-pow(max(rg - rG, 0.) / .5, 2.));
   vec3 A = up * (K(uGlory) * nearG * .8 + K(uSky) * (1. - nearG) * (.35 + 1.1 * v2) + K(uFar) * smoothstep(.45, 1.5, rg) * (.3 + 1.5 * v1))
          + (1. - up) * (K(uLow) * (.45 + .9 * v2) + K(uDeep) * smoothstep(.3, 1.3, rw) * (.4 + 1.5 * v1));
+  if (uOne > .001) {
+    // no realms: one colour spreading from the centre, in slow bands
+    float bands = .5 + .5 * sin(rg * 15. + wM.x * 7. + wL.y * 5. - t * .15);
+    vec3 A1 = K(uGlory) * (.2 + .7 * exp(-rg * rg / .5)) * (.6 + .8 * v2)
+            + K(uSky) * smoothstep(.15, .9, rg) * (.15 + .8 * v1) * (.45 + .7 * bands)
+            + K(uFar) * smoothstep(.75, 1.5, rg) * (.3 + 1.1 * v2);
+    A = mix(A, A1, uOne);
+  }
   A *= blooms * streaks * uBg * mix(.8, 1., smoothstep(.3, .5, fbm(q * 1.4 + wL + 20.) + .12));
   A += K(vec3(.62, .6, .66)) * uDull * .12 * (.5 + v2);
   A *= mix(1., .26, uBare * smoothstep(.15, .8, q.y + wL.y * .4));   // the upper page left almost bare
@@ -115,12 +124,12 @@ void main(){
   float wave = max(0., sin((rg - rG) * 16. - t * .9 + wM.x * 2.));
   A *= 1. - .3 * uWave * wave * wave * exp(-(rg - rG) * 2.6) * smoothstep(rG, rG + .05, rg);
 
-  A *= 1. - .93 * max(layers(dG, 11., .04, .0045, 0.) * pres, layers(dW, 17., .04, .0045, 0.));
+  A *= 1. - .93 * max(layers(dG, 11., .04, .0045, 0.) * pres * (1. - uOne), layers(dW, 17., .04, .0045, 0.) * uWorldA);
   float ink = 0.;
 
   // ---------- the world ----------
   {
-    float dens = layers(dW, 2., .03, .0045, tide);
+    float dens = layers(dW, 2., .03, .0045, tide) * uWorldA;
     vec2 p = q - Wc;
     // drained: the wash thin at the top, heavier where it gathered
     dens *= mix(1., mix(.1, 1., smoothstep(.75, -1., p.y / rW + (v2 - .5) * 1.2)), uDrain);
@@ -194,22 +203,33 @@ void main(){
     }
   }
 
+  ink *= uWorldA;
+
   // ---------- ripples through the world: light when God acts, shadow when sin spreads ----------
   {
     float rr = length(q + wL * .03 - vec2(0., uRipY));
-    float rip = pow(max(0., sin(rr * 15. - t * 1.2)), 6.) * exp(-rr * 3.) * smoothstep(0., .06, rr) * smoothstep(0., -.03, dW);
+    float rip = pow(max(0., sin(rr * 15. - t * 1.2)), 6.) * exp(-rr * 3.) * smoothstep(0., .06, rr) * smoothstep(0., -.03, mix(dW, dG, uOne));
     A *= 1. - .4 * max(uRip, 0.) * rip;
     A += K(vec3(.13, .11, .22)) * max(-uRip, 0.) * rip * .35;
   }
 
   // ---------- the Ultimate ----------
   {
-    float dens = layers(dG, 1., .03, .0045, tide) * uGodA;
+    float dens = layers(dG, 1., mix(.03, .1, uOne), mix(.0045, .03, uOne), mix(tide, .25, uOne)) * uGodA;
     float ink0 = ink;
+    float bandsG = mix(1., .6 + .5 * sin(rg * 15. + wM.x * 7. + wL.y * 5. - t * .15), uMaya);
     float core = mix(.42, 1.05, smoothstep(0., rG, rg + wM.x * .1));
     A += K(uGodC) * dens * core * bloom(q * 2.4, 31.) * (.85 + .6 * v2);
-    A += K(uGodRim) * dens * smoothstep(rG * .5, rG, rg + wM.y * .15) * (.2 + .55 * v1);
-    ink += pen(dG + .012 + wob) + pen(dG - .02 - wob * 1.4) * step(.45, noise(q * 6. + 2.));
+    A += K(uGodRim) * dens * smoothstep(rG * .5, rG, rg + wM.y * .15) * (.2 + .55 * v1) * bandsG;
+    A *= 1. - .35 * uOne * exp(-rg * rg / .03);
+    ink += (pen(dG + .012 + wob) + pen(dG - .02 - wob * 1.4) * step(.45, noise(q * 6. + 2.))) * (1. - uOne);
+    // the many things: rings drawn on the surface, moving outward and never arriving
+    if (uMaya > .001) {
+      float rr = length(q + hand - G);
+      float u = rr * 6.5 - t * .04;
+      float id = floor(u);
+      ink += pen((fract(u) - .5) / 6.5) * step(.42, noise(q * 4.5 + id * 7.3)) * smoothstep(.05, .13, rr) * smoothstep(rG + .2, rG - .06, rr) * .6 * uMaya;
+    }
     // drawn by hand, each ring turning at its own pace
     float loose = pen(dG - .075 + wob * .8) * step(.4, noise(rot(q - G, t * .05) * 4. + 5.)) * .8;
     loose += pen(dG - .13 - wob) * step(.55, noise(rot(q - G, -t * .035) * 3. + 9.)) * .6;
@@ -251,7 +271,7 @@ void main(){
     A *= 1. - .85 * ring * uRing;
     A += K(vec3(.98, .72, .18)) * ring * (.85 + .25 * sin(t * 1.6)) * uRing;
     float hollow = mix(1., step(.42, fract(atan(q.y - Sc.y, q.x) * 14. / 6.2832 + t * .012)), uHollow);
-    ink += (pen(dS - .012 + wob * .4) * hollow + pen(dS - .037 - wob * .3) * step(.4, noise(q * 14. + 3.)) * .7 * (1. - uClock) * (1. - uBox)) * mix(mix(.35, .8, uHollow), 1., uManA);
+    ink += (pen(dS - .012 + wob * .4) * hollow + pen(dS - .037 - wob * .3) * step(.4, noise(q * 14. + 3.)) * .7 * (1. - uClock) * (1. - uBox)) * mix(mix(.35, .8, uHollow), 1., uManA) * uManI;
   }
 
   A += K(vec3(.2, .13, .1)) * min(ink, 1.) * (.5 + H);

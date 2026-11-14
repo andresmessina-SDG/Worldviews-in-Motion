@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=11';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=11';
-import { CATALOGUE } from './catalogue.js?v=11';
-import { createMenu } from './menu.js?v=11';
+import { createPainter } from './paint.js?v=12';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=12';
+import { CATALOGUE } from './catalogue.js?v=12';
+import { createMenu } from './menu.js?v=12';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -179,7 +179,7 @@ function resize() {
     b.style.top = `${cy + 0.795 * unit}px`;
   });
   const room = (x) => `${Math.max(60, (W / 2 / unit - x - 0.1) * unit)}px`;
-  labels.bridge.el.style.maxWidth = room(0.22);
+  labels.bridge.el.style.maxWidth = room(Math.max(0.22, actOf().p.lBrX));
   labels.self.el.style.maxWidth = room(0.56);
   labels.sin.el.style.maxWidth = room(0.56);
   // in a short window the words on the left reach down beside the painting: keep clear of them
@@ -285,6 +285,17 @@ function drawConn(p, c) {
     g += `<circle cx="0" cy="${f(-p.Gy)}" r="${f(p.rG)}" fill="none" stroke="${GREY}" stroke-width=".0042" stroke-linecap="round" stroke-dasharray=".016 .018" stroke-dashoffset="${f(c.t * 0.004)}" opacity="${f(p.empty)}"/>`;
   }
 
+  // ----- the wheel of rebirth: a ring around everything, turning without end -----
+  if (p.wheel > 0.01) {
+    const R = p.rG + 0.1, wy = -p.Gy;
+    let heads = '';
+    for (let i = 0; i < 4; i++) {
+      const a = c.t * 0.07 + (i * Math.PI) / 2, deg = (a * 180) / Math.PI;
+      heads += `<path transform="translate(${f(R * Math.cos(a))},${f(wy + R * Math.sin(a))}) rotate(${f(deg + 90)})" d="M.026,0 L-.014,-.021 L-.014,.021Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/>`;
+    }
+    g += `<g opacity="${f(p.wheel)}"><circle cx="0" cy="${f(wy)}" r="${f(R)}" fill="none" stroke="${PAP}" stroke-width=".0195" opacity=".92"/><circle cx="0" cy="${f(wy)}" r="${f(R)}" fill="none" stroke="${ACC}" stroke-width=".0075"/>${heads}</g>`;
+  }
+
   // ----- reason: a thin line climbing from man, with marks moving upward -----
   if (p.reason > 0.01) {
     const y0 = -(p.Wy + p.rW + 0.115), y1 = top + 0.035;
@@ -359,6 +370,7 @@ function frame(now) {
       uGlory: p.glory, uSky: p.sky, uFar: p.far, uLow: p.low, uDeep: p.deep, uSea: p.sea, uLand: p.land,
       uGodC: p.godC, uGodRim: p.godRim, uStainC: p.stainC, uBg: p.bg, uWarm: p.warm, uGodA: p.godA,
       uBox: p.box, uLat: p.lat, uPulse: p.pulse, uBare: p.bare, uManA: p.manA, uManC: p.manC, uDrain: p.drain, uPool: p.pool, uHollow: p.hollow, uSelfR: p.selfR, uSelfA: p.selfA, uSelfC: p.selfC,
+      uOne: p.one, uMaya: p.maya, uWorldA: p.worldA, uManI: p.manI,
       uWave: p.wave, uHaloL: p.haloL, uHaloR: p.haloR, uClock: p.clock, uRing: p.ring, uStainS: p.stainS,
       uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
       uTick: hd.whole, uHands: [hd.sec, hd.min, hd.hour], 'uLab[0]': rects,

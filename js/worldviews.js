@@ -14,6 +14,7 @@ const christianBase = {
   wave: 1, haloL: 1, haloR: 0, clock: 0, ring: 1,
   box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
+  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
   bridge: 0.95, bw: 0.044, bbot: -0.12, crim: 0, cross: 0, snap: 0, flow: 1,
@@ -31,6 +32,7 @@ const deismBase = {
   wave: 0, haloL: 0, haloR: 1, clock: 1, ring: 0,
   box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
+  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   stainR: 0.02, stainA: 0, glow: 0, dull: 0.15, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0.75, reason: 0, tick: 1, acc: [63, 98, 127],
@@ -46,6 +48,7 @@ const naturalismBase = {
   wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
   box: 1, lat: 1, pulse: 1, bare: 1, manA: 1, manC: [0.3, 0.42, 0.54], empty: 0.8, drain: 0, pool: 0, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
+  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, tick: 0, acc: [70, 100, 78],
@@ -61,6 +64,7 @@ const nihilismBase = {
   wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
   box: 1, lat: 0.45, pulse: 0.3, bare: 0.6, manA: 1, manC: [0.42, 0.44, 0.5], empty: 0.45, drain: 0.35, pool: 0.25, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
+  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   stainR: 0.02, stainA: 0, glow: 0, dull: 0.6, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, tick: 0, acc: [86, 82, 100],
@@ -76,10 +80,28 @@ const existentialismBase = {
   wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
   box: 1, lat: 0.35, pulse: 0.3, bare: 0.6, manA: 1, manC: [0.85, 0.3, 0.2], empty: 0.4, drain: 0.4, pool: 0, hollow: 0,
   selfR: 0.09, selfA: 0.3, selfC: [0.86, 0.33, 0.24],
+  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   stainR: 0.02, stainA: 0, glow: 0, dull: 0.7, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, tick: 0, acc: [190, 66, 44],
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.42, tBrX: 0.13, tBrY: 0.11,
+};
+
+const hinduBase = {
+  // the Ultimate and the world are one shape: the world's own circle is not drawn
+  Gy: 0.08, rG: 0.36, Wy: 0.08, rW: 0.46, Sy: -0.02, bOff: 0,
+  glory: [0.99, 0.76, 0.34], sky: [0.9, 0.42, 0.58], far: [0.66, 0.5, 0.76], low: [0.92, 0.6, 0.6], deep: [0.7, 0.52, 0.76],
+  sea: [0.9, 0.5, 0.4], land: [0.92, 0.6, 0.3], warm: 0.3, bg: 0.46,
+  godC: [0.96, 0.52, 0.16], godRim: [0.9, 0.4, 0.42], godA: 1,
+  stainC: [0.36, 0.22, 0.4], stainS: 1,
+  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
+  box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.74, 0.16, 0.24], empty: 0, drain: 0, pool: 0, hollow: 1,
+  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
+  one: 1, maya: 0.5, worldA: 0, manI: 1, wheel: 0,
+  stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
+  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
+  ghost: 0, reason: 0, tick: 0, acc: [172, 44, 100],
+  lGodK: 0.45, lSide: 0.06, lBrX: 0.28, lBrY: 0.63, tBrX: 0.23, tBrY: 0.478,
 };
 
 const build = (base, acts) => acts.map((a) => ({ ...a, p: { ...base, ...a.p } }));
@@ -316,7 +338,7 @@ export const WORLDVIEWS = {
   existentialism: {
     name: 'Existentialism',
     tagline: 'The world has no meaning, so man must make his own.',
-    move: { to: 'christian', q: 'What if meaning is given, not made?' },
+    move: { to: 'hindu-monism', q: 'What if the separate self is an illusion?' },
     acts: build(existentialismBase, [
       {
         slug: 'thrown',
@@ -363,6 +385,62 @@ export const WORLDVIEWS = {
           world: ['The world', 'It goes on unchanged'],
           bridge: ['Meaning of his own making', 'It fades when he does'],
           self: ['Man', 'His work ends with him'],
+        },
+      },
+    ]),
+  },
+
+  'hindu-monism': {
+    name: 'Hindu Monism',
+    tagline: 'All is one, and the one is Brahman.',
+    move: { to: 'christian', q: 'What if God is someone, not everything?' },
+    acts: build(hinduBase, [
+      {
+        slug: 'the-one',
+        name: 'The One',
+        text: 'Brahman alone is real: one, without parts and beyond all description. Everything that exists is Brahman.',
+        p: {},
+        labels: {
+          god: ['Brahman', 'The One, and all that is'],
+          world: ['The world', 'Not made by Brahman: it is Brahman'],
+          self: ['Atman', 'The self is Brahman too'],
+        },
+      },
+      {
+        slug: 'ignorance',
+        name: 'Ignorance',
+        text: 'The many things we see are maya, an appearance. Taking them for real, the self is reborn again and again.',
+        p: { maya: 1, wheel: 1, hollow: 0, stainR: 0.12, stainA: 0.5 },
+        labels: {
+          god: ['Brahman', 'The only reality'],
+          world: ['Maya', 'The world of appearances'],
+          bridge: ['Samsara', 'The wheel of rebirth, driven by karma'],
+          self: ['Atman', 'It believes it is separate'],
+          sin: ['Avidya', 'Ignorance of what the self is'],
+        },
+      },
+      {
+        slug: 'knowledge',
+        name: 'Knowledge',
+        text: 'Release comes by knowing that the self is Brahman. Meditation and discipline lead there, often over many lives.',
+        p: { maya: 0.6, wheel: 0.7, stainR: 0.07, stainA: 0.2, glow: 0.7, rip: 0.7 },
+        labels: {
+          god: ['Brahman', 'Beyond good and evil'],
+          world: ['Maya', 'Seen through'],
+          bridge: ['Samsara', 'Many lives may pass first'],
+          self: ['Atman', '“You are that”'],
+          sin: ['Avidya', 'Clearing'],
+        },
+      },
+      {
+        slug: 'release',
+        name: 'Release',
+        text: 'The self is freed from rebirth and is no longer separate, like a drop returning to the sea. No person remains.',
+        p: { maya: 0.15, wheel: 0.12, manA: 0, manI: 0.3, glow: 0.5 },
+        labels: {
+          god: ['Brahman', 'All that there ever was'],
+          world: ['Moksha', 'Release from the wheel'],
+          self: ['The self', 'No one is left to enjoy it'],
         },
       },
     ]),
