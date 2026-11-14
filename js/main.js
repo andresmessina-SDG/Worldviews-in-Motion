@@ -130,8 +130,7 @@ function go(wv, act) {
 }
 // ---------- the menu of worldviews ----------
 const menu = createMenu($('menu'), CATALOGUE, {
-  isBuilt: (id) => !!WORLDVIEWS[id] || params.has('mockall'),   // ?mockall shows every entry as painted, for mockups
-  variant: Number(params.get('menu')) || 0,      // ?menu=1..4 tries other looks for the menu
+  isBuilt: (id) => !!WORLDVIEWS[id],
   onSelect: (id) => { auto = false; go(id, cur.act); },
 });
 menu.setCurrent(cur.wv);
