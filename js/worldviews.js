@@ -4,7 +4,7 @@
 
 const christianBase = {
   // where things stand (scene units, y up)
-  Gy: 0.47, rG: 0.29, Wy: -0.43, rW: 0.36, Sy: -0.4, bOff: 0.03,
+  Gy: 0.445, rG: 0.29, Wy: -0.43, rW: 0.36, Sy: -0.4, bOff: 0.03,
   // palette
   glory: [1, 0.94, 0.66], sky: [0.97, 0.76, 0.56], far: [0.8, 0.7, 0.82], low: [0.72, 0.88, 0.85], deep: [0.5, 0.68, 0.8],
   sea: [0.22, 0.6, 0.66], land: [0.3, 0.62, 0.42], warm: 0.55, bg: 0.5,
@@ -139,7 +139,7 @@ export const WORLDVIEWS = {
         slug: 'end',
         name: 'An Uncertain End',
         text: 'The good may be rewarded after death. God has made no promise, so no one can be sure.',
-        p: { Gy: 0.66, rG: 0.16, godA: 0.36, reason: 0.3, glow: 0.4, dull: 0.3, lBrY: 0.21, tBrY: 0.19 },
+        p: { Gy: 0.62, rG: 0.16, godA: 0.36, reason: 0.3, glow: 0.4, dull: 0.3, lBrY: 0.19, tBrY: 0.17 },
         labels: {
           god: ['The Creator', 'Further off, still silent'],
           world: ['The world', 'Ticking on'],
