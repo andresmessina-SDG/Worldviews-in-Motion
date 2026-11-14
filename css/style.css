@@ -241,23 +241,54 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 
 /* 1. the painter's test strip: each dab pulled into a brushstroke */
 .mv1 .tab.cur, .mv2 .tab.cur { padding-left: 18px; }
+.mv1 .tab { --wash1: color-mix(in srgb, var(--c1) 58%, #fbf7ec); --wash2: color-mix(in srgb, var(--c2) 52%, #fbf7ec); }
+/* the dab: a small wet touch of colour, pale at its heart and gathered at its rim */
+.mv1 .tab-dab {
+  background: radial-gradient(circle at 46% 44%, color-mix(in srgb, var(--c1) 34%, #fbf7ec) 0 38%, var(--wash2) 78%, color-mix(in srgb, var(--c2) 70%, #fbf7ec) 100%);
+  opacity: .62;
+  transform: scale(.72);
+}
+.mv1 .tab.cur .tab-dab { opacity: .85; transform: scale(.9); }
+/* the stroke: a loaded head, an even body, and a tail where the brush runs dry */
+.mv1 .tab-stroke, .mv1 .tab-stroke::after {
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 300 40%22 preserveAspectRatio=%22none%22%3E%3Cfilter id=%22f%22 x=%22-5%25%22 y=%22-30%25%22 width=%22110%25%22 height=%22160%25%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.035 0.22%22 numOctaves=%222%22 seed=%2211%22/%3E%3CfeDisplacementMap in=%22SourceGraphic%22 scale=%225%22/%3E%3C/filter%3E%3Cmask id=%22g%22%3E%3Crect width=%22300%22 height=%2240%22 fill=%22white%22/%3E%3Cpath d=%22M118,12 H240 M150,26.5 H256 M96,19.5 H206 M172,31 H246 M196,8.5 H250%22 stroke=%22black%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3C/mask%3E%3Cg mask=%22url%28%23g%29%22 filter=%22url%28%23f%29%22%3E%3Cpath fill=%22white%22 d=%22M5,20 C5,9 13,5 30,5 C90,3 150,7 205,6 L252,4 L229,10 L287,11 L241,16 L298,19 L237,23 L281,28 L227,29 L264,35 L205,34 C150,36 90,33 30,35 C13,35 5,31 5,20 Z%22/%3E%3C/g%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 300 40%22 preserveAspectRatio=%22none%22%3E%3Cfilter id=%22f%22 x=%22-5%25%22 y=%22-30%25%22 width=%22110%25%22 height=%22160%25%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.035 0.22%22 numOctaves=%222%22 seed=%2211%22/%3E%3CfeDisplacementMap in=%22SourceGraphic%22 scale=%225%22/%3E%3C/filter%3E%3Cmask id=%22g%22%3E%3Crect width=%22300%22 height=%2240%22 fill=%22white%22/%3E%3Cpath d=%22M118,12 H240 M150,26.5 H256 M96,19.5 H206 M172,31 H246 M196,8.5 H250%22 stroke=%22black%22 stroke-width=%221.1%22 stroke-linecap=%22round%22/%3E%3C/mask%3E%3Cg mask=%22url%28%23g%29%22 filter=%22url%28%23f%29%22%3E%3Cpath fill=%22white%22 d=%22M5,20 C5,9 13,5 30,5 C90,3 150,7 205,6 L252,4 L229,10 L287,11 L241,16 L298,19 L237,23 L281,28 L227,29 L264,35 L205,34 C150,36 90,33 30,35 C13,35 5,31 5,20 Z%22/%3E%3C/g%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
 .mv1 .tab-stroke {
   position: absolute;
-  left: 8px;
+  left: 3px;
   top: 50%;
-  height: 74%;
-  width: calc((var(--tw, 80px) + 84px) * var(--out, 0));
+  height: 80%;
+  width: calc((var(--tw, 80px) + 92px) * var(--out, 0));
   transform: translateY(-50%);
-  border-radius: 45% 60% 60% 45% / 50%;
-  background: linear-gradient(to right, var(--c1) 0, var(--c2) 40%, color-mix(in srgb, var(--c2) 60%, transparent) 76%, transparent 100%);
-  opacity: calc(.34 + .5 * var(--lens, 0));
-  filter: url(#stroke);
+  background: linear-gradient(to right, var(--wash1) 0, var(--wash2) 38%, var(--wash2) 100%);
+  opacity: calc(.3 + .42 * var(--lens, 0));
   mix-blend-mode: multiply;
   z-index: -1;
 }
-.mv1 .tab.cur .tab-stroke { opacity: .8; width: calc((var(--tw, 80px) + 110px) * var(--out, 0)); }
-.mv1 .tab.pencil .tab-stroke { top: 80%; height: 0; border-top: 1.2px dashed #b0aaa3; border-radius: 0; background: none; filter: none; mix-blend-mode: normal; opacity: .9; left: 30px; width: calc((var(--tw, 80px) + 16px) * var(--out, 0)); }
-.mv1 .menu-veil { opacity: calc(var(--mopen, 0) * .8); }
+.mv1 .tab-stroke::after {          /* a second, slightly misplaced glaze, as in the painting */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--wash2);
+  opacity: .45;
+  transform: translate(5px, 1.5px) scale(.93, .7);
+}
+.mv1 .tab.cur .tab-stroke { opacity: .85; width: calc((var(--tw, 80px) + 122px) * var(--out, 0)); }
+.mv1 .tab.cur .tab-name { font-weight: 600; }
+.mv1 .tab-name { padding-left: 3px; }
+.mv1 .tab.pencil .tab-dab { background: none; opacity: .85; transform: scale(.66); }
+.mv1 .tab.pencil .tab-stroke {
+  -webkit-mask: none; mask: none;
+  left: 32px; top: 82%; height: 0; width: calc((var(--tw, 80px) + 14px) * var(--out, 0));
+  border-top: 1.1px dashed #b0aaa3; background: none; mix-blend-mode: normal; opacity: .85;
+}
+.mv1 .tab.pencil .tab-stroke::after { display: none; }
+.mv1 .menu-veil {
+  width: calc(var(--mw, 220px) + 70px);
+  background: linear-gradient(to right, rgba(250, 246, 235, .9) 0, rgba(250, 246, 235, .8) 50%, rgba(250, 246, 235, 0) 100%);
+  opacity: calc(var(--mopen, 0) * .78);
+}
 
 /* 2. lettering on the veil: no shapes, only a small dab beside each name */
 .mv2 .tab-dab { transform: scale(.5); }
@@ -283,3 +314,4 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 .mv4 .tab.cur .tab-dab { transform: scale(1.05); box-shadow: 0 0 12px 5px color-mix(in srgb, var(--c2) 42%, transparent); }
 .mv4 .tab.pencil .tab-dab { background: #fbf7ec; }
 .mv4 .menu-veil { opacity: calc(var(--mopen, 0) * .75); }
+.mv.menu-open .t { opacity: .07; }
