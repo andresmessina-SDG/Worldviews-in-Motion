@@ -115,6 +115,7 @@ function renderText(instant, wholePage) {
 }
 
 function go(wv, act) {
+  if (!WORLDVIEWS[wv]) return;
   act = Math.min(3, Math.max(0, act));
   if (wv === cur.wv && act === cur.act) return;
   const moved = wv !== cur.wv;
@@ -129,7 +130,8 @@ function go(wv, act) {
 }
 // ---------- the menu of worldviews ----------
 const menu = createMenu($('menu'), CATALOGUE, {
-  isBuilt: (id) => !!WORLDVIEWS[id],
+  isBuilt: (id) => !!WORLDVIEWS[id] || params.has('mockall'),   // ?mockall shows every entry as painted, for mockups
+  variant: Number(params.get('menu')) || 0,      // ?menu=1..4 tries other looks for the menu
   onSelect: (id) => { auto = false; go(id, cur.act); },
 });
 menu.setCurrent(cur.wv);

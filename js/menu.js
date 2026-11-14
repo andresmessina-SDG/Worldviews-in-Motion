@@ -13,11 +13,24 @@ const TOUCH_EDGE = 44;  // a finger needs a wider strip
 const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
 const backOut = (x) => 1 + 2.2 * Math.pow(x - 1, 3) + 1.2 * Math.pow(x - 1, 2);   // settle with a slight overshoot
 
-export function createMenu(root, items, { isBuilt, onSelect }) {
+export function createMenu(root, items, { isBuilt, onSelect, variant = 0 }) {
   const N = items.length;
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   root.innerHTML = `<svg width="0" height="0" aria-hidden="true"><filter id="dab-edge" x="-20%" y="-20%" width="140%" height="140%">
-    <feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="5"/></filter></svg>`;
+    <feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="5"/></filter>
+    <filter id="stroke" x="-5%" y="-60%" width="110%" height="220%">
+      <feTurbulence type="fractalNoise" baseFrequency=".018 .42" numOctaves="2" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="9" result="d"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -2.6 0 0 0 1.95" result="m"/>
+      <feComposite in="d" in2="m" operator="in"/></filter>
+    <filter id="veil-edge" x="-10%" y="-5%" width="130%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency=".007" numOctaves="3" seed="2"/><feDisplacementMap in="SourceGraphic" scale="70"/></filter>
+    <filter id="pencil" x="-400%" y="-2%" width="900%" height="104%">
+      <feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="5"/><feDisplacementMap in="SourceGraphic" scale="3.5"/></filter></svg>`;
+  if (variant) {
+    document.body.classList.add('mv', `mv${variant}`);
+    root.insertAdjacentHTML('beforeend', '<div class="menu-veil"></div><div class="menu-line"></div>');
+  }
 
   const tabs = items.map((it, i) => {
     const b = document.createElement('button');
@@ -25,7 +38,7 @@ export function createMenu(root, items, { isBuilt, onSelect }) {
     b.className = `tab ${built ? '' : 'pencil'}`;
     b.style.setProperty('--c1', it.c[0]);
     b.style.setProperty('--c2', it.c[1]);
-    b.innerHTML = `${built ? '' : '<span class="tab-note">not yet painted</span>'}<span class="tab-name">${it.name}</span><span class="tab-dab"></span>`;
+    b.innerHTML = `${variant ? '<span class="tab-stroke"></span>' : ''}${built ? '' : '<span class="tab-note">not yet painted</span>'}<span class="tab-name">${it.name}</span><span class="tab-dab"></span>`;
     if (!built) b.setAttribute('aria-disabled', 'true');
     b.addEventListener('click', () => { choose(i); b.blur(); });
     // only a keyboard's focus should hold the menu open, not the focus a click leaves behind
@@ -197,15 +210,21 @@ export function createMenu(root, items, { isBuilt, onSelect }) {
       const show = 13 + (isCur ? 11 : 0) + out * (Math.max(restW, t.w * k + 50) - 13 + L * 14 + (isCur ? 6 : 0));
       const lean = following && !calm ? clamp((py - (ys[i] + hs[i] / 2)) / 260, -1, 1) * 1.6 * L * openT : 0;
       t.el.style.height = `${h.toFixed(1)}px`;
-      t.el.style.transform = `translate3d(${(show - 420).toFixed(1)}px, ${ys[i].toFixed(1)}px, 0) rotate(${lean.toFixed(2)}deg)`;
+      if (variant) {
+        t.el.style.transform = `translate3d(0, ${ys[i].toFixed(1)}px, 0)`;
+        t.el.style.setProperty('--out', out.toFixed(3));
+        t.el.style.setProperty('--lens', L.toFixed(3));
+        t.el.style.setProperty('--tw', `${(t.w * k).toFixed(1)}px`);
+      } else t.el.style.transform = `translate3d(${(show - 420).toFixed(1)}px, ${ys[i].toFixed(1)}px, 0) rotate(${lean.toFixed(2)}deg)`;
       t.name.style.transform = `scale(${k.toFixed(3)})`;
       t.el.style.setProperty('--ink-in', clamp(out * 1.6 - 0.5, 0, 1).toFixed(2));
       const ds = clamp(h * 0.62, 8, 26) * (1 + 0.35 * L * openT * depth + (i === shown ? 0.18 : 0));
       t.dab.style.width = t.dab.style.height = `${ds.toFixed(1)}px`;
+      if (variant) t.el.style.setProperty('--ds', `${ds.toFixed(1)}px`);
       t.el.classList.toggle('hot', i === shown);
       t.el.classList.toggle('cur', isCur);
       t.el.tabIndex = isCur || (openT > 0.5 && depth > 0.6) ? 0 : -1;
-      widest = Math.max(widest, show);
+      widest = Math.max(widest, variant ? 44 + out * (t.w * k + 20) : show);
       if (t.gapBefore) {
         const rule = rules[r++];
         rule.style.transform = `translate3d(0, ${(ys[i] - GAP / 2 - 1).toFixed(1)}px, 0)`;
@@ -214,6 +233,12 @@ export function createMenu(root, items, { isBuilt, onSelect }) {
       }
     }
     menuW = widest;
+    if (variant) {
+      root.style.setProperty('--mopen', (openT * clamp(depth * 1.6 - 0.6, 0, 1)).toFixed(3));
+      root.style.setProperty('--mw', `${widest.toFixed(0)}px`);
+      root.style.setProperty('--mtop', `${ys[0].toFixed(1)}px`);
+      root.style.setProperty('--mh', `${(ys[N - 1] + hs[N - 1] - ys[0]).toFixed(1)}px`);
+    }
     requestAnimationFrame(frame);
   }
 

@@ -207,3 +207,79 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 .narrow #moves button { font-size: .92rem; padding: 5px 14px 6px; }
 .narrow .l { font-size: .82rem; }
 .narrow #marks button { font-size: .72rem; padding: 6px 2px; }
+
+/* ---------- menu looks under trial (?menu=1..4): paint and ink, no boxes ---------- */
+.menu-veil, .menu-line { display: none; }
+.mv .tab {
+  width: auto;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 0 16px 0 9px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  overflow: visible;
+}
+.mv .tab.cur { box-shadow: none; }
+.mv .tab-dab { order: 0; margin-left: calc(13px - var(--ds, 14px) / 2); }
+.mv .tab-name { order: 1; transform-origin: 0 50%; text-shadow: 0 0 6px rgba(250, 246, 235, .95), 0 0 2px rgba(250, 246, 235, .9); }
+.mv .tab-note { order: 2; }
+.mv .tab-rule { display: none; }
+.mv .menu-veil {                 /* paper lifted with a damp brush, spreading in from the edge */
+  display: block;
+  position: absolute;
+  left: -60px;
+  top: -5vh;
+  height: 110vh;
+  width: calc(var(--mw, 220px) + 120px);
+  background: linear-gradient(to right, rgba(250, 246, 235, .95) 0, rgba(250, 246, 235, .9) 58%, rgba(250, 246, 235, 0) 100%);
+  filter: url(#veil-edge);
+  opacity: var(--mopen, 0);
+  pointer-events: none;
+}
+
+/* 1. the painter's test strip: each dab pulled into a brushstroke */
+.mv1 .tab.cur, .mv2 .tab.cur { padding-left: 18px; }
+.mv1 .tab-stroke {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  height: 74%;
+  width: calc((var(--tw, 80px) + 84px) * var(--out, 0));
+  transform: translateY(-50%);
+  border-radius: 45% 60% 60% 45% / 50%;
+  background: linear-gradient(to right, var(--c1) 0, var(--c2) 40%, color-mix(in srgb, var(--c2) 60%, transparent) 76%, transparent 100%);
+  opacity: calc(.34 + .5 * var(--lens, 0));
+  filter: url(#stroke);
+  mix-blend-mode: multiply;
+  z-index: -1;
+}
+.mv1 .tab.cur .tab-stroke { opacity: .8; width: calc((var(--tw, 80px) + 110px) * var(--out, 0)); }
+.mv1 .tab.pencil .tab-stroke { top: 80%; height: 0; border-top: 1.2px dashed #b0aaa3; border-radius: 0; background: none; filter: none; mix-blend-mode: normal; opacity: .9; left: 30px; width: calc((var(--tw, 80px) + 16px) * var(--out, 0)); }
+.mv1 .menu-veil { opacity: calc(var(--mopen, 0) * .8); }
+
+/* 2. lettering on the veil: no shapes, only a small dab beside each name */
+.mv2 .tab-dab { transform: scale(.5); }
+.mv2 .tab.cur .tab-dab { transform: scale(.85); }
+
+/* 3. a second axis: the history line stood on end */
+.mv3 .menu-line, .mv4 .menu-line { display: block; position: absolute; left: 21px; top: var(--mtop, 0); height: var(--mh, 0); pointer-events: none; }
+.mv3 .menu-line { width: 2.4px; border-radius: 2px; background: #33271f; box-shadow: 0 0 0 2.5px rgba(248, 242, 228, .92); }
+.mv3 .tab-dab { background: #f8f2e4; filter: none; mix-blend-mode: normal; border: 2.2px solid #33271f; border-radius: 50%; opacity: 1; transform: scale(.52); }
+.mv3 .tab.cur .tab-dab { background: var(--red); border-color: #f8f2e4; box-shadow: 0 0 0 1.5px var(--red); transform: scale(.72); }
+.mv3 .tab.pencil .tab-dab { border: 2.2px dashed #a9a39c; }
+.mv3 .tab-name { font-style: normal; }
+.mv3 .menu-veil { opacity: calc(var(--mopen, 0) * .75); }
+
+/* 4. beads of paint on a pencil line */
+.mv4 .menu-line { width: 1.4px; background: #8f8982; filter: url(#pencil); }
+.mv4 .tab-dab {
+  background: radial-gradient(circle at 33% 29%, rgba(255, 255, 255, .8) 0 7%, var(--c1) 24%, var(--c2) 76%, color-mix(in srgb, var(--c2) 70%, #2b211d) 100%);
+  mix-blend-mode: normal;
+  opacity: 1;
+  transform: scale(.78);
+}
+.mv4 .tab.cur .tab-dab { transform: scale(1.05); box-shadow: 0 0 12px 5px color-mix(in srgb, var(--c2) 42%, transparent); }
+.mv4 .tab.pencil .tab-dab { background: #fbf7ec; }
+.mv4 .menu-veil { opacity: calc(var(--mopen, 0) * .75); }
