@@ -1,11 +1,11 @@
-import { createPainter } from './paint.js?v=17';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=17';
-import { CATALOGUE } from './catalogue.js?v=17';
-import { createMenu } from './menu.js?v=17';
+import { createPainter } from './paint.js?v=18';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=18';
+import { CATALOGUE } from './catalogue.js?v=18';
+import { createMenu } from './menu.js?v=18';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
-// halfway point of the move from another worldview, named with &from=.
+// halfway point of the move from another worldview, named with &from= (and its act with &fromAct=).
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -43,7 +43,8 @@ let t0 = -1e9;
 let dur = 1;
 if (params.has('k')) {
   const other = WORLDVIEWS[params.get('from')] ? params.get('from') : Object.keys(WORLDVIEWS).find((w) => w !== cur.wv);
-  live = blendP({ ...WORLDVIEWS[other].acts[cur.act].p, act: cur.act }, target(), Number(params.get('k')));
+  const fa = params.has('fromAct') ? Math.min(3, Math.max(0, Number(params.get('fromAct')) - 1)) : cur.act;
+  live = blendP({ ...WORLDVIEWS[other].acts[fa].p, act: cur.act }, target(), Number(params.get('k')));
 }
 
 // ---------- lettering ----------
@@ -317,9 +318,9 @@ function drawConn(p, c) {
     g += `<circle cx="0" cy="${f(wy)}" r="${f(r0)}" fill="none" stroke="${ACC}" stroke-width=".0065" stroke-linecap="round" stroke-dasharray=".014 .026" stroke-dashoffset="${f(-c.t * 0.012)}" opacity=".85"/></g>`;
   }
   if (p.push > 0.01) {
-    // at man's place on the stream the current runs right; against it is leftward
+    // at man's place on the stream the current runs right, so he pushes leftward; as he gives up, the strain goes out of it
     const strain = 1 - p.along, jit = 0.012 * strain * Math.sin(c.t * 7.3) * Math.sin(c.t * 2.1);
-    const dir = p.along > 0.5 ? 1 : -1, x0 = dir * 0.085, x1 = dir * (0.085 + 0.1 + 0.02 * Math.sin(c.t * 1.3));
+    const dir = -1, x0 = dir * 0.085, x1 = dir * (0.085 + (0.1 + 0.02 * Math.sin(c.t * 1.3)) * Math.min(1, p.push * 1.5));
     const y = -p.Sy + jit;
     const head = `M${f(x1)},${f(y)} L${f(x1 - dir * 0.03)},${f(y - 0.02)} L${f(x1 - dir * 0.03)},${f(y + 0.02)}Z`;
     g += `<g opacity="${f(p.push)}">${stroke(`M${f(x0)},${f(y)} L${f(x1 - dir * 0.02)},${f(y)}`, ACC, 0.007)}${shape(head, ACC)}</g>`;
