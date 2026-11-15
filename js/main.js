@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=31';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=31';
-import { CATALOGUE } from './catalogue.js?v=31';
-import { createMenu } from './menu.js?v=31';
+import { createPainter } from './paint.js?v=32';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=32';
+import { CATALOGUE } from './catalogue.js?v=32';
+import { createMenu } from './menu.js?v=32';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -64,6 +64,11 @@ for (const k of KEYS) {
   if (ALIGN[k] !== 'center' || k === 'god') $('lines').appendChild(g);
   labels[k] = { el, g, path, dot, on: false, timer: null, w: 0, h: 0 };
 }
+// (the line and its dot fade themselves, rather than their group, for the reason given at flatten() below)
+function fadeLeader(L, a) {
+  L.path.style.strokeOpacity = (0.9 * a).toFixed(3);
+  L.dot.style.fillOpacity = a.toFixed(3);
+}
 function setLabel(k, content, instant, wait = 550) {
   const L = labels[k];
   const html = content ? `${content[0]}<small>${content[1]}</small>` : '';
@@ -74,12 +79,12 @@ function setLabel(k, content, instant, wait = 550) {
     L.el.innerHTML = html;
     L.on = !!content;
     L.el.style.opacity = L.on ? 1 : 0;
-    L.g.style.opacity = L.on ? 1 : 0;
+    fadeLeader(L, L.on ? 1 : 0);
     measure();
   };
   if (instant) return apply();
   L.el.style.opacity = 0;
-  L.g.style.opacity = 0;
+  fadeLeader(L, 0);
   L.timer = setTimeout(apply, wait);
 }
 
@@ -235,8 +240,7 @@ function layout(p, G) {
     lg.path.setAttribute('d', `M${X(0)},${Y(y0)} L${X(ex)},${Y(ey)}`);
     lg.dot.setAttribute('cx', X(ex));
     lg.dot.setAttribute('cy', Y(ey));
-    lg.path.setAttribute('opacity', show.toFixed(3));
-    lg.dot.setAttribute('opacity', show.toFixed(3));
+    if (lg.on) { lg.path.style.strokeOpacity = (0.9 * show).toFixed(3); lg.dot.style.fillOpacity = show.toFixed(3); }
   }
   place('world', 0, worldY);
   place('bridge', p.lBrX, p.lBrY, p.tBrX, p.tBrY + p.tBrS * p.Sy);    // (a target can be set relative to man, and then moves with him)
@@ -277,6 +281,23 @@ function arcC(cx, cy, r, a0, a1) {
   return d;
 }
 const shape = (d, col) => `<path d="${d}" fill="${col}" stroke="${PAP}" stroke-width=".012" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="${col}"/>`;
+
+// Opacity is written on groups above, which is the easy way to fade a connector. But a translucent group makes the
+// browser draw it apart and lay the result down again, and some graphics drivers lay it down shifted or upside down:
+// that is what split the bridge in two partway through a move. So before the browser sees it, every group's opacity
+// is pushed down onto the strokes and fills inside, where it is applied directly as they are drawn.
+function flatten(el, a) {
+  for (const c of el.children) {
+    const tag = c.tagName;
+    if (tag === 'defs' || tag === 'clipPath') continue;
+    let op = a;
+    if (c.hasAttribute('opacity')) { op *= Number(c.getAttribute('opacity')); c.removeAttribute('opacity'); }
+    if (tag === 'g') flatten(c, op);
+    else if (op < 0.9995) {
+      for (const k of ['fill-opacity', 'stroke-opacity']) c.setAttribute(k, ((c.hasAttribute(k) ? Number(c.getAttribute(k)) : 1) * op).toFixed(4));
+    }
+  }
+}
 
 function drawConn(p, c, G) {
   const bTop = p.Gy - p.rG + p.bOff;
@@ -440,7 +461,9 @@ function drawConn(p, c, G) {
     const R = G.R, Ry = orbitRy(p, R), co = Math.cos(G.rot), si = Math.sin(G.rot);
     const frame = `translate(0 ${f(-p.Sy)}) rotate(${f((-G.rot * 180) / Math.PI)})`;
     const ell = (a) => `<ellipse cx="0" cy="0" rx="${f(R)}" ry="${f(Ry)}" fill="none" ${a}/>`;
-    const god = `<circle cx="${f(G.x)}" cy="${f(-G.y)}" r="${f(G.r * 0.97)}" fill="#000"/>`;
+    // everything outside a circle, as a clip path (a mask would make the browser draw the group apart and lay it down
+    // again, which some graphics drivers do wrongly)
+    const outside = (id, x, y, r) => `<clipPath id="${id}"><path clip-rule="evenodd" d="M-3,-3 H3 V3 H-3Z M${f(x + r)},${f(y)}${arcC(x, y, r, 0, Math.PI)}${arcC(x, y, r, Math.PI, 2 * Math.PI)}Z"/></clipPath>`;
     let heads = '';
     for (let i = 1; i <= 2; i++) {
       const a = c.orb + i * 2.094, sa = Math.sin(a), ca = Math.cos(a);
@@ -454,11 +477,10 @@ function drawConn(p, c, G) {
       heads += `<path transform="translate(${f(x)},${f(-y)}) rotate(${f(deg)})" d="M.019,0 L-.011,-.015 L-.011,.015Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round" opacity="${f(op)}"/>`;
     }
     g += `<defs><clipPath id="orbNear"><rect x="-3" y="-3" width="6" height="3"/></clipPath><clipPath id="orbFar"><rect x="-3" y="0" width="6" height="3"/></clipPath>`;
-    g += `<mask id="orbBehind" maskUnits="userSpaceOnUse" x="-3" y="-3" width="6" height="6"><rect x="-3" y="-3" width="6" height="6" fill="#fff"/><circle cx="0" cy="${f(-p.Wy)}" r="${f(p.rW + 0.008)}" fill="#000"/>${god}</mask>`;
-    g += `<mask id="orbGod" maskUnits="userSpaceOnUse" x="-3" y="-3" width="6" height="6"><rect x="-3" y="-3" width="6" height="6" fill="#fff"/>${god}</mask></defs>`;
+    g += `${outside('orbOutW', 0, -p.Wy, p.rW + 0.008)}${outside('orbOutG', G.x, -G.y, G.r * 0.97)}</defs>`;
     g += `<g opacity="${f(p.orbit * 0.85)}">`;
-    g += `<g mask="url(#orbBehind)" opacity=".5"><g transform="${frame}">${ell(`clip-path="url(#orbFar)" stroke="${ACC}" stroke-width=".004" stroke-linecap="round" stroke-dasharray=".012 .016"`)}</g></g>`;
-    g += `<g mask="url(#orbGod)"><g transform="${frame}">${ell(`clip-path="url(#orbNear)" stroke="${PAP}" stroke-width=".0165" opacity=".92"`)}${ell(`clip-path="url(#orbNear)" stroke="${ACC}" stroke-width=".0045"`)}</g></g>`;
+    g += `<g clip-path="url(#orbOutW)"><g clip-path="url(#orbOutG)" opacity=".5"><g transform="${frame}">${ell(`clip-path="url(#orbFar)" stroke="${ACC}" stroke-width=".004" stroke-linecap="round" stroke-dasharray=".012 .016"`)}</g></g></g>`;
+    g += `<g clip-path="url(#orbOutG)"><g transform="${frame}">${ell(`clip-path="url(#orbNear)" stroke="${PAP}" stroke-width=".0165" opacity=".92"`)}${ell(`clip-path="url(#orbNear)" stroke="${ACC}" stroke-width=".0045"`)}</g></g>`;
     g += `${heads}</g>`;
   }
 
@@ -530,6 +552,7 @@ function drawConn(p, c, G) {
   g += `<circle cx="${f(bx)}" cy="${ty}" r="${f(0.031 + beat)}" fill="none" stroke="${ACC}" stroke-width=".003"/><circle cx="${f(bx)}" cy="${ty}" r=".018" fill="${ACC}" stroke="${PAP}" stroke-width=".004"/>`;
 
   connSvg.innerHTML = `<g transform="translate(${f(cx)},${f(cy)}) scale(${f(unit)})">${g}</g>`;
+  flatten(connSvg, 1);
 }
 
 // ---------- time ----------
