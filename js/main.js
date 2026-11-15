@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=43';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=43';
-import { CATALOGUE } from './catalogue.js?v=43';
-import { createMenu } from './menu.js?v=43';
+import { createPainter } from './paint.js?v=44';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=44';
+import { CATALOGUE } from './catalogue.js?v=44';
+import { createMenu } from './menu.js?v=44';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -257,11 +257,16 @@ function wordsFit(W, Hh, u) {
   return tallestWords() + 0.03 * u + 2 * parseFloat(getComputedStyle(labels.sin.el).fontSize) + 4 < top;
 }
 let pageLayout = 'wide';
+// (the washes gain nothing visible beyond 1.5 pixels per point, and twice the density costs nearly twice as much)
+let repaint = true;
+function fitCanvas() {
+  scale = Math.min(window.devicePixelRatio || 1, 1.5) * quality;
+  if (painter) painter.resize(Math.round(innerWidth * scale), Math.round(innerHeight * scale));
+  repaint = true;                                  // (a canvas is cleared when its size changes: paint it again at once)
+}
 function resize(choose = true) {
   const W = innerWidth, Hh = innerHeight, body = document.body.classList;
-  // (the washes gain nothing visible beyond 1.5 pixels per point, and twice the density costs nearly twice as much)
-  scale = Math.min(window.devicePixelRatio || 1, 1.5) * quality;
-  if (painter) painter.resize(Math.round(W * scale), Math.round(Hh * scale));
+  fitCanvas();
   const set = (l) => { for (const c of ['narrow', 'compact', 'short']) body.toggle(c, l === c); };
   if (choose) {
     let best = 'short', u = 0;
@@ -825,21 +830,35 @@ function spiritsAt(p, t) {
 // Anything that moves must move by values that change smoothly from one frame to the next. A value found in
 // steps, or a hard max or min between two moving values, makes a shape shake all through a move (the orbit
 // once did): search by halving, use smax() and smin(), and follow a jumping target on a spring.
+let lastDraw = 0, ceiling = 1, raisedAt = -1e9, calm = 0;
 function frame(now) {
-  const dt = lastT ? Math.min(100, now - lastT) / 1000 : 0;
+  requestAnimationFrame(frame);
   // If frames come slowly, paint at a lower resolution rather than stutter. Normally the change waits until nothing
   // is moving, where a jump in sharpness would show; but if frames are very slow it is made at once, since a
-  // graphics card that is overwhelmed can fail outright.
+  // graphics card that is overwhelmed can fail outright. When frames have come at full speed for a while, the
+  // resolution goes back up a step; if that step proves too much, it comes down again and stays below it.
   const moving = now - t0 < dur + 400;
   if (frozen === null && lastT && now - lastT < 400) {      // a long gap means the page was hidden, not slow
     acc += now - lastT;
     if (++nF === 20) {
       const ms = acc / nF;
-      if (quality > 0.5 && (ms > 80 || (ms > 36 && !moving))) { quality -= 0.25; resize(); }
+      if (quality > 0.5 && (ms > 80 || (ms > 36 && !moving))) {
+        if (now - raisedAt < 15000) { ceiling = quality - 0.25; raisedAt = -1e9; }
+        quality -= 0.25; calm = 0; fitCanvas();
+      } else if (ms < 20 && !moving && quality < ceiling) {
+        if (++calm === 5) { quality += 0.25; raisedAt = now; calm = 0; fitCanvas(); }
+      } else calm = 0;
       acc = 0; nF = 0;
     }
   }
   lastT = now;
+  // While nothing on the page moves quickly, 30 paintings a second are enough: the washes drift by less than a
+  // point between them. Moves, the glide between sizes and God's orbit get every frame the screen offers.
+  const quick = moving || glide || live.orbit > 0.01 || frozen !== null;
+  if (!quick && !repaint && now - lastDraw < 1000 / 30 - 4) return;
+  repaint = false;
+  const dt = lastDraw ? Math.min(100, now - lastDraw) / 1000 : 0;
+  lastDraw = now;
 
   if (!params.has('k')) live = blendP(from, target(), ease(Math.min(1, (now - t0) / dur)));
   const p = live;
@@ -848,7 +867,7 @@ function frame(now) {
   arrow = frozen !== null ? frozen * 0.04 * p.flow : arrow + dt * 0.04 * p.flow * (reduced ? 0 : 1);
   orb = frozen !== null ? Math.PI / 2 + frozen * p.oSpd : orb + dt * p.oSpd * (reduced ? 0 : 1);
   const G = godAt(p, dt);
-  window.__G = { ...G, cx, cy, unit, sy: p.Sy };      // for tests of where God has got to, and man
+  window.__G = { ...G, cx, cy, unit, sy: p.Sy, quality };   // for tests: where God has got to, man, and the resolution
 
   const css = rgb(p.acc);
   if (css !== accent) { accent = css; document.documentElement.style.setProperty('--red', css); }
@@ -873,7 +892,6 @@ function frame(now) {
     });
   }
   drawConn(p, { t, arrow, orb, tock: hd.tock }, G);
-  requestAnimationFrame(frame);
 }
 
 addEventListener('resize', resize);
