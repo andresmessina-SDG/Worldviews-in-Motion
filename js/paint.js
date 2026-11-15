@@ -15,6 +15,10 @@
 //   will crawl and shimmer as it moves.
 // - This is WebGL 1 (GLSL ES 1.0): loops need fixed bounds and arrays cannot be given values when declared,
 //   so values chosen by index are picked with ?: (as the copies are).
+// - The paper's grain and the finer wobble of every edge (H, wM, wF and the rest below) do not change while the
+//   painting keeps its size and place, so BAKE paints them into two textures whenever it moves or is resized,
+//   and each frame reads them back instead of working them out again. Noise that moves with time, or with a
+//   shape (wL, field()), is worked out each frame as before.
 // - Colour is laid down as pigment. A holds how much light each pixel's paint absorbs: K(colour) adds a
 //   wash of that colour, A *= 1. - x lifts paint off, and the paper's colour is finally multiplied by exp(-A).
 
@@ -51,6 +55,8 @@ uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
 uniform vec3 uHands;            // second, minute and hour hands, radians clockwise from the top
 uniform vec4 uLab[3];           // where lettering sits inside a shape, and its half size
 uniform vec3 uLabA;             // how much each of those three names shows
+uniform sampler2D uBakeA, uBakeB;  // the noise that stands still (see BAKE), when uBaked is 1
+uniform float uBaked;
 
 float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 float noise(vec2 p){
@@ -129,11 +135,19 @@ void main(){
   float t = uT;
 
   wL = vec2(fbm(q * 1.2 + t * .012), fbm(q * 1.2 + vec2(31.7, 11.3) - t * .012)) - .5;
-  wM = vec2(fbm(q * 4.5 + 5.), fbm(q * 4.5 + vec2(7., 23.))) - .5;
-  wF = vec2(fbm(q * 22. + 1.), fbm(q * 22. + vec2(13., 4.))) - .5;
-  H = paperH(frag);
-  float Hx = paperH(frag + vec2(1.2, 1.2));
-  PW = .0028 * (.5 + noise(q * 9.));
+  float Hx, grain;
+  if (uBaked > .5) {
+    vec2 at = frag / uRes;
+    vec4 a = texture2D(uBakeA, at), b = texture2D(uBakeB, at);
+    wM = a.xy - .5; wF = a.zw - .5; H = b.x; Hx = b.y; PW = .0028 * (.5 + b.z); grain = b.w;
+  } else {
+    wM = vec2(fbm(q * 4.5 + 5.), fbm(q * 4.5 + vec2(7., 23.))) - .5;
+    wF = vec2(fbm(q * 22. + 1.), fbm(q * 22. + vec2(13., 4.))) - .5;
+    H = paperH(frag);
+    Hx = paperH(frag + vec2(1.2, 1.2));
+    PW = .0028 * (.5 + noise(q * 9.));
+    grain = noise(frag * .02);
+  }
 
   float v1 = fbm(q * 1.1 + wL * 1.6 + 2.), v2 = fbm(q * 2.3 - wL * 2.2 + 7.);
   float blooms = mix(1., bloom(q, 1.) * bloom(q * 2.1, 5.), .22);
@@ -483,8 +497,22 @@ void main(){
 
   vec3 col = vec3(.982, .972, .945) * exp(-A);
   col *= 1. + (H - Hx) * .2;
-  col *= .985 + .03 * noise(frag * .02);
+  col *= .985 + .03 * grain;
   gl_FragColor = vec4(col, 1.);
+}`;
+
+// The noise that stands still, in two textures the size of the canvas: the middle and fine wobble (wM, wF) in
+// the first; the paper's grain and its light (H, Hx), the pen's width and the paper's tone in the second.
+// Every value lies between 0 and 1, as a texture holds it.
+const BAKE = `
+precision highp float;
+uniform vec2 uCen;
+uniform float uUnit, uPart;
+${FRAG.slice(FRAG.indexOf('float hash('), FRAG.indexOf('float sdSeg('))}
+void main(){
+  vec2 frag = gl_FragCoord.xy, q = (frag - uCen) / uUnit;
+  if (uPart < .5) gl_FragColor = vec4(fbm(q * 4.5 + 5.), fbm(q * 4.5 + vec2(7., 23.)), fbm(q * 22. + 1.), fbm(q * 22. + vec2(13., 4.)));
+  else gl_FragColor = vec4(paperH(frag), paperH(frag + vec2(1.2, 1.2)), noise(q * 9.), noise(frag * .02));
 }`;
 
 export function createPainter(canvas) {
@@ -499,14 +527,54 @@ export function createPainter(canvas) {
     if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
     return s;
   };
-  let prog, checked = false;
+  let prog, bakeProg, checked = false;
   const uniforms = new Set();          // the uniforms the shader uses (an array as uSp[0])
+  const OWN = new Set(['uBakeA', 'uBakeB', 'uBaked']);   // (set here, not by main.js)
+  const link = (frag) => {
+    const pr = gl.createProgram();
+    gl.attachShader(pr, sh(gl.VERTEX_SHADER, 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }'));
+    gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, frag));
+    gl.bindAttribLocation(pr, 0, 'p');
+    gl.linkProgram(pr);
+    return pr;
+  };
+  // the baked noise: two textures, each with a framebuffer to paint into it; bakedAt says for which size and place
+  let bakeTex = [], bakeFb = [], bakeLoc = {}, bakedAt = '', canBake = false;
+  const makeBake = () => {
+    bakeTex = []; bakeFb = []; bakedAt = '';
+    for (let i = 0; i < 2; i++) {
+      const tex = gl.createTexture();
+      gl.activeTexture(gl.TEXTURE0 + i);
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, canvas.width, canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+      for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.NEAREST], [gl.TEXTURE_MAG_FILTER, gl.NEAREST], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v);
+      const fb = gl.createFramebuffer();
+      gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+      canBake = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
+      bakeTex.push(tex); bakeFb.push(fb);
+    }
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  };
+  const bake = (cen, u) => {
+    const key = `${canvas.width},${canvas.height},${cen[0]},${cen[1]},${u}`;
+    if (key === bakedAt) return;
+    bakedAt = key;
+    gl.useProgram(bakeProg);
+    gl.uniform2f(bakeLoc.uCen, cen[0], cen[1]);
+    gl.uniform1f(bakeLoc.uUnit, u);
+    for (let i = 0; i < 2; i++) {
+      gl.bindFramebuffer(gl.FRAMEBUFFER, bakeFb[i]);
+      gl.uniform1f(bakeLoc.uPart, i);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.useProgram(prog);
+  };
   const init = () => {
-  prog = gl.createProgram();
-  gl.attachShader(prog, sh(gl.VERTEX_SHADER, 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }'));
-  gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FRAG));
-  gl.bindAttribLocation(prog, 0, 'p');
-  gl.linkProgram(prog);
+  prog = link(FRAG);
+  bakeProg = link(BAKE);
+  bakeLoc = { uCen: gl.getUniformLocation(bakeProg, 'uCen'), uUnit: gl.getUniformLocation(bakeProg, 'uUnit'), uPart: gl.getUniformLocation(bakeProg, 'uPart') };
   gl.useProgram(prog);
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
@@ -517,6 +585,10 @@ export function createPainter(canvas) {
   uniforms.clear();
   for (let i = 0, n = gl.getProgramParameter(prog, gl.ACTIVE_UNIFORMS); i < n; i++) uniforms.add(gl.getActiveUniform(prog, i).name);
   checked = false;
+  gl.uniform1i(gl.getUniformLocation(prog, 'uBakeA'), 0);
+  gl.uniform1i(gl.getUniformLocation(prog, 'uBakeB'), 1);
+  makeBake();
+  gl.uniform1f(gl.getUniformLocation(prog, 'uBaked'), canBake ? 1 : 0);
   };
   init();
   // a phone may take the graphics context away while the page is in the background
@@ -532,6 +604,9 @@ export function createPainter(canvas) {
         canvas.width = w;
         canvas.height = h;
         gl.viewport(0, 0, w, h);
+        for (const tex of bakeTex) gl.deleteTexture(tex);
+        for (const fb of bakeFb) gl.deleteFramebuffer(fb);
+        makeBake();
       }
     },
     // values: { name: number | [x, y] | [x, y, z] | Float32Array (vec4 array) }
@@ -539,7 +614,7 @@ export function createPainter(canvas) {
       if (lost) return;
       if (!checked) {
         checked = true;
-        const missing = [...uniforms].filter((n) => !(n in values));
+        const missing = [...uniforms].filter((n) => !(n in values) && !OWN.has(n));
         if (missing.length) console.error(`paint.js: no value for ${missing.join(', ')}`);
       }
       for (const name in values) {
@@ -551,6 +626,7 @@ export function createPainter(canvas) {
         else if (v.length === 2) gl.uniform2f(l, v[0], v[1]);
         else gl.uniform3f(l, v[0], v[1], v[2]);
       }
+      if (canBake) bake(values.uCen, values.uUnit);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     },
   };
