@@ -18,7 +18,7 @@ const christianBase = {
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
   bridge: 0.95, bw: 0.044, bbot: -0.12, crim: 0, cross: 0, snap: 0, flow: 1,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, tick: 0, acc: [163, 38, 43],
+  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
   // lettering
   lGodK: 0.38, lSide: 0.1, lBrX: 0.22, lBrY: 0.145, tBrX: 0.05, tBrY: 0.095, tBrS: 0,
 };
@@ -35,7 +35,7 @@ const deismBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.15, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0.75, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, tick: 1, acc: [63, 98, 127],
+  ghost: 0.75, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 1, acc: [63, 98, 127],
   lGodK: 0.12, lSide: 0.2, lBrX: 0.2, lBrY: 0.14, tBrX: 0.035, tBrY: 0.12, tBrS: 0,
 };
 
@@ -53,7 +53,7 @@ const mtdBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 1, oR: 0.62, oTilt: 0.42, oRot: 0.45, oSpd: 0.12, tick: 0, acc: [182, 72, 108],
+  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 1, oR: 0.62, oTilt: 0.42, oRot: 0.45, oSpd: 0.12, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [182, 72, 108],
   lGodK: 0, lSide: 0.1, lBrX: 0.32, lBrY: -0.3, tBrX: 0.085, tBrY: -0.06, tBrS: 1,
 };
 
@@ -69,7 +69,7 @@ const naturalismBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, tick: 0, acc: [70, 100, 78],
+  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [70, 100, 78],
   lGodK: 0, lSide: 0.1, lBrX: 0.26, lBrY: 0.29, tBrX: 0.16, tBrY: 0.17, tBrS: 0,
 };
 
@@ -85,7 +85,7 @@ const nihilismBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.6, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, tick: 0, acc: [86, 82, 100],
+  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [86, 82, 100],
   lGodK: 0, lSide: 0.1, lBrX: 0.27, lBrY: -0.52, tBrX: 0.15, tBrY: -0.44, tBrS: 0,
 };
 
@@ -101,7 +101,7 @@ const existentialismBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.7, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, tick: 0, acc: [190, 66, 44],
+  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [190, 66, 44],
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.42, tBrX: 0.13, tBrY: 0.11, tBrS: 0,
 };
 
@@ -118,7 +118,7 @@ const hinduBase = {
   one: 1, maya: 0.5, worldA: 0, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, tick: 0, acc: [172, 44, 100],
+  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [172, 44, 100],
   lGodK: 0.45, lSide: 0.06, lBrX: 0.28, lBrY: 0.63, tBrX: 0.23, tBrY: 0.478, tBrS: 0,
 };
 
@@ -135,7 +135,7 @@ const buddhistBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 1, bundle: 1, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, tick: 0, acc: [140, 47, 47],
+  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [140, 47, 47],
   lGodK: 1.75, lSide: 0.08, lBrX: 0.3, lBrY: -0.38, tBrX: 0.26, tBrY: -0.26, tBrS: 0,
 };
 
@@ -152,7 +152,7 @@ const taoistBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 1, mist: 1, current: 0.5, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, tick: 0, acc: [46, 112, 98],
+  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [46, 112, 98],
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.3, tBrX: 0.113, tBrY: -0.027, tBrS: 0,
 };
 
@@ -169,7 +169,7 @@ const confucianBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 1, bonds: 1, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, tick: 0, acc: [160, 58, 42],
+  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [160, 58, 42],
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.35, tBrX: 0.17, tBrY: 0.11, tBrS: 0,
 };
 
@@ -186,8 +186,25 @@ const animistBase = {
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 1, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, tick: 0, acc: [150, 90, 45],
+  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [150, 90, 45],
   lGodK: -2.25, lSide: 0.1, lBrX: 0.3, lBrY: 0.32, tBrX: 0.06, tBrY: -0.03, tBrS: 0,
+};
+
+const platonistBase = {
+  // two storeys: the Good and the Forms above, still and eternal; the world of becoming below, always changing
+  Gy: 0.64, rG: 0.12, Wy: -0.3, rW: 0.34, Sy: -0.3, bOff: 0,
+  glory: [1, 0.97, 0.86], sky: [0.97, 0.94, 0.87], far: [0.88, 0.87, 0.93], low: [0.84, 0.82, 0.91], deep: [0.66, 0.62, 0.79],
+  sea: [0.58, 0.55, 0.75], land: [0.74, 0.7, 0.82], shade: [0.32, 0.29, 0.52], warm: 0.1, bg: 0.4,
+  godC: [1, 0.9, 0.6], godRim: [0.96, 0.82, 0.58], godA: 0.9,
+  stainC: [0.24, 0.21, 0.36], stainS: 1,
+  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
+  box: 0, lat: 0, pulse: 0, bare: 0, manA: 0.4, manC: [0.56, 0.42, 0.42], empty: 0, drain: 0, pool: 0, hollow: 0,
+  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
+  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
+  spirits: 1, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
+  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
+  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 1, partake: 1, copies: 1, copyDark: 0, soul: 1, soulY: -0.3, ladder: 0, rebirth: 0, divide: 1, tick: 0, acc: [82, 72, 148],
+  lGodK: 0, lSide: 0.1, lBrX: 0.45, lBrY: 0.38, tBrX: 0.378, tBrY: 0.285, tBrS: 0,
 };
 
 const build = (base, acts) => acts.map((a) => ({ ...a, p: { ...base, ...a.p } }));
@@ -754,7 +771,7 @@ export const WORLDVIEWS = {
   animism: {
     name: 'Animism',
     tagline: 'The world is full of spirits, and they must be kept content.',
-    move: { to: 'christian', q: 'What if the distant God has come near?' },
+    move: { to: 'platonism', q: 'What if reason can climb past the spirits to the Good?' },
     acts: build(animistBase, [
       {
         slug: 'a-world-alive',
@@ -801,6 +818,63 @@ export const WORLDVIEWS = {
           god: ['The High God', 'Still far off'],
           world: ['The world', 'Its spirits remain'],
           self: ['Man', 'An ancestor, until forgotten'],
+        },
+      },
+    ]),
+  },
+  platonism: {
+    name: 'Platonism',
+    tagline: 'The real world lies above this one, and the soul must climb back to it.',
+    move: { to: 'christian', q: 'What if the Word became flesh?' },
+    acts: build(platonistBase, [
+      {
+        slug: 'two-worlds',
+        name: 'Two Worlds',
+        text: 'Above the changing world are the Forms: perfect, eternal patterns, with the Good over them all. A divine craftsman shaped matter after them, so all we see is a copy.',
+        p: {},
+        labels: {
+          god: ['The Good', 'Source of all, but not a person'],
+          world: ['The world of becoming', 'Copies, always changing'],
+          bridge: ['The Forms', 'Perfect and unchanging'],
+          self: ['Man', 'An immortal soul in a body'],
+        },
+      },
+      {
+        slug: 'the-cave',
+        name: 'The Cave',
+        text: 'The soul has fallen into a body and forgotten the Forms. Like prisoners in a cave, people take shadows for the real thing.',
+        p: { forms: 0.3, partake: 0, copyDark: 1, manA: 0.95, anger: 0.7, godA: 0.6, stainR: 0.12, stainA: 0.4, dull: 0.55 },
+        labels: {
+          god: ['The Good', 'Shining, but unseen'],
+          world: ['The cave', 'Shadows taken for real'],
+          bridge: ['The Forms', 'Forgotten'],
+          self: ['The soul', 'Imprisoned in the body'],
+          sin: ['Ignorance', 'Forgetting, not rebellion'],
+        },
+      },
+      {
+        slug: 'the-ascent',
+        name: 'The Ascent',
+        text: 'Philosophy turns the soul from shadows toward the light. Through reason and self-discipline it recalls the Forms and climbs toward the Good.',
+        p: { forms: 0.85, partake: 0.5, copyDark: 0.3, manA: 0.45, soulY: 0.07, ladder: 1, stainR: 0.05, stainA: 0.12, dull: 0.15, glow: 0.3, lBrX: 0.3, lBrY: 0.03, tBrX: 0.032, tBrY: 0.02 },
+        labels: {
+          god: ['The Good', 'Waiting to be reached'],
+          world: ['The world of becoming', 'Seen through at last'],
+          bridge: ['The ascent', 'By reason, for the few'],
+          self: ['The philosopher', 'Recalling what he once knew'],
+          sin: ['Ignorance', 'Cured by knowledge'],
+        },
+      },
+      {
+        slug: 'release',
+        name: 'Release',
+        text: 'At death the purified soul leaves the body for good and returns to the Forms. Other souls are born again into new bodies.',
+        p: { soulY: 0.3, manA: 0.15, hollow: 1, manI: 0.6, ladder: 0.25, rebirth: 1, partake: 0.6, lBrX: 0.3, lBrY: 0.45, tBrX: 0.035, tBrY: 0.33 },
+        labels: {
+          god: ['The Good', 'Seen at last, but it cannot love'],
+          world: ['The world of becoming', 'Where other souls are reborn'],
+          bridge: ['The soul', 'Free of the body for ever'],
+          self: ['The body', 'Left behind like a tomb'],
         },
       },
     ]),

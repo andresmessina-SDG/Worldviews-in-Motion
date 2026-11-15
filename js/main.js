@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=27';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=27';
-import { CATALOGUE } from './catalogue.js?v=27';
-import { createMenu } from './menu.js?v=27';
+import { createPainter } from './paint.js?v=28';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=28';
+import { CATALOGUE } from './catalogue.js?v=28';
+import { createMenu } from './menu.js?v=28';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -254,6 +254,10 @@ function layout(p, G) {
 // Things that join, point and mark are drawn as plain strokes over the paint:
 // warm ink, one accent colour, and a paper-coloured edge so they read on any wash.
 const connSvg = $('conn');
+// Platonism: the four Forms above (x, y, sides: 0 is the circle), their copies in the world (from its centre),
+// their size, and the height of the line between the seen and the known
+const FORMS = [[-0.32, 0.27, 0], [-0.16, 0.33, 3], [0.16, 0.33, 4], [0.32, 0.27, 6]];
+const COPIES = [[-0.19, 0.1], [-0.1, 0.2], [0.1, 0.2], [0.19, 0.1]], FSZ = 0.044, DIVIDE = 0.14;
 const DARK = '#33271f', RED = [163, 38, 43], OCHRE = [176, 122, 30], GREY = '#6f6a66', PAP = '#f8f2e4';
 const f = (n) => n.toFixed(4);
 const rgb = (c) => `rgb(${c.map(Math.round).join(',')})`;
@@ -457,6 +461,59 @@ function drawConn(p, c, G) {
     }
   }
 
+  // ----- the line between the seen and the known: ruled, and fading out at its ends -----
+  if (p.divide > 0.01) {
+    let segs = '';
+    for (let i = 0; i < 24; i++) {
+      const x0 = -0.44 + (0.88 * i) / 24, x1 = x0 + 0.88 / 24 - 0.006, m = 1 - Math.pow(Math.abs((x0 + x1) / 2) / 0.44, 3);
+      segs += `<path d="M${f(x0)},${f(-DIVIDE)} H${f(x1)}" opacity="${f(m)}"/>`;
+    }
+    g += `<g opacity="${f(p.divide * 0.55)}" stroke="${DARK}" stroke-width=".0026" stroke-linecap="round">${segs}</g>`;
+  }
+
+  // ----- participation: each copy below hangs from its Form above by a dotted thread, with being coming down it -----
+  if (p.partake > 0.01) {
+    let d = '';
+    FORMS.forEach(([fx, fy], i) => {
+      const [cx0, cy0] = COPIES[i], x1 = cx0, y1 = p.Wy + cy0 + 0.05;
+      d += `M${f(fx)},${f(-(fy - FSZ - 0.012))} L${f(x1)},${f(-y1)} `;
+    });
+    g += `<g opacity="${f(p.partake)}"><path d="${d}" fill="none" stroke="${ACC}" stroke-width=".0014" opacity=".45"/>`;
+    g += `<path d="${d}" fill="none" stroke="${ACC}" stroke-width=".0058" stroke-linecap="round" stroke-dasharray=".001 .02" stroke-dashoffset="${f(-c.t * 0.012)}" opacity=".9"/></g>`;
+  }
+
+  // ----- the Forms: perfect figures in ruled ink, and the one thing on the page that never moves -----
+  if (p.forms > 0.01) {
+    let d = '';
+    FORMS.forEach(([fx, fy, n]) => {
+      if (!n) { d += `M${f(fx + FSZ)},${f(-fy)}${arcC(fx, -fy, FSZ, 0, Math.PI)}${arcC(fx, -fy, FSZ, Math.PI, 2 * Math.PI)}Z `; return; }
+      const R = FSZ / Math.cos(Math.PI / n);           // to a corner, so the sides sit at FSZ like the copies'
+      for (let k = 0; k <= n; k++) {
+        const a = Math.PI / n + (k * 2 * Math.PI) / n;   // a flat side at the bottom, as the copies have
+        d += `${k ? 'L' : 'M'}${f(fx + R * Math.sin(a))},${f(-fy + R * Math.cos(a))} `;
+      }
+      d += 'Z ';
+    });
+    g += `<g opacity="${f(p.forms)}"><path d="${d}" fill="${PAP}" fill-opacity=".55" stroke="${PAP}" stroke-width=".0145" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="none" stroke="${DARK}" stroke-width=".0038" stroke-linejoin="round"/></g>`;
+  }
+
+  // ----- the ascent: a ladder from man up through the dividing line toward the Forms -----
+  if (p.ladder > 0.01) {
+    const y0 = p.Sy + 0.09, y1 = DIVIDE + 0.15, HW = 0.024;
+    let d = `M${f(-HW)},${f(-y0)} V${f(-y1)} M${f(HW)},${f(-y0)} V${f(-y1)} `;
+    for (let y = y0 + 0.03; y < y1 - 0.01; y += 0.046) d += `M${f(-HW)},${f(-y)} H${f(HW)} `;
+    g += `<g opacity="${f(p.ladder)}">${stroke(d, ACC, 0.0045)}</g>`;
+  }
+
+  // ----- rebirth: souls not yet pure carried back down into the world, round and round -----
+  if (p.rebirth > 0.01) {
+    const P = [[0.37, 0.22], [0.58, 0.12], [0.52, -0.12], [0.32, -0.15]];
+    const d = `M${f(P[0][0])},${f(-P[0][1])} C${f(P[1][0])},${f(-P[1][1])} ${f(P[2][0])},${f(-P[2][1])} ${f(P[3][0] + 0.012)},${f(-(P[3][1] + 0.004))}`;
+    const ang = (Math.atan2(-(P[3][1] - P[2][1]), P[3][0] - P[2][0]) * 180) / Math.PI;
+    g += `<g opacity="${f(p.rebirth)}">${stroke(d, ACC, 0.0045)}<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".0045" stroke-linecap="round" stroke-dasharray=".001 .03" stroke-dashoffset="${f(-c.t * 0.03)}"/>`;
+    g += `<path transform="translate(${f(P[3][0])},${f(-P[3][1])}) rotate(${f(ang)})" d="M.012,0 L-.018,-.017 L-.018,.017Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/></g>`;
+  }
+
   // ----- the line of history -----
   const ty = 0.87, bx = ext * (-0.72 + 0.48 * p.act);
   g += stroke(`M${f(-ext)},${ty} H${f(ext + 0.04)}`, DARK, 0.0055);
@@ -566,7 +623,9 @@ function spiritsAt(p, t) {
     x = lerp(x, rr * Math.cos(b), k);
     y = lerp(y, p.Sy + rr * Math.sin(b), k);
     const dark = i < 5 ? p.anger : 0;
-    const a1 = p.spirits * (i < 5 ? 1 : lerp(1, 0.55, p.near)) * (0.85 + 0.15 * Math.sin(t * 1.9 + i * 2.3));
+    let a1 = p.spirits * (i < 5 ? 1 : lerp(1, 0.55, p.near)) * (0.85 + 0.15 * Math.sin(t * 1.9 + i * 2.3));
+    // one soul: the first light settles in man (or wherever the soul has climbed to) and the rest fade away
+    if (i === 0) { x = lerp(x, 0, p.soul); y = lerp(y, p.soulY, p.soul); } else a1 *= 1 - p.soul;
     spirits.set([x, y, dark, a1], i * 4);
   });
   return spirits;
@@ -608,7 +667,7 @@ function frame(now) {
       uBox: p.box, uLat: p.lat, uPulse: p.pulse, uBare: p.bare, uManA: p.manA, uManC: p.manC, uDrain: p.drain, uPool: p.pool, uHollow: p.hollow, uSelfR: p.selfR, uSelfA: p.selfA, uSelfC: p.selfC,
       uOne: p.one, uMaya: p.maya, uWorldA: p.worldA, uManI: p.manI,
       uWave: p.wave, uHaloL: p.haloL, uHaloR: p.haloR, uClock: p.clock, uRing: p.ring, uStainS: p.stainS,
-      uStainUp: p.stainUp, uLit: p.lit, uScan: p.scan, uSpA: p.spirits, 'uSp[0]': spirits, uBi: p.bi, uYin: p.yin, uMist: p.mist, uFlux: p.flux, uBundle: p.bundle, uScatter: p.scatter, uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
+      uStainUp: p.stainUp, uCopies: p.copies, uCopyDark: p.copyDark, uSoul: [spirits[0], spirits[1], p.spirits > 0.01 ? p.soul * p.spirits * (1 - 0.8 * p.anger) : 0], uLit: p.lit, uScan: p.scan, uSpA: p.spirits, 'uSp[0]': spirits, uBi: p.bi, uYin: p.yin, uMist: p.mist, uFlux: p.flux, uBundle: p.bundle, uScatter: p.scatter, uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
       uTick: hd.whole, uHands: [hd.sec, hd.min, hd.hour], 'uLab[0]': rects,
     });
   }

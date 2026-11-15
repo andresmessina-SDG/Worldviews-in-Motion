@@ -28,6 +28,8 @@ uniform vec4 uSp[9];            // spirits: where each is, how dark, how present
 uniform float uSpA;
 uniform float uBi;              // the Ultimate as a jade disc of Heaven, with a round hole at its centre
 uniform float uYin, uMist;      // the world as yin and yang turning; a nameless source, painted as mist with no edge
+uniform vec3 uSoul;             // the soul as a small light: where it is, and how much of it there is
+uniform float uCopies, uCopyDark;  // copies of the eternal Forms, drifting in the world of becoming; how far they have darkened into shadows
 uniform float uFlux, uBundle, uScatter;   // things arising and passing away; a self made of five parts; those parts drifting apart
 uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
 uniform vec3 uHands;            // second, minute and hour hands, radians clockwise from the top
@@ -55,6 +57,12 @@ float paperH(vec2 f){ return .5 * noise(f * .42) + .3 * noise(f * .95 + 7.3) + .
 float sdSeg(vec2 p, vec2 a, vec2 b){
   vec2 pa = p - a, ba = b - a;
   return length(pa - ba * clamp(dot(pa, ba) / max(dot(ba, ba), 1e-5), 0., 1.));
+}
+// a regular polygon of n sides, r from its centre to the middle of a side (n = 0 gives a circle)
+float sdPoly(vec2 p, float r, float n){
+  if (n < .5) return length(p) - r;
+  float s = 6.2832 / n, a = atan(p.x, p.y) + 3.14159;
+  return cos(floor(.5 + a / s) * s - a) * length(p) - r;
 }
 vec2 rot(vec2 v, float a){ float c = cos(a), s = sin(a); return vec2(c * v.x - s * v.y, s * v.x + c * v.y); }
 vec3 K(vec3 c){ return -log(c); }
@@ -302,6 +310,27 @@ void main(){
     }
   }
 
+  // ---------- copies of the Forms: circle, triangle, square and hexagon, each a little wrong and never the same twice.
+  //            In the cave they darken and spread into shadows. ----------
+  if (uCopies > .001) {
+    float inW = smoothstep(.0, -.03, dW) * uWorldA;
+    for (int i = 0; i < 4; i++) {
+      float fi = float(i);
+      vec2 off = i == 0 ? vec2(-.19, .1) : i == 1 ? vec2(-.1, .2) : i == 2 ? vec2(.1, .2) : vec2(.19, .1);
+      float n = i == 0 ? 0. : i == 1 ? 3. : i == 2 ? 4. : 6.;
+      vec2 c = Wc + off + .016 * vec2(sin(t * .21 + fi * 1.7), cos(t * .17 + fi * 2.3));
+      vec2 lp = rot(q - c, .4 * sin(t * .11 + fi * 1.3) + fi * .7);
+      lp += (vec2(noise(lp * 7. + t * .15 + fi * 5.), noise(lp * 7. - t * .13 + fi * 5. + 9.)) - .5) * mix(.014, .03, uCopyDark);
+      float sz = .036 * (1. + .14 * sin(t * .3 + fi * 1.7)) * (1. + .3 * uCopyDark);
+      float d = sdPoly(lp, sz, n);
+      float blur = mix(.006, .022, uCopyDark);
+      float fill = smoothstep(blur, -blur * 1.5, d);
+      vec3 col = mix(vec3(.58, .52, .8), uStainC, uCopyDark);
+      A += K(col) * fill * mix(.55, .9, uCopyDark) * (.75 + .5 * v1) * inW * uCopies;
+      ink += smoothstep(.0026, .0008, abs(d + .002)) * .55 * (1. - uCopyDark) * step(.35, noise(lp * 30. + fi)) * inW * uCopies;
+    }
+  }
+
   ink *= uWorldA;
 
   // ---------- ripples through the world: light when God acts, shadow when sin spreads ----------
@@ -401,6 +430,14 @@ void main(){
     A += K(vec3(.98, .72, .18)) * ring * (.85 + .25 * sin(t * 1.6)) * uRing;
     float hollow = mix(1., step(.42, fract(atan(q.y - Sc.y, q.x) * 14. / 6.2832 + t * .012)), uHollow);
     ink += (penW(dS - .012 + swob * .4, sPW) * hollow + penW(dS - .037 - swob * .3, sPW) * step(.4, noise((q - Sc) * 14. + 3.)) * .7 * (1. - uClock) * (1. - uBox)) * mix(mix(.35, .8, uHollow), 1., uManA) * uManI;
+  }
+
+  // ---------- the soul: a small gold light, in the body or climbing out of it ----------
+  if (uSoul.z > .001) {
+    float d = length(q - uSoul.xy);
+    float c1 = exp(-pow(d / .017, 2.)), c2 = exp(-pow(d / .045, 2.)), c3 = exp(-pow(d / .09, 2.));
+    A *= 1. - uSoul.z * min(.9, .75 * c2 + .3 * c3);
+    A += K(vec3(1., .82, .4)) * uSoul.z * (c1 * 1.1 + c2 * .28);
   }
 
   A += K(vec3(.2, .13, .1)) * min(ink, 1.) * (.5 + H);
