@@ -38,7 +38,7 @@ const DEFAULTS = {
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  covenant: 0, broken: 0, tablets: 0, awaited: 0, sent: 0, scales: 0, extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
+  steps: 0, covenant: 0, broken: 0, tablets: 0, awaited: 0, sent: 0, scales: 0, extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
   // lettering
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.145, tBrX: 0.05, tBrY: 0.11, tBrS: 0,
 };
@@ -118,6 +118,18 @@ const naturalismBase = {
   box: 1, lat: 1, pulse: 1, bare: 1, manC: [0.3, 0.42, 0.54], empty: 0.8,
   acc: [70, 100, 78],
   lBrX: 0.26, lBrY: 0.29, tBrX: 0.16, tBrY: 0.17,
+};
+
+const humanismBase = {
+  // nothing above, but man bright with a light of his own; later he climbs toward the place left empty
+  Gy: 0.66, rG: 0.18, Wy: -0.33, rW: 0.34, Sy: -0.26,
+  glory: [0.98, 0.96, 0.9], sky: [0.97, 0.88, 0.7], far: [0.84, 0.86, 0.88], low: [0.86, 0.9, 0.92], deep: [0.64, 0.74, 0.84],
+  sea: [0.4, 0.62, 0.78], land: [0.9, 0.76, 0.46], shade: [0.22, 0.32, 0.5], warm: 0.45, bg: 0.4,
+  stainC: [0.4, 0.4, 0.46],
+  bare: 0.45, manC: [0.9, 0.56, 0.22], empty: 0.8,
+  selfR: 0.07, selfA: 0.25, selfC: [0.98, 0.78, 0.36], glow: 0.35,
+  acc: [176, 110, 30],
+  lBrX: 0.24, lBrY: 0.05, tBrX: -0.05, tBrY: 0.06,
 };
 
 const nihilismBase = {
@@ -528,7 +540,7 @@ export const WORLDVIEWS = {
   naturalism: {
     name: 'Naturalism',
     tagline: 'Matter is all there is, and nobody made it.',
-    move: { to: 'nihilism', q: 'What if none of it matters?' },
+    move: { to: 'humanism', q: 'What if man can be good without God?' },
     acts: build(naturalismBase, [
       {
         slug: 'matter',
@@ -578,6 +590,62 @@ export const WORLDVIEWS = {
           world: ['The cosmos', 'Cold, dark and running down'],
           bridge: ['No goal', 'History is heading nowhere'],
           self: ['Man', 'Here briefly, then gone'],
+        },
+      },
+    ]),
+  },
+
+  humanism: {
+    name: 'Secular Humanism',
+    tagline: 'Man needs no God: reason can make the world good.',
+    move: { to: 'nihilism', q: 'What if none of it matters?' },
+    acts: build(humanismBase, [
+      {
+        slug: 'man-the-measure',
+        name: 'Man the Measure',
+        text: 'The cosmos is all there is, and nobody made it. Man is its finest product, made by chance over long ages, and the only one who can understand it.',
+        p: {},
+        labels: {
+          god: ['Nothing above', '“No deity will save us”'],
+          world: ['The cosmos', 'Matter, and nothing more'],
+          self: ['Man', 'Of great worth, though made by chance'],
+        },
+      },
+      {
+        slug: 'superstition',
+        name: 'Superstition',
+        text: 'Nothing is wrong with man at heart. The trouble lies in ignorance, poverty and prejudice, and above all in religion, which stops people thinking for themselves.',
+        p: { stainOn: 1, stainR: 0.12, stainA: 0.45, dull: 0.3, glow: 0.2, selfA: 0.12 },
+        labels: {
+          god: ['Nothing above', 'A story man outgrows'],
+          world: ['The cosmos', 'Neither for us nor against us'],
+          self: ['Man', 'Good at heart, held back'],
+          sin: ['Superstition', 'The fault lies outside man'],
+        },
+      },
+      {
+        slug: 'progress',
+        name: 'Progress',
+        text: 'Reason and science will set man free. With education, technology and good laws, people can build a better world and choose their own values.',
+        p: { Wy: -0.4, rW: 0.3, Sy: 0.28, steps: 1, stainOn: 1, selfA: 0.55, selfR: 0.12, glow: 0.7, rip: 0.6, lSide: -0.1, lBrX: 0.16, lBrY: 0.02, tBrX: -0.08, tBrY: 0.04 },
+        labels: {
+          god: ['Nothing above', '“We must save ourselves”'],
+          world: ['The cosmos', 'It tells us no “ought”'],
+          bridge: ['Progress', 'Ever upward, by man’s own effort'],
+          self: ['Man', 'Choosing his own values'],
+        },
+      },
+      {
+        slug: 'this-life-only',
+        name: 'This Life Only',
+        text: 'Each person dies and is gone, and lives on only in what he leaves behind. In the far future the sun will burn out and take mankind with it.',
+        p: { Wy: -0.4, rW: 0.3, Sy: 0.28, steps: 0.7, lBrX: 0.16, lBrY: 0.02, tBrX: -0.08, tBrY: 0.04, selfA: 0, glow: 0, manA: 0.18, hollow: 1, manI: 0.6, dull: 1, warm: 0, bg: 0.34,
+          sea: [0.52, 0.58, 0.66], land: [0.6, 0.6, 0.6], lSide: -0.1 },
+        labels: {
+          god: ['Nothing above', 'No one to remember mankind'],
+          world: ['The cosmos', 'Cooling, and running down'],
+          bridge: ['Progress', 'A stair to nowhere, in the end'],
+          self: ['Man', 'Remembered for a while, then gone'],
         },
       },
     ]),

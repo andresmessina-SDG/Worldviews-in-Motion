@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=53';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=53';
-import { CATALOGUE } from './catalogue.js?v=53';
-import { createMenu } from './menu.js?v=53';
+import { createPainter } from './paint.js?v=54';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=54';
+import { CATALOGUE } from './catalogue.js?v=54';
+import { createMenu } from './menu.js?v=54';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -657,6 +657,17 @@ function drawConn(p, c, G) {
       dots += `<circle cx="${f(x)}" cy="${f(y)}" r=".028" fill="${PAP}" stroke="${ACC}" stroke-width=".0055" opacity="${f(op)}"/>`;
     });
     g += lines + rite + dots;
+  }
+
+  // ----- progress: a stair from the world up to where man has climbed, with a mark going up it -----
+  if (p.steps > 0.01) {
+    const y0 = p.Wy + p.rW + 0.012, y1 = p.Sy - 0.09, n = 5;
+    if (y1 > y0 + 0.04) {
+      const x0 = -0.2, x1 = -0.02, dy = (y1 - y0) / n, dx = (x1 - x0) / n;
+      let d = `M${f(x0)},${f(-y0)} `;
+      for (let i = 1; i <= n; i++) d += `V${f(-(y0 + i * dy))} H${f(x0 + i * dx)} `;
+      g += `<g opacity="${f(p.steps)}">${stroke(d, ACC, 0.0045)}<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".0036" stroke-linecap="round" stroke-dasharray=".001 .04" stroke-dashoffset="${f(-c.t * 0.02)}"/></g>`;
+    }
   }
 
   // ----- the covenant: two lines between God and man, his and his people's. Broken, his stays whole while theirs
