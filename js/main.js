@@ -1,8 +1,7 @@
-import { createPainter } from './paint.js?v=30';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=30';
-import { CATALOGUE } from './catalogue.js?v=30';
-import { createMenu } from './menu.js?v=30';
-import { createInk } from './ink.js?v=30';
+import { createPainter } from './paint.js?v=31';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=31';
+import { CATALOGUE } from './catalogue.js?v=31';
+import { createMenu } from './menu.js?v=31';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -174,9 +173,9 @@ function resize() {
     cy = Hh / 2;
     ext = Math.min(1.05, W / 2 / unit - 0.16);
   }
-  scale = Math.min(window.devicePixelRatio || 1, 2) * quality;
+  // (the washes gain nothing visible beyond 1.5 pixels per point, and twice the density costs nearly twice as much)
+  scale = Math.min(window.devicePixelRatio || 1, 1.5) * quality;
   if (painter) painter.resize(Math.round(W * scale), Math.round(Hh * scale));
-  ink.resize(W, Hh, Math.min(window.devicePixelRatio || 1, 2));        // the strokes stay sharp whatever the painting's resolution
   marks.forEach((b, i) => {
     b.style.left = `${cx + ext * (-0.72 + 0.48 * i) * unit}px`;
     b.style.top = `${cy + 0.795 * unit}px`;
@@ -255,18 +254,7 @@ function layout(p, G) {
 // ---------- connectors ----------
 // Things that join, point and mark are drawn as plain strokes over the paint:
 // warm ink, one accent colour, and a paper-coloured edge so they read on any wash.
-const ink = createInk($('conn'));
-// If the canvas fails in this browser (an error, or nothing reaching it), the connectors go back to being drawn
-// as SVG, which every browser shows, if less steadily under load.
-let inkFrames = 0, connSvg = null;
-function svgFallback(why) {
-  console.warn('Connectors drawn as SVG instead:', why);
-  connSvg = document.createElementNS(NS, 'svg');
-  connSvg.id = 'connSvg';
-  connSvg.setAttribute('aria-hidden', 'true');
-  $('conn').replaceWith(connSvg);
-}
-if (params.has('svgink')) svgFallback('asked for, with ?svgink');
+const connSvg = $('conn');
 // Platonism: the four Forms above (x, y, sides: 0 is the circle), their copies in the world (from its centre),
 // their size, and the height of the line between the seen and the known
 const FORMS = [[-0.32, 0.27, 0], [-0.16, 0.33, 3], [0.16, 0.33, 4], [0.32, 0.27, 6]];
@@ -541,14 +529,7 @@ function drawConn(p, c, G) {
   const beat = lerp(0.004 * Math.sin(c.t * 2.4), 0.005 * c.tock, p.tick);     // a pulse, or the tick of a clock
   g += `<circle cx="${f(bx)}" cy="${ty}" r="${f(0.031 + beat)}" fill="none" stroke="${ACC}" stroke-width=".003"/><circle cx="${f(bx)}" cy="${ty}" r=".018" fill="${ACC}" stroke="${PAP}" stroke-width=".004"/>`;
 
-  const svg = `<g transform="translate(${f(cx)},${f(cy)}) scale(${f(unit)})">${g}</g>`;
-  window.__ink = svg;                                     // (kept for tests)
-  if (connSvg) { connSvg.innerHTML = svg; return; }
-  try {
-    ink.draw(svg);
-    // a few frames in, make sure the line of history (always drawn) has really reached the screen
-    if (++inkFrames === 6 && !ink.shows(cx, cy + 0.87 * unit)) svgFallback('nothing reached the canvas');
-  } catch (err) { svgFallback(err.message); connSvg.innerHTML = svg; }
+  connSvg.innerHTML = `<g transform="translate(${f(cx)},${f(cy)}) scale(${f(unit)})">${g}</g>`;
 }
 
 // ---------- time ----------
@@ -654,17 +635,15 @@ function spiritsAt(p, t) {
 
 function frame(now) {
   const dt = lastT ? Math.min(100, now - lastT) / 1000 : 0;
-  // If frames come slowly, paint at a lower resolution rather than stutter; if they come quickly enough to afford it,
-  // go back up. The change is made only while nothing is moving, never partway through a move, where the
-  // painting would visibly jump in sharpness. (Cost grows with the number of pixels, the square of the scale.)
+  // If frames come slowly, paint at a lower resolution rather than stutter. Normally the change waits until nothing
+  // is moving, where a jump in sharpness would show; but if frames are very slow it is made at once, since a
+  // graphics card that is overwhelmed can fail outright.
   const moving = now - t0 < dur + 400;
-  if (moving) { acc = 0; nF = 0; }
-  else if (frozen === null && lastT && now - lastT < 250) {      // a long gap means the page was hidden, not slow
+  if (frozen === null && lastT && now - lastT < 400) {      // a long gap means the page was hidden, not slow
     acc += now - lastT;
-    if (++nF === 40) {
-      const ms = acc / nF, up = Math.pow((quality + 0.25) / quality, 2);
-      if (ms > 36 && quality > 0.5) { quality -= 0.25; resize(); }
-      else if (ms * up < 24 && quality < 1) { quality += 0.25; resize(); }
+    if (++nF === 20) {
+      const ms = acc / nF;
+      if (quality > 0.5 && (ms > 80 || (ms > 36 && !moving))) { quality -= 0.25; resize(); }
       acc = 0; nF = 0;
     }
   }
