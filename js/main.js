@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=46';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=46';
-import { CATALOGUE } from './catalogue.js?v=46';
-import { createMenu } from './menu.js?v=46';
+import { createPainter } from './paint.js?v=47';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=47';
+import { CATALOGUE } from './catalogue.js?v=47';
+import { createMenu } from './menu.js?v=47';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -138,6 +138,7 @@ function renderText(instant, wholePage) {
     marks.forEach((b, i) => { b.textContent = wv.acts[i].name; });
     moveBtn.textContent = wv.move.q;
     moveTo = wv.move.to;
+    $('scene').setAttribute('aria-label', `The painting. ${KEYS.filter((k) => a.labels[k]).map((k) => `${a.labels[k][0]}: ${a.labels[k][1]}.`).join(' ')}`);
     document.body.classList.remove('swap', 'swap-all');
     if (!instant) resize(false);                // new words may take a different amount of room
   };
