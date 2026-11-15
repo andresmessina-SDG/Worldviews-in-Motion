@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=26';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=26';
-import { CATALOGUE } from './catalogue.js?v=26';
-import { createMenu } from './menu.js?v=26';
+import { createPainter } from './paint.js?v=27';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=27';
+import { CATALOGUE } from './catalogue.js?v=27';
+import { createMenu } from './menu.js?v=27';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -258,6 +258,19 @@ const DARK = '#33271f', RED = [163, 38, 43], OCHRE = [176, 122, 30], GREY = '#6f
 const f = (n) => n.toFixed(4);
 const rgb = (c) => `rgb(${c.map(Math.round).join(',')})`;
 const stroke = (d, col, wd) => `<path d="${d}" fill="none" stroke="${PAP}" stroke-width="${f(wd + 0.012)}" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="none" stroke="${col}" stroke-width="${f(wd)}" stroke-linecap="round" stroke-linejoin="round"/>`;
+// A circular arc as cubic Béziers, in svg coordinates (angles grow clockwise on screen). SVG's own arc command has
+// to work out a centre, and for a half circle that sum is balanced on a knife edge: rounding tips it one way or the
+// other from frame to frame, and the curve hops. Béziers have no centre to work out.
+function arcC(cx, cy, r, a0, a1) {
+  const n = Math.max(1, Math.ceil(Math.abs(a1 - a0) / (Math.PI / 2) - 1e-9)), da = (a1 - a0) / n, k = (4 / 3) * Math.tan(da / 4) * r;
+  let d = '';
+  for (let i = 0; i < n; i++) {
+    const a = a0 + i * da, e = a + da;
+    const x0 = cx + r * Math.cos(a), y0 = cy + r * Math.sin(a), x3 = cx + r * Math.cos(e), y3 = cy + r * Math.sin(e);
+    d += ` C${f(x0 - k * Math.sin(a))},${f(y0 + k * Math.cos(a))} ${f(x3 + k * Math.sin(e))},${f(y3 - k * Math.cos(e))} ${f(x3)},${f(y3)}`;
+  }
+  return d;
+}
 const shape = (d, col) => `<path d="${d}" fill="${col}" stroke="${PAP}" stroke-width=".012" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="${col}"/>`;
 
 function drawConn(p, c, G) {
@@ -279,8 +292,8 @@ function drawConn(p, c, G) {
       // snapped: two pieces whose jagged ends would fit, the lower one fallen aside
       const yb = -(bTop - (bTop - p.bbot) * 0.5), gap = 0.085 * p.snap;
       const jag = (y) => [[HW, -0.012], [HW * 0.35, 0.012], [-HW * 0.25, -0.016], [-HW, 0.008]].map(([x, dy]) => `${f(x)},${f(y + dy)}`);
-      const upper = `M${f(-HW)},${f(top + HW)} A${f(HW)} ${f(HW)} 0 0 1 ${f(HW)},${f(top + HW)} L${jag(yb - gap / 2).join(' L')}Z`;
-      const lower = `M${jag(yb + gap / 2).reverse().join(' L')} L${f(HW)},${f(bot - HW)} A${f(HW)} ${f(HW)} 0 0 1 ${f(-HW)},${f(bot - HW)}Z`;
+      const upper = `M${f(-HW)},${f(top + HW)}${arcC(0, top + HW, HW, Math.PI, 2 * Math.PI)} L${jag(yb - gap / 2).join(' L')}Z`;
+      const lower = `M${jag(yb + gap / 2).reverse().join(' L')} L${f(HW)},${f(bot - HW)}${arcC(0, bot - HW, HW, 0, Math.PI)}Z`;
       const lean = p.snap * (13 + 1.8 * Math.sin(c.t * 0.9));
       g += `<defs><clipPath id="bc"><path d="${upper}"/></clipPath></defs>${shape(upper, COL)}${arrowsIn}`;
       g += `<g transform="rotate(${f(lean)} 0 ${f(bot)})" opacity="${f(1 - 0.22 * p.snap)}">${shape(lower, COL)}</g>`;
@@ -328,7 +341,7 @@ function drawConn(p, c, G) {
   //       Man either pushes against it, straining, or goes along with it. -----
   if (p.current > 0.01) {
     const R = p.rW, wy = -p.Wy, deg = (c.t * 0.06 * 180) / Math.PI;
-    const s = `M0,${f(-R)} A${f(R / 2)} ${f(R / 2)} 0 0 1 0,0 A${f(R / 2)} ${f(R / 2)} 0 0 0 0,${f(R)}`;
+    const s = `M0,${f(-R)}${arcC(0, -R / 2, R / 2, -Math.PI / 2, Math.PI / 2)}${arcC(0, R / 2, R / 2, -Math.PI / 2, -1.5 * Math.PI)}`;
     const r0 = Math.abs(p.Sy - p.Wy);
     g += `<g opacity="${f(p.current)}"><g transform="translate(0 ${f(wy)}) rotate(${f(deg)})">${stroke(s, ACC, 0.006)}</g>`;
     g += `<circle cx="0" cy="${f(wy)}" r="${f(r0)}" fill="none" stroke="${ACC}" stroke-width=".0065" stroke-linecap="round" stroke-dasharray=".014 .026" stroke-dashoffset="${f(-c.t * 0.012)}" opacity=".85"/></g>`;
@@ -400,19 +413,20 @@ function drawConn(p, c, G) {
     for (let i = 0; i < 3; i++) {
       const ph = (c.t * 0.22 + i / 3) % 1, r = 0.095 + ph * span, op = Math.sin(Math.PI * ph);
       const w = Math.min(0.14, 0.05 + r * 0.32), h = Math.sqrt(Math.max(0, r * r - w * w));
-      const d = `M${f(-w)},${f(-(p.Sy + h))} A${f(r)} ${f(r)} 0 0 1 ${f(w)},${f(-(p.Sy + h))}`;
+      const d = `M${f(-w)},${f(-(p.Sy + h))}${arcC(0, -p.Sy, r, Math.atan2(-h, -w), Math.atan2(-h, w))}`;
       arcs += `<g opacity="${f(op)}">${stroke(d, ACC, 0.0055)}</g>`;
     }
     g += `<g opacity="${f(p.call)}" transform="rotate(${f(deg)} 0 ${f(-p.Sy)})">${arcs}</g>`;
   }
 
-  // ----- God's orbit round man: the near half drawn plainly, the far half faint and hidden by the world -----
+  // ----- God's orbit round man: a true ellipse, turned to the orbit's tilt and cut in two in its own frame.
+  //       The near half is drawn plainly; the far half is faint, dashed and hidden by the world.
+  //       God sits on his track, so the line stops at his edge rather than crossing him. -----
   if (p.orbit > 0.01) {
-    const R = G.R, Ry = orbitRy(p, R), rot = f((-G.rot * 180) / Math.PI);
-    const [ax, ay] = orbitAt(p, 0, R, G.rot), [bx, by] = orbitAt(p, Math.PI, R, G.rot);
-    const near = `M${f(ax)},${f(-ay)} A${f(R)} ${f(Ry)} ${rot} 0 0 ${f(bx)},${f(-by)}`;
-    const far = `M${f(bx)},${f(-by)} A${f(R)} ${f(Ry)} ${rot} 0 0 ${f(ax)},${f(-ay)}`;
-    const co = Math.cos(G.rot), si = Math.sin(G.rot);
+    const R = G.R, Ry = orbitRy(p, R), co = Math.cos(G.rot), si = Math.sin(G.rot);
+    const frame = `translate(0 ${f(-p.Sy)}) rotate(${f((-G.rot * 180) / Math.PI)})`;
+    const ell = (a) => `<ellipse cx="0" cy="0" rx="${f(R)}" ry="${f(Ry)}" fill="none" ${a}/>`;
+    const god = `<circle cx="${f(G.x)}" cy="${f(-G.y)}" r="${f(G.r * 0.97)}" fill="#000"/>`;
     let heads = '';
     for (let i = 1; i <= 2; i++) {
       const a = c.orb + i * 2.094, sa = Math.sin(a), ca = Math.cos(a);
@@ -425,9 +439,13 @@ function drawConn(p, c, G) {
       const deg = (Math.atan2(-ty, tx) * 180) / Math.PI;
       heads += `<path transform="translate(${f(x)},${f(-y)}) rotate(${f(deg)})" d="M.019,0 L-.011,-.015 L-.011,.015Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round" opacity="${f(op)}"/>`;
     }
-    g += `<defs><mask id="behind"><rect x="-3" y="-3" width="6" height="6" fill="#fff"/><circle cx="0" cy="${f(-p.Wy)}" r="${f(p.rW + 0.008)}" fill="#000"/></mask></defs>`;
-    g += `<g opacity="${f(p.orbit * 0.85)}"><g mask="url(#behind)" opacity=".5"><path d="${far}" fill="none" stroke="${ACC}" stroke-width=".004" stroke-linecap="round" stroke-dasharray=".012 .016"/></g>`;
-    g += `${stroke(near, ACC, 0.0045)}${heads}</g>`;
+    g += `<defs><clipPath id="orbNear"><rect x="-3" y="-3" width="6" height="3"/></clipPath><clipPath id="orbFar"><rect x="-3" y="0" width="6" height="3"/></clipPath>`;
+    g += `<mask id="orbBehind" maskUnits="userSpaceOnUse" x="-3" y="-3" width="6" height="6"><rect x="-3" y="-3" width="6" height="6" fill="#fff"/><circle cx="0" cy="${f(-p.Wy)}" r="${f(p.rW + 0.008)}" fill="#000"/>${god}</mask>`;
+    g += `<mask id="orbGod" maskUnits="userSpaceOnUse" x="-3" y="-3" width="6" height="6"><rect x="-3" y="-3" width="6" height="6" fill="#fff"/>${god}</mask></defs>`;
+    g += `<g opacity="${f(p.orbit * 0.85)}">`;
+    g += `<g mask="url(#orbBehind)" opacity=".5"><g transform="${frame}">${ell(`clip-path="url(#orbFar)" stroke="${ACC}" stroke-width=".004" stroke-linecap="round" stroke-dasharray=".012 .016"`)}</g></g>`;
+    g += `<g mask="url(#orbGod)"><g transform="${frame}">${ell(`clip-path="url(#orbNear)" stroke="${PAP}" stroke-width=".0165" opacity=".92"`)}${ell(`clip-path="url(#orbNear)" stroke="${ACC}" stroke-width=".0045"`)}</g></g>`;
+    g += `${heads}</g>`;
   }
 
   // ----- the way up to heaven: a dotted trail from the world to man, who has left it -----
