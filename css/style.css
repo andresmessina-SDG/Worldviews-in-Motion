@@ -229,6 +229,8 @@ h1 { margin: 2px 0 0; font-size: clamp(2rem, 5.5vmin, 3.6rem); font-weight: 600;
 #marks button:hover { opacity: 1; }
 #marks button[aria-current='true'] { opacity: 1; color: var(--red); font-weight: 600; }
 #marks button { transition: opacity .3s, color .6s; }
+/* between worldviews the names of the acts fade out and back with the other words (see renderText) */
+body.swap-all #marks button { opacity: 0; }
 /* too little room for four names: only the open act keeps its name */
 #marks.tight button:not([aria-current='true']) { width: var(--gap, 40px); overflow: hidden; color: transparent; }
 #marks.tight button[aria-current='true'] { z-index: 1; }
