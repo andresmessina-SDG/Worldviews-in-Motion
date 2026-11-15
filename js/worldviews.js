@@ -34,7 +34,7 @@ const DEFAULTS = {
   box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  pyr: 0, level: 0, strata: 0, split: 0, churn: 0, stainOn: 0, star: 0, law: 0,
+  shards: 0, dominant: 0, play: 0, gap: 0, script: 0, pyr: 0, level: 0, strata: 0, split: 0, churn: 0, stainOn: 0, star: 0, law: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
@@ -153,6 +153,18 @@ const existentialismBase = {
   dull: 0.7,
   acc: [190, 66, 44],
   lBrY: 0.42, tBrX: 0.13,
+};
+
+const postmodernBase = {
+  // nothing above that anyone can know; below, the world as a collage of shards, written over
+  Gy: 0.62, rG: 0.19, Wy: -0.2, rW: 0.4, Sy: -0.1,
+  glory: [0.96, 0.95, 0.96], sky: [0.92, 0.9, 0.94], far: [0.86, 0.84, 0.9], low: [0.9, 0.88, 0.9], deep: [0.76, 0.74, 0.82],
+  sea: [0.4, 0.76, 0.78], land: [0.9, 0.5, 0.7], shade: [0.34, 0.3, 0.52], warm: 0.2, bg: 0.38,
+  stainC: [0.22, 0.18, 0.3],
+  bare: 0.5, manC: [0.42, 0.3, 0.5], empty: 0.7,
+  shards: 1, script: 1,
+  acc: [168, 46, 110],
+  lBrX: 0.3, lBrY: 0.3, tBrX: 0.2, tBrY: 0.08,
 };
 
 const marxistBase = {
@@ -710,7 +722,7 @@ export const WORLDVIEWS = {
   existentialism: {
     name: 'Existentialism',
     tagline: 'The world has no meaning, so man must make his own.',
-    move: { to: 'marxism', q: 'What if man is made by his society, not by his choices?' },
+    move: { to: 'postmodernism', q: 'What if even the self is made by language?' },
     acts: build(existentialismBase, [
       {
         slug: 'thrown',
@@ -757,6 +769,64 @@ export const WORLDVIEWS = {
           world: ['The world', 'It goes on unchanged'],
           bridge: ['Meaning of his own making', 'It fades when he does'],
           self: ['Man', 'His work ends with him'],
+        },
+      },
+    ]),
+  },
+
+  postmodernism: {
+    name: 'Postmodernism',
+    tagline: 'No truth, only stories, and every story serves power.',
+    move: { to: 'marxism', q: 'What if one story does explain it all: the war of classes?' },
+    acts: build(postmodernBase, [
+      {
+        slug: 'only-stories',
+        name: 'Only Stories',
+        text: 'No one can know reality as it is. Language does not describe the world; it builds one. Each culture lives inside its own stories, and none stands above the rest.',
+        p: {},
+        labels: {
+          god: ['Nothing above', 'No Word, only words'],
+          world: ['Reality', 'Hidden behind our words'],
+          bridge: ['Language', 'It builds the world it seems to show'],
+          self: ['Man', 'Made by the stories told about him'],
+        },
+      },
+      {
+        slug: 'power',
+        name: 'Power',
+        text: 'Every claim to truth is a bid for power. The grand stories of God, reason and progress have been used to silence those who see the world otherwise.',
+        p: { dominant: 1, stainR: 0.1, stainA: 0.45, dull: 0.2 },
+        labels: {
+          god: ['Nothing above', 'One more story, told for power'],
+          world: ['Reality', 'Painted in the rulers’ colours'],
+          bridge: ['The grand story', 'Called a mask for power'],
+          self: ['Man', 'Shaped by those in power'],
+          sin: ['Oppression', 'Called wrong, though nothing is'],
+        },
+      },
+      {
+        slug: 'deconstruction',
+        name: 'Deconstruction',
+        text: 'Take the grand stories apart and expose the power behind them. Let every group tell its own story, and let none claim to be true for all.',
+        p: { gap: 1, script: 0.6, stainR: 0.07, stainA: 0.25, glow: 0.3, rip: 0.5 },
+        labels: {
+          god: ['Nothing above', 'Truth with a small t'],
+          world: ['Reality', 'Whatever a group agrees on'],
+          bridge: ['Deconstruction', 'It spares only its own story'],
+          self: ['Man', 'Free to tell his own story'],
+          sin: ['Oppression', 'Named, with no standard to judge it'],
+        },
+      },
+      {
+        slug: 'endless-play',
+        name: 'Endless Play',
+        text: 'There is no final chapter. Stories replace stories, and no one can say which is true. What works for now is all we can hope for.',
+        p: { gap: 1, play: 1, script: 0.3, worldA: 0.75, bundle: 1, scatter: 0.8, manA: 0.6, dull: 0.3 },
+        labels: {
+          god: ['Nothing above', 'No last word'],
+          world: ['Reality', 'Lost for good'],
+          bridge: ['Stories', 'Endless, and none of them true'],
+          self: ['The self', 'Coming apart'],
         },
       },
     ]),

@@ -58,6 +58,7 @@ uniform float uFlux, uBundle, uScatter;   // things arising and passing away; a 
 uniform float uPyr, uLevel;     // the world as a pyramid of society; the pyramid levelled into a plain
 uniform float uStrata, uSplit, uChurn;  // the pyramid in two storeys, split at a height (in the world's radii); its lower storey churning
 uniform float uStainOn;         // the stain moved off man and onto the top of the pyramid
+uniform float uShards, uDominant, uPlay, uGap, uScript;  // the world as a collage of shards; one story's colour over most; shards shifting; cracks between; handwriting over all
 uniform float uStar, uLaw;      // a ruled eight-pointed star in the Ultimate; the world patterned with such stars, as law
 uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
 uniform vec3 uHands;            // second, minute and hour hands, radians clockwise from the top
@@ -291,6 +292,36 @@ void main(){
       As += K(uShade) * dens * smoothstep(-.3, 1., dot(p, vec2(.45, -.9)) / rW) * (.3 + .4 * v1);
       Aw = mix(Aw, As, uStrata);
       ink += penW(sy, kPW) * smoothstep(-.008, -.025, dW) * step(.3, noise(p * 6. + 4.)) * uStrata;
+    }
+    if (uShards > .001 && dW < .02) {
+      // a collage: shards of different colours, each group's own picture. One story can paint over most of them;
+      // taken apart, the cracks between them open; at the end the pieces keep changing shape
+      vec2 sp = p / .13 + kM * .15;
+      vec2 ci = floor(sp), cf = fract(sp), id = vec2(0.);
+      float d1 = 9., d2 = 9.;
+      for (int j = -1; j <= 1; j++) for (int i = -1; i <= 1; i++) {
+        vec2 g = vec2(float(i), float(j));
+        vec2 h = vec2(hash(ci + g), hash(ci + g + 17.3));
+        vec2 o = .5 + .38 * sin(6.2832 * h + t * .25 * uPlay * (.5 + h.yx));
+        float d = length(g + o - cf);
+        if (d < d1) { d2 = d1; d1 = d; id = ci + g; } else if (d < d2) d2 = d;
+      }
+      float edge = (d2 - d1) * .065, hc = hash(id + 5.1);
+      vec3 col = hc < .38 ? sea : hc < .72 ? land : vec3(.96, .84, .5);
+      col = mix(col, uShade, uDominant * step(.22, hash(id + 9.)));
+      float shard = smoothstep(.001, .006, edge - uGap * .012);
+      vec3 As = K(col) * dens * shard * (.7 + .6 * v2) * (.8 + .4 * hash(id + 3.));
+      Aw = mix(Aw, As, uShards);
+      ink += penW(edge - .002 - uGap * .012, kPW) * .55 * step(.4, noise(p * 7.)) * smoothstep(-.01, -.03, dW) * uShards;
+    }
+    if (uScript > .001 && dW < .01) {
+      // lines of handwriting laid over everything: the world seen only through words
+      const float rowH = .05;
+      float yy = p.y + .004 * sin(p.x * 37. + floor(p.y / rowH) * 2.3);
+      float row = floor(yy / rowH), dy = (fract(yy / rowH) - .5) * rowH;
+      float wig = .006 * sin(p.x * 210. + row * 5.) * (.6 + .4 * sin(p.x * 31. + row));
+      float word = step(.38, noise(vec2(p.x * 14. + row * 7.7, row)));
+      ink += penW(dy - wig, kPW * .8) * word * smoothstep(-.02, -.04, dW) * uScript * .8;
     }
     if (uYin > .001) {
       // yin and yang: two halves, each with a seed of the other, turning slowly for ever
