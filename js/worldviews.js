@@ -38,7 +38,7 @@ const DEFAULTS = {
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  sent: 0, scales: 0, extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
+  covenant: 0, broken: 0, tablets: 0, awaited: 0, sent: 0, scales: 0, extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
   // lettering
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.145, tBrX: 0.05, tBrY: 0.11, tBrS: 0,
 };
@@ -82,6 +82,19 @@ const mtdBase = {
   selfR: 0.05, selfA: 0.18, selfC: [0.95, 0.56, 0.64],
   orbit: 1, oR: 0.62, oTilt: 0.42, oRot: 0.45, oSpd: 0.12, acc: [182, 72, 108],
   lBrX: 0.32, lBrY: -0.3, tBrX: 0.085, tBrY: -0.06, tBrS: 1,
+};
+
+const judaismBase = {
+  // the one God above, bound to Israel by covenant: two lines, his and theirs
+  Gy: 0.58, rG: 0.22, Wy: -0.28, rW: 0.36, Sy: -0.22,
+  glory: [1, 0.98, 0.9], sky: [0.9, 0.92, 0.95], far: [0.82, 0.85, 0.92], low: [0.9, 0.9, 0.86], deep: [0.7, 0.76, 0.86],
+  sea: [0.3, 0.5, 0.72], land: [0.82, 0.76, 0.58], shade: [0.2, 0.3, 0.5], warm: 0.3, bg: 0.42,
+  godC: [0.99, 0.95, 0.82], godRim: [0.6, 0.72, 0.9], godA: 1,
+  stainC: [0.18, 0.18, 0.26],
+  manC: [0.68, 0.4, 0.28],
+  haloL: 1, covenant: 1,
+  acc: [40, 82, 150],
+  lBrX: 0.2, lBrY: 0.14, tBrX: 0.016, tBrY: 0.22,
 };
 
 const islamBase = {
@@ -346,7 +359,7 @@ export const WORLDVIEWS = {
   mtd: {
     name: 'Moralistic Therapeutic Deism',
     tagline: 'Be nice, be happy, and call on God when you need him.',
-    move: { to: 'islam', q: 'What if God must be obeyed, not just called on?' },
+    move: { to: 'judaism', q: 'What if God must be obeyed, not just called on?' },
     acts: build(mtdBase, [
       {
         slug: 'a-kindly-god',
@@ -393,6 +406,64 @@ export const WORLDVIEWS = {
           god: ['God', 'Still at their service'],
           world: ['The world', 'Left behind'],
           self: ['Good people', 'Good enough by their own measure'],
+        },
+      },
+    ]),
+  },
+
+  judaism: {
+    name: 'Judaism',
+    tagline: 'One God chose one people, and gave them his law.',
+    move: { to: 'islam', q: 'What if God spoke again, through one last prophet?' },
+    acts: build(judaismBase, [
+      {
+        slug: 'creation',
+        name: 'Creation',
+        text: 'The LORD, the one God, made the world good and made man in his image. He chose Abraham, and through him Israel, and bound himself to them by covenant.',
+        p: { rip: 0.8, ripAt: 0 },
+        labels: {
+          god: ['The LORD', '“The LORD is one”'],
+          world: ['Creation', 'Made by God, and good'],
+          bridge: ['The covenant', 'With Abraham and his children'],
+          self: ['Man', 'Made in the image of God'],
+        },
+      },
+      {
+        slug: 'exile',
+        name: 'Sin and Exile',
+        text: 'Man is born with a good inclination and an evil one, and is free to choose. Israel broke the covenant and was sent into exile. The temple was destroyed and the sacrifices ended.',
+        p: { broken: 1, stainR: 0.12, stainA: 0.5, dull: 0.4, rip: -0.6 },
+        labels: {
+          god: ['The LORD', 'Faithful to his covenant'],
+          world: ['Creation', 'Good, but Israel is in exile'],
+          bridge: ['The covenant', 'Broken by Israel, kept by God'],
+          self: ['Man', 'Free to choose the good'],
+          sin: ['Sin', 'The evil inclination, not a fallen nature'],
+        },
+      },
+      {
+        slug: 'torah',
+        name: 'Torah',
+        text: 'God gave Israel the Torah at Sinai: 613 commandments. A Jew returns to God by repentance, prayer and charity, which now stand in place of the sacrifices.',
+        p: { tablets: 1, stainR: 0.08, stainA: 0.3, dull: 0.15, glow: 0.3, tBrX: 0.075 },
+        labels: {
+          god: ['The LORD', 'He forgives the penitent'],
+          world: ['Creation', 'Hallowed by the commandments'],
+          bridge: ['The Torah', 'A yoke no one has fully borne'],
+          self: ['Israel', 'Returning to God by repentance'],
+          sin: ['Sin', 'No sacrifice for it since AD 70'],
+        },
+      },
+      {
+        slug: 'the-world-to-come',
+        name: 'The World to Come',
+        text: 'The Messiah, a man descended from David, will come. He will gather the exiles, rebuild the temple and bring peace. The dead will be raised to the world to come.',
+        p: { awaited: 1, lit: 0.6, glow: 0.6, rip: 0.6, tBrX: 0.052 },
+        labels: {
+          god: ['The LORD', 'King over all the earth'],
+          world: ['The world to come', 'The temple rebuilt, and peace'],
+          bridge: ['The Messiah', 'Still awaited, though the temple has fallen'],
+          self: ['Israel', 'Gathered home, and raised'],
         },
       },
     ]),

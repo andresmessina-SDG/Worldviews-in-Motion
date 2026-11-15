@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=52';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=52';
-import { CATALOGUE } from './catalogue.js?v=52';
-import { createMenu } from './menu.js?v=52';
+import { createPainter } from './paint.js?v=53';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=53';
+import { CATALOGUE } from './catalogue.js?v=53';
+import { createMenu } from './menu.js?v=53';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -659,11 +659,39 @@ function drawConn(p, c, G) {
     g += lines + rite + dots;
   }
 
+  // ----- the covenant: two lines between God and man, his and his people's. Broken, his stays whole while theirs
+  //       breaks into pieces. The tablets of the law hang on it, or an empty place where the Messiah is awaited. -----
+  if (p.covenant > 0.01) {
+    const y0 = G.y - G.r - 0.015, y1 = p.Sy + 0.095;
+    if (y0 > y1) {
+      // (from God wherever he is: during a move from a worldview where he goes round man, he is not yet overhead)
+      const L = `M${f(G.x - 0.014)},${f(-y0)} L-.014,${f(-y1)}`, R = `M${f(G.x + 0.014)},${f(-y0)} L.014,${f(-y1)}`;
+      const dash = p.broken > 0.02 ? ` stroke-dasharray="${f(0.03 * (1 - p.broken) + 0.01)} ${f(0.026 * p.broken)}"` : '';
+      g += `<g opacity="${f(p.covenant)}">${stroke(L, ACC, 0.0045)}<path d="${L}" fill="none" stroke="${PAP}" stroke-width=".0036" stroke-linecap="round" stroke-dasharray=".001 .03" stroke-dashoffset="${f(-c.t * 0.015)}"/>`;
+      g += `<path d="${R}" fill="none" stroke="${PAP}" stroke-width=".0165" stroke-linecap="round" opacity=".92"${dash}/><path d="${R}" fill="none" stroke="${ACC}" stroke-width=".0045" stroke-linecap="round"${dash}/></g>`;
+    }
+  }
+  const mid = (G.y - G.r + p.Wy + p.rW) / 2;
+  if (p.tablets > 0.01) {
+    let d = '', lines = '';
+    for (const x of [-0.038, 0.038]) {
+      const w = 0.066, h = 0.115, bot = -(mid - h / 2), top = -(mid + h / 2);
+      d += `M${f(x - w / 2)},${f(bot)} L${f(x - w / 2)},${f(top + w / 2)}${arcC(x, top + w / 2, w / 2, Math.PI, 2 * Math.PI)} L${f(x + w / 2)},${f(bot)}Z `;
+      for (let i = 0; i < 4; i++) { const y = top + 0.045 + i * 0.017; lines += `M${f(x - 0.018)},${f(y)} H${f(x + 0.018)} `; }
+    }
+    g += `<g opacity="${f(p.tablets)}"><path d="${d}" fill="${PAP}" stroke="${PAP}" stroke-width=".016" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="${PAP}" stroke="${ACC}" stroke-width=".0045" stroke-linejoin="round"/>`;
+    g += `<path d="${lines}" fill="none" stroke="${ACC}" stroke-width=".0026" stroke-linecap="round" opacity=".8"/></g>`;
+  }
+  if (p.awaited > 0.01) {
+    g += `<g opacity="${f(p.awaited)}"><circle cx="0" cy="${f(-mid)}" r=".05" fill="${PAP}" fill-opacity=".85" stroke="${PAP}" stroke-width=".014" opacity=".92"/>`;
+    g += `<circle cx="0" cy="${f(-mid)}" r=".05" fill="none" stroke="${ACC}" stroke-width=".0045" stroke-linecap="round" stroke-dasharray=".012 .014" stroke-dashoffset="${f(c.t * 0.004)}"/></g>`;
+  }
+
   // ----- the Quran sent down: a ruled line from God to man, with its pages coming down it. God himself stays above. -----
   if (p.sent > 0.01) {
     const y0 = G.y - G.r - 0.02, y1 = p.Sy + 0.095;
     if (y0 > y1) {
-      const d = `M0,${f(-y0)} V${f(-y1)}`;
+      const d = `M${f(G.x)},${f(-y0)} L0,${f(-y1)}`;
       g += `<g opacity="${f(p.sent)}">${stroke(d, ACC, 0.0035)}`;
       g += `<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".026" stroke-dasharray=".026 .05" stroke-dashoffset="${f(-c.t * 0.02 - 0.002)}" opacity=".92"/>`;
       g += `<path d="${d}" fill="none" stroke="${ACC}" stroke-width=".016" stroke-dasharray=".022 .054" stroke-dashoffset="${f(-c.t * 0.02)}"/></g>`;
