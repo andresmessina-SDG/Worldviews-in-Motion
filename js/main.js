@@ -1,3 +1,5 @@
+// Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
+// value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
 import { createPainter } from './paint.js?v=32';
 import { WORLDVIEWS, HOME } from './worldviews.js?v=32';
 import { CATALOGUE } from './catalogue.js?v=32';
@@ -33,6 +35,8 @@ Object.assign(cur, readHash());
 const actOf = (c = cur) => WORLDVIEWS[c.wv].acts[c.act];
 const target = () => ({ ...actOf().p, act: cur.act });
 
+// Every move, between acts or between worldviews, is this blend of every value at once. It walks the keys
+// of the target, so each value must exist on both sides (see the rules at the top of worldviews.js).
 const lerp = (a, b, k) => (typeof a === 'number' ? a + (b - a) * k : a.map((v, i) => v + (b[i] - v) * k));
 const blendP = (a, b, k) => { const o = {}; for (const n in b) o[n] = lerp(a[n], b[n], k); return o; };
 const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
@@ -256,6 +260,17 @@ function layout(p, G) {
 }
 
 // ---------- connectors ----------
+// Rules for connectors, each learned from something that went wrong:
+// - Work in scene units, y up, as the painting does. SVG's y runs down, so every y written below is negated.
+// - Draw a connector only while its value is above 0.01, and fade it with opacity on its group; flatten()
+//   then moves that opacity onto the strokes and fills. Never use masks or filters here: like a
+//   translucent group, they make the browser draw apart and lay down again, which some drivers get wrong
+//   (the bridge once split in two mid-move). Clip paths are safe.
+// - Never draw a half circle or half ellipse with SVG's arc command: with its two ends exactly opposite,
+//   rounding makes its centre hop from frame to frame. Use arcC(), or a whole <ellipse> clipped in two.
+// - A stroke-dashoffset that grows more negative with time moves the dashes toward the end of the path.
+// - Everything here is drawn in the same frame as the painting, from the same values: never place a
+//   connector by anything the painting does not also see, or the two drift apart.
 // Things that join, point and mark are drawn as plain strokes over the paint:
 // warm ink, one accent colour, and a paper-coloured edge so they read on any wash.
 const connSvg = $('conn');
@@ -656,6 +671,9 @@ function spiritsAt(p, t) {
   return spirits;
 }
 
+// Anything that moves must move by values that change smoothly from one frame to the next. A value found in
+// steps, or a hard max or min between two moving values, makes a shape shake all through a move (the orbit
+// once did): search by halving, use smax() and smin(), and follow a jumping target on a spring.
 function frame(now) {
   const dt = lastT ? Math.min(100, now - lastT) / 1000 : 0;
   // If frames come slowly, paint at a lower resolution rather than stutter. Normally the change waits until nothing
@@ -688,6 +706,8 @@ function frame(now) {
   if (p.spirits > 0.01) spiritsAt(p, t);
   if (painter) {
     const entry = p.Wy + p.rW - 0.02;
+    // Every uniform the shader declares must be passed here under the same name: one never set reads as 0,
+    // and its part of the painting silently disappears. An array of vec4 goes as a Float32Array (as uSp).
     painter.draw({
       uRes: [canvas.width, canvas.height], uCen: [cx * scale, canvas.height - cy * scale], uUnit: unit * scale, uT: t,
       uG: [G.y, G.r], uGx: G.x, uGf: G.front, uGb: G.back, uW: [p.Wy, p.rW], uSy: p.Sy,

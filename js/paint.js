@@ -1,6 +1,20 @@
 // The painting. One watercolor shader draws every worldview; what differs
 // between them (places, palette, which motions run) arrives as uniforms,
 // so one painting can turn into another by blending those values.
+//
+// Rules for adding to the painting:
+// - A new part reads a uniform declared below and passed by name in main.js (painter.draw), and is
+//   wrapped in if (uX > .001), so that worldviews without it pay nothing for it.
+// - The whole cost of the page is work per pixel, done millions of times a frame. Work a part out only
+//   where it can show (the copies, the spirits and the soul skip every pixel out of their reach), keep
+//   loops short, and remember that a move between two worldviews runs both worldviews' parts at once.
+// - A shape that moves must carry its brushwork with it: take the noise for its edges and pen lines from
+//   field(), centred on the shape (with layersAt and penW), not from the paper's noise, or its outline
+//   will crawl and shimmer as it moves.
+// - This is WebGL 1 (GLSL ES 1.0): loops need fixed bounds and arrays cannot be given values when declared,
+//   so values chosen by index are picked with ?: (as the copies are).
+// - Colour is laid down as pigment. A holds how much light each pixel's paint absorbs: K(colour) adds a
+//   wash of that colour, A *= 1. - x lifts paint off, and the paper's colour is finally multiplied by exp(-A).
 
 const FRAG = `
 precision highp float;

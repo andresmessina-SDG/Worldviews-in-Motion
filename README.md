@@ -25,4 +25,11 @@ Then open http://localhost:8000. Click a mark on the line of history, or use the
 
 ## Adding a worldview
 
-Add an entry to `WORLDVIEWS` in `js/worldviews.js`: a base set of values, then what changes in each of its four acts. Any value left out of an act keeps its base value. Give it a `move` naming the worldview it leads to and the question that leads there.
+Add an entry to `WORLDVIEWS` in `js/worldviews.js`: a base set of values, then what changes in each of its four acts. Any value left out of an act keeps its base value. Give it a `move` naming the worldview it leads to and the question that leads there, and reword the question of the worldview that now leads into it. Its `id` must match its entry in `js/catalogue.js`.
+
+The rules that keep the site working are written as comments where they apply:
+
+- `js/worldviews.js`, at the top: every base holds every key, scene units, labels and wording.
+- `js/main.js`, above the connectors: how to draw them so they stay steady and whole in every browser.
+- `js/paint.js`, at the top: how to add to the painting without slowing it down or making moving shapes shimmer.
+- `index.html` and `js/main.js`: the `?v=` number to raise on each deploy.

@@ -1,6 +1,25 @@
 // The worldviews. Each is a set of values the painting and its connectors read:
 // a base that holds for the whole worldview, and what changes in each of its four acts.
 // Every value is a number or a colour, so any act can blend into any other.
+//
+// Rules for working in this file:
+// - Every base must hold every key, in the same form (a number, or a colour as [r, g, b] from 0 to 1).
+//   A move blends key by key, so a key missing on either side becomes NaN and the painting goes blank.
+//   A new key goes into all the bases at once, set to the value that means "not here" (usually 0).
+//   To check, from the top folder:
+//   node -e "import('./js/worldviews.js').then(({WORLDVIEWS:W})=>{const k=Object.keys(W.christian.acts[0].p);for(const[id,w]of Object.entries(W))for(const a of w.acts){const m=k.filter(x=>!(x in a.p)),e=Object.keys(a.p).filter(x=>!k.includes(x));if(m.length||e.length)console.log(id,a.slug,m,e)}})"
+// - Places are in scene units: x across, y up, 0 at the middle of the painting, about 1 from the
+//   middle to the top. Gy, Wy and Sy are the heights of the Ultimate, the world and man.
+// - acc is the accent colour of the connectors and of the open act's name: dark enough to read on paper.
+// - move names the next worldview and the question that leads to it. The worldviews form one loop,
+//   so adding one also means rewording the question of the worldview that now leads into it.
+// - labels: god, world, bridge, self and sin, each [title, sub]; leave one out for no label. The title
+//   names the thing; the sub says what this worldview holds about it, and is where its weakness should
+//   show. lGodK, lSide, lBrX/lBrY and tBrX/tBrY (+ tBrS) place them. A label must not cross another,
+//   at rest or while it moves between acts, at any window size from a 320-pixel phone up: check them all.
+// - Words: plain English and short sentences, after Orwell's rules; the terms a worldview needs are fine.
+//   Avoid stock formulas such as "an X that Y" ("matter that thinks"); say it as a person would.
+// - Act names stay short: all four share the line of history, even on a small phone.
 
 const christianBase = {
   // where things stand (scene units, y up)

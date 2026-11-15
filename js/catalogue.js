@@ -1,6 +1,7 @@
 // Every worldview the site plans to show, in menu order: grouped by family,
 // and within a family following the chain of questions that leads from one to the next.
 // Each has two colours for its dab of paint. Those not yet built appear in pencil.
+// A worldview counts as built once WORLDVIEWS in worldviews.js has an entry under the same id.
 
 export const CATALOGUE = [
   { id: 'christian', name: 'Christian Theism', family: 'theistic', c: ['#e9b548', '#3c9aa0'] },
