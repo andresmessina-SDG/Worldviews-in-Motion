@@ -38,7 +38,7 @@ const DEFAULTS = {
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  upload: 0, steps: 0, covenant: 0, broken: 0, tablets: 0, awaited: 0, sent: 0, scales: 0, extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
+  rings: 0, ringDir: 0, fence: 0, burst: 0, upload: 0, steps: 0, covenant: 0, broken: 0, tablets: 0, awaited: 0, sent: 0, scales: 0, extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
   // lettering
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.145, tBrX: 0.05, tBrY: 0.11, tBrS: 0,
 };
@@ -165,6 +165,19 @@ const postmodernBase = {
   shards: 1, script: 1,
   acc: [168, 46, 110],
   lBrX: 0.3, lBrY: 0.3, tBrX: 0.2, tBrY: 0.08,
+};
+
+const individualBase = {
+  // nothing above; man at the centre, with a colour of his own, looking inward
+  Gy: 0.62, rG: 0.19, Wy: -0.22, rW: 0.4, Sy: -0.12,
+  glory: [0.98, 0.95, 0.93], sky: [0.97, 0.9, 0.88], far: [0.9, 0.84, 0.9], low: [0.95, 0.9, 0.88], deep: [0.84, 0.76, 0.84],
+  sea: [0.62, 0.66, 0.8], land: [0.94, 0.78, 0.6], shade: [0.4, 0.3, 0.5], warm: 0.35, bg: 0.4,
+  stainC: [0.3, 0.24, 0.3],
+  bare: 0.45, manC: [0.62, 0.34, 0.6], empty: 0.7,
+  selfR: 0.08, selfA: 0.35, selfC: [0.94, 0.5, 0.38],
+  rings: 1, ringDir: -1,
+  acc: [180, 78, 46],
+  lBrX: 0.3, lBrY: 0.22, tBrX: 0.17, tBrY: -0.02,
 };
 
 const transhumanBase = {
@@ -846,7 +859,7 @@ export const WORLDVIEWS = {
   marxism: {
     name: 'Marxism',
     tagline: 'History is a war of classes, and revolution will end it.',
-    move: { to: 'transhumanism', q: 'What if technology, not revolution, can remake man?' },
+    move: { to: 'individualism', q: 'What if the self, not society, is what needs freeing?' },
     acts: build(marxistBase, [
       {
         slug: 'matter-in-motion',
@@ -899,6 +912,60 @@ export const WORLDVIEWS = {
       },
     ]),
   },
+  individualism: {
+    name: 'Expressive Individualism',
+    tagline: 'The true self lies within, and must be set free.',
+    move: { to: 'transhumanism', q: 'What if the body itself can be remade to fit the self?' },
+    acts: build(individualBase, [
+      {
+        slug: 'the-inner-self',
+        name: 'The Inner Self',
+        text: 'Each person has a true self within: feelings and desires that are his alone. Who he really is, he finds by looking inward, not to God or to others.',
+        p: {},
+        labels: {
+          god: ['Nothing above', 'Look within instead'],
+          world: ['Society', 'A stage for the self'],
+          self: ['The self', 'Its feelings are its truth'],
+        },
+      },
+      {
+        slug: 'repression',
+        name: 'Repression',
+        text: 'What is wrong lies outside the self: family, tradition, religion and the moral rules that tell people who to be. To deny one’s desires is to be false to oneself.',
+        p: { rings: 0, fence: 1, selfA: 0.15, selfR: 0.05, dull: 0.3, stainR: 0.14 },
+        labels: {
+          god: ['Nothing above', 'Or one more rule to throw off'],
+          world: ['Society', 'Its rules hem the self in'],
+          self: ['The self', 'Held in by others’ rules'],
+          sin: ['Repression', 'Sin is saying no to oneself'],
+        },
+      },
+      {
+        slug: 'self-expression',
+        name: 'Self-Expression',
+        text: 'Freedom comes by discovering who you really are and expressing it, whatever others think. Society’s task is to affirm each person’s chosen identity.',
+        p: { ringDir: 1, fence: 0.35, burst: 1, selfA: 1, selfR: 0.22, glow: 0.4, rip: 0.6 },
+        labels: {
+          god: ['Nothing above', 'The self is its own judge'],
+          world: ['Society', 'Required to affirm'],
+          bridge: ['Authenticity', 'Following the heart, which deceives'],
+          self: ['The self', 'Its own maker'],
+        },
+      },
+      {
+        slug: 'fulfilment',
+        name: 'Fulfilment',
+        text: 'The goal of life is to become fully oneself and to feel fulfilled. Beyond that there is no hope: when the self dies, the story it told about itself ends.',
+        p: { rings: 0.4, ringDir: 1, selfA: 0.7, selfR: 0.3, sea: [0.82, 0.5, 0.72], land: [0.95, 0.62, 0.48], manA: 0.3, hollow: 1, manI: 0.7, glow: 0.2 },
+        labels: {
+          god: ['Nothing above', 'No one to say who I am'],
+          world: ['Society', 'A crowd of selves, each alone'],
+          self: ['The self', 'Fulfilled, until it dies'],
+        },
+      },
+    ]),
+  },
+
   transhumanism: {
     name: 'Transhumanism',
     tagline: 'Man is unfinished, and technology will finish him.',

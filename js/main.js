@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=56';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=56';
-import { CATALOGUE } from './catalogue.js?v=56';
-import { createMenu } from './menu.js?v=56';
+import { createPainter } from './paint.js?v=57';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=57';
+import { CATALOGUE } from './catalogue.js?v=57';
+import { createMenu } from './menu.js?v=57';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -657,6 +657,31 @@ function drawConn(p, c, G) {
       dots += `<circle cx="${f(x)}" cy="${f(y)}" r=".028" fill="${PAP}" stroke="${ACC}" stroke-width=".0055" opacity="${f(op)}"/>`;
     });
     g += lines + rite + dots;
+  }
+
+  // ----- rings round man: closing in as he looks inward, or going out from him as he expresses himself -----
+  if (p.rings > 0.01) {
+    const k = (p.ringDir + 1) / 2;
+    let d = '';
+    for (let i = 0; i < 3; i++) {
+      const ph = (c.t * 0.12 + i / 3) % 1, r = 0.095 + 0.2 * lerp(1 - ph, ph, k), op = Math.sin(Math.PI * ph);
+      d += `<g opacity="${f(op)}"><circle cx="0" cy="${f(-p.Sy)}" r="${f(r)}" fill="none" stroke="${PAP}" stroke-width=".0125" opacity=".92"/><circle cx="0" cy="${f(-p.Sy)}" r="${f(r)}" fill="none" stroke="${ACC}" stroke-width=".004"/></g>`;
+    }
+    g += `<g opacity="${f(p.rings)}">${d}</g>`;
+  }
+  // ----- other people's rules: a ring of short bars round man, hemming him in; thrown off, they burst outward -----
+  if (p.fence > 0.01) {
+    let d = '';
+    for (let i = 0; i < 14; i++) {
+      const h = Math.sin(i * 12.9898) * 43758.5453, rnd = h - Math.floor(h);
+      const a = (i / 14) * 2 * Math.PI + p.burst * (rnd - 0.5) * 0.6, r0 = 0.125 + p.burst * (0.14 + 0.12 * rnd), L = 0.05;
+      const tilt = p.burst * (rnd - 0.5) * 1.6, ca = Math.cos(a), sa = Math.sin(a), cb = Math.cos(a + tilt), sb = Math.sin(a + tilt);
+      const x0 = r0 * ca, y0 = p.Sy + r0 * sa;
+      d += `M${f(x0)},${f(-y0)} L${f(x0 + L * cb)},${f(-(y0 + L * sb))} `;
+    }
+    // (two rails join the posts into a fence; when it bursts they are gone)
+    const rails = p.burst < 0.99 ? `<g opacity="${f(1 - p.burst)}">${[0.135, 0.165].map((r) => `<circle cx="0" cy="${f(-p.Sy)}" r="${r}" fill="none" stroke="${PAP}" stroke-width=".0125" opacity=".92"/><circle cx="0" cy="${f(-p.Sy)}" r="${r}" fill="none" stroke="${DARK}" stroke-width=".0036"/>`).join('')}</g>` : '';
+    g += `<g opacity="${f(p.fence * (1 - 0.5 * p.burst))}">${rails}${stroke(d, DARK, 0.0062)}</g>`;
   }
 
   // ----- uploading: bits going up from man to a chip set in the place left empty above -----
