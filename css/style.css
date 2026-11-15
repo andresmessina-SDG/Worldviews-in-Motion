@@ -160,6 +160,10 @@ h1 { margin: 2px 0 0; font-size: clamp(2rem, 5.5vmin, 3.6rem); font-weight: 600;
 
 /* the worldview now open: set further out, in fuller colour, its name in the accent */
 .tab.cur { padding-left: 20px; }
+/* on a phone the words below reach the strip: there the open worldview's dab stays in line, and smaller, until the menu opens */
+.narrow .tab { transition: padding-left .3s ease; }
+.narrow:not(.menu-open) .tab.cur { padding-left: 6px; }
+.narrow:not(.menu-open) .tab.cur .tab-dab { transform: scale(.8); }
 .tab.cur .tab-dab { opacity: .95; transform: scale(1); }
 .tab.cur .tab-stroke { opacity: .95; width: calc((var(--tw, 80px) + 150px) * var(--out, 0)); background: linear-gradient(to right, color-mix(in srgb, var(--c1) 80%, #fbf7ec) 0, color-mix(in srgb, var(--c2) 72%, #fbf7ec) 40% 100%); }
 .tab.cur .tab-name { font-weight: 600; color: var(--red); }
@@ -249,8 +253,8 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 .narrow .tag { display: none; }
 .narrow .act {
   position: fixed;
-  left: 9vw;
-  right: 9vw;
+  left: max(9vw, 32px);           /* clear of the menu's strip of dabs on the left, and as much in from the right */
+  right: max(9vw, 32px);
   bottom: max(7.5vw, 26px);
   min-height: 9.4em;
   margin: 0;

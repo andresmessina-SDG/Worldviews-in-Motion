@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=60';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=60';
-import { CATALOGUE } from './catalogue.js?v=60';
-import { createMenu } from './menu.js?v=60';
+import { createPainter } from './paint.js?v=61';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=61';
+import { CATALOGUE } from './catalogue.js?v=61';
+import { createMenu } from './menu.js?v=61';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -336,8 +336,10 @@ function fit() {
   });
   const room = (x) => `${Math.max(60, ((W - cx) / unit - x - 0.1) * unit)}px`;   // (room to the right edge)
   labels.bridge.el.style.maxWidth = room(Math.max(0.22, actOf().p.lBrX));
-  labels.self.el.style.maxWidth = room(0.56);
-  labels.sin.el.style.maxWidth = room(0.56);
+  // (man's label and sin's sit at the world's side, mirrored: measured from there, but never from further out than 0.56)
+  const side = Math.min(0.56, actOf().p.rW + actOf().p.lSide);
+  labels.self.el.style.maxWidth = room(side);
+  labels.sin.el.style.maxWidth = room(side);
   // in a short window the words on the left reach down beside the painting: keep clear of them
   if (short) labels.sin.el.style.maxWidth = `${Math.max(60, cx - 0.52 * unit - document.querySelector('.t').getBoundingClientRect().right - 10)}px`;
   // if the four names cannot sit side by side, only the open act keeps its name
