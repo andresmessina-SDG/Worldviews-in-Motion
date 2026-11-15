@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=45';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=45';
-import { CATALOGUE } from './catalogue.js?v=45';
-import { createMenu } from './menu.js?v=45';
+import { createPainter } from './paint.js?v=46';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=46';
+import { CATALOGUE } from './catalogue.js?v=46';
+import { createMenu } from './menu.js?v=46';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -55,7 +55,7 @@ const lerp = (a, b, k) => (typeof a === 'number' ? a + (b - a) * k : a.map((v, i
 const blendP = (a, b, k) => { const o = {}; for (const n in b) o[n] = lerp(a[n], b[n], k); return o; };
 const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 
-let live = target();
+let live = target(), settled = -1;
 let from = live;
 let t0 = -1e9;
 let dur = 1;
@@ -750,9 +750,13 @@ function orbitAt(p, a, R, rot) {
 }
 // As wide and as level as asked, unless that would carry God into the words on the left, off the page or into his own name.
 // Where room is short the orbit first tips up more steeply, and only then grows smaller.
+// (it runs some thirty times a frame, so it works from a table of angles and makes no arrays: the sums are orbitAt's)
+const AROUND = new Float64Array(96).map((_, i) => (i % 2 ? Math.sin : Math.cos)((Math.floor(i / 2) * Math.PI) / 24));
 function orbitFits(p, R, rot) {
-  for (let i = 0; i < 48; i++) {
-    const [x, y, sa] = orbitAt(p, (i * Math.PI) / 24, R, rot), r = p.rG * (1 + 0.2 * sa) + 0.03;
+  const Ry = orbitRy(p, R), c = Math.cos(rot), s = Math.sin(rot);
+  for (let i = 0; i < 96; i += 2) {
+    const ca = AROUND[i], sa = AROUND[i + 1];
+    const x = R * ca * c - Ry * sa * s, y = p.Sy + R * ca * s + Ry * sa * c, r = p.rG * (1 + 0.2 * sa) + 0.03;
     if ((x - r < wordsRight && y + r > wordsBottom) || Math.abs(x) + r > ext + 0.04 || y + r > p.Gy - 0.09) return false;
   }
   return true;
@@ -862,7 +866,11 @@ function frame(now) {
   const dt = lastDraw ? Math.min(100, now - lastDraw) / 1000 : 0;
   lastDraw = now;
 
-  if (!params.has('k')) live = blendP(from, target(), ease(Math.min(1, (now - t0) / dur)));
+  // (once a move is over the values stand still, so they are taken once rather than blended afresh each frame)
+  if (!params.has('k')) {
+    if (now - t0 < dur) { live = blendP(from, target(), ease((now - t0) / dur)); settled = -1; }
+    else if (settled !== t0) { live = target(); settled = t0; }
+  }
   const p = live;
   const t = frozen !== null ? frozen : reduced ? 0 : now / 1000;
   const hd = hands();
