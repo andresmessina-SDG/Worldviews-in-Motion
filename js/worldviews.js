@@ -34,11 +34,11 @@ const DEFAULTS = {
   box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  circuit: 0, shards: 0, dominant: 0, play: 0, gap: 0, script: 0, pyr: 0, level: 0, strata: 0, split: 0, churn: 0, stainOn: 0, star: 0, law: 0,
+  aura: 0, circuit: 0, shards: 0, dominant: 0, play: 0, gap: 0, script: 0, pyr: 0, level: 0, strata: 0, split: 0, churn: 0, stainOn: 0, star: 0, law: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  rings: 0, ringDir: 0, fence: 0, burst: 0, upload: 0, steps: 0, covenant: 0, broken: 0, tablets: 0, awaited: 0, sent: 0, scales: 0, extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
+  spiral: 0, spiralW: 0, rings: 0, ringDir: 0, fence: 0, burst: 0, upload: 0, steps: 0, covenant: 0, broken: 0, tablets: 0, awaited: 0, sent: 0, scales: 0, extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
   // lettering
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.145, tBrX: 0.05, tBrY: 0.11, tBrS: 0,
 };
@@ -178,6 +178,19 @@ const individualBase = {
   rings: 1, ringDir: -1,
   acc: [180, 78, 46],
   lBrX: 0.3, lBrY: 0.22, tBrX: 0.17, tBrY: -0.02,
+};
+
+const newAgeBase = {
+  // the Universe as a violet mist above, with no edge; man in an aura, a spark of the same divinity
+  Gy: 0.55, rG: 0.3, Wy: -0.3, rW: 0.36, Sy: -0.2,
+  glory: [0.99, 0.95, 0.98], sky: [0.96, 0.88, 0.94], far: [0.86, 0.82, 0.94], low: [0.92, 0.88, 0.94], deep: [0.78, 0.72, 0.88],
+  sea: [0.6, 0.56, 0.84], land: [0.94, 0.7, 0.78], shade: [0.4, 0.3, 0.56], warm: 0.3, bg: 0.4,
+  godC: [0.78, 0.6, 0.92], godRim: [0.9, 0.7, 0.86],
+  stainC: [0.34, 0.3, 0.4],
+  manC: [0.6, 0.36, 0.66],
+  mist: 1, aura: 0.75,
+  acc: [140, 62, 150],
+  lBrX: 0.22, lBrY: 0.2, tBrX: 0.012, tBrY: 0.2,
 };
 
 const transhumanBase = {
@@ -969,7 +982,7 @@ export const WORLDVIEWS = {
   transhumanism: {
     name: 'Transhumanism',
     tagline: 'Man is unfinished, and technology will finish him.',
-    move: { to: 'hindu-monism', q: 'What if matter is an illusion, and all is one?' },
+    move: { to: 'new-age', q: 'What if man becomes divine by awakening, not by machines?' },
     acts: build(transhumanBase, [
       {
         slug: 'unfinished',
@@ -1017,6 +1030,62 @@ export const WORLDVIEWS = {
           world: ['Nature', 'Wired over'],
           bridge: ['Uploading', 'A copy, but is anyone in it?'],
           self: ['The body', 'Left behind'],
+        },
+      },
+    ]),
+  },
+
+  'new-age': {
+    name: 'New Age',
+    tagline: 'All is one, all is divine, and so are you.',
+    move: { to: 'hindu-monism', q: 'What if the self must be lost in the One, not exalted?' },
+    acts: build(newAgeBase, [
+      {
+        slug: 'all-is-one',
+        name: 'All Is One',
+        text: 'Everything is one, and the one is divine: a living energy, not a Person. Each of us is a spark of it. In the depths of the self, each person is God.',
+        p: {},
+        labels: {
+          god: ['The Universe', 'Energy, not a Person'],
+          world: ['The cosmos', 'One with the self'],
+          self: ['The self', '“I am God”'],
+        },
+      },
+      {
+        slug: 'forgetting',
+        name: 'Forgetting',
+        text: 'What is wrong is not sin but forgetting. We have lost sight of our own divinity and live shut inside narrow, everyday consciousness.',
+        p: { aura: 0.15, stainR: 0.1, stainA: 0.35, dull: 0.35, mist: 0.7 },
+        labels: {
+          god: ['The Universe', 'No one to offend'],
+          world: ['The cosmos', 'Seen only on the surface'],
+          self: ['The self', 'Asleep to its own divinity'],
+          sin: ['Forgetting', 'Not sin, only a narrow mind'],
+        },
+      },
+      {
+        slug: 'awakening',
+        name: 'Awakening',
+        text: 'Meditation, crystals, channelling and other techniques open the mind to a higher consciousness. The awakened self finds that it creates its own reality.',
+        p: { aura: 1, spiral: 1, stainR: 0.06, stainA: 0.15, glow: 0.5, rip: 0.6 },
+        labels: {
+          god: ['The Universe', 'Tapped, not worshipped'],
+          world: ['The cosmos', 'Shaped by the mind'],
+          bridge: ['Cosmic consciousness', 'Where right and wrong dissolve'],
+          self: ['The self', 'Creating its own reality'],
+          sin: ['Forgetting', 'Cured by technique, not grace'],
+        },
+      },
+      {
+        slug: 'ascension',
+        name: 'Ascension',
+        text: 'Death is a passage, not an end. The soul returns in life after life, rising toward the light, and mankind is on the edge of a new age.',
+        p: { aura: 0.8, spiral: 1, spiralW: 1, manA: 0.3, hollow: 1, manI: 0.7, mist: 1.15, glow: 0.4, tBrX: 0.05 },
+        labels: {
+          god: ['The Universe', 'Reached by climbing, not by grace'],
+          world: ['The new age', 'Always about to dawn'],
+          bridge: ['Reincarnation', 'Life after life, and no Saviour'],
+          self: ['The soul', 'Rising, with no judgement to face'],
         },
       },
     ]),

@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=57';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=57';
-import { CATALOGUE } from './catalogue.js?v=57';
-import { createMenu } from './menu.js?v=57';
+import { createPainter } from './paint.js?v=58';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=58';
+import { CATALOGUE } from './catalogue.js?v=58';
+import { createMenu } from './menu.js?v=58';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -657,6 +657,19 @@ function drawConn(p, c, G) {
       dots += `<circle cx="${f(x)}" cy="${f(y)}" r=".028" fill="${PAP}" stroke="${ACC}" stroke-width=".0055" opacity="${f(op)}"/>`;
     });
     g += lines + rite + dots;
+  }
+
+  // ----- a beam of consciousness rising from man to the Universe; widened, a spiral of lives winding up toward it -----
+  if (p.spiral > 0.01) {
+    const y0 = p.Sy + 0.09, y1 = p.Gy - p.rG * 0.45;
+    if (y1 > y0) {
+      let d = '';
+      for (let i = 0; i <= 64; i++) {
+        const s = i / 64, y = y0 + (y1 - y0) * s, x = p.spiralW * 0.07 * (1 - 0.5 * s) * Math.sin(s * 3.5 * 2 * Math.PI + c.t * 0.4);
+        d += `${i ? 'L' : 'M'}${f(x)},${f(-y)} `;
+      }
+      g += `<g opacity="${f(p.spiral)}">${stroke(d, ACC, 0.0042)}<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".0036" stroke-linecap="round" stroke-dasharray=".001 .03" stroke-dashoffset="${f(-c.t * 0.025)}"/></g>`;
+    }
   }
 
   // ----- rings round man: closing in as he looks inward, or going out from him as he expresses himself -----

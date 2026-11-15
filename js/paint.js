@@ -59,6 +59,7 @@ uniform float uPyr, uLevel;     // the world as a pyramid of society; the pyrami
 uniform float uStrata, uSplit, uChurn;  // the pyramid in two storeys, split at a height (in the world's radii); its lower storey churning
 uniform float uStainOn;         // the stain moved off man and onto the top of the pyramid
 uniform float uShards, uDominant, uPlay, uGap, uScript;  // the world as a collage of shards; one story's colour over most; shards shifting; cracks between; handwriting over all
+uniform float uAura;           // a soft rainbow aura round man, and how far it reaches
 uniform float uCircuit;        // circuit traces spreading out from man, how far
 uniform float uStar, uLaw;      // a ruled eight-pointed star in the Ultimate; the world patterned with such stars, as law
 uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
@@ -548,6 +549,16 @@ void main(){
     float inside = smoothstep(0., -.025, dW);
     A *= 1. - .55 * uSelfA * smoothstep(.03, -.06, d) * inside;
     A += K(uSelfC) * layers(d, 9., .035, .012, .6) * strokes * uSelfA * inside;
+  }
+
+  // ---------- an aura: soft bands of every colour round man, breathing slowly ----------
+  if (uAura > .001 && length(q - Sc) < .4) {
+    float r = length(q - Sc + wL * .025), R = .07 + .17 * uAura * (1. + .05 * sin(t * .8));
+    float band = r / R + (noise((q - Sc) * 6. + t * .05) - .5) * .18;
+    vec3 c = mix(vec3(1.), .5 + .5 * cos(6.2832 * (band * .8 + t * .03 + vec3(0., .33, .67))), .5);
+    float m = smoothstep(1.15, .55, band) * smoothstep(.3, .6, r / .07 - .3);
+    A *= 1. - .45 * m * uAura;
+    A += K(c) * m * .45 * uAura;
   }
 
   // ---------- spirits: small lights wandering the world, or dark presences pressing in ----------
