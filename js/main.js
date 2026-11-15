@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=38';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=38';
-import { CATALOGUE } from './catalogue.js?v=38';
-import { createMenu } from './menu.js?v=38';
+import { createPainter } from './paint.js?v=39';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=39';
+import { CATALOGUE } from './catalogue.js?v=39';
+import { createMenu } from './menu.js?v=39';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -750,9 +750,10 @@ function orbitShape(p) {
 // The orbit's size and tilt follow what fits on a damped spring: when the room changes all at once
 // (the words of a new act arrive), God's speed still changes smoothly and he never jerks.
 let oShape = null, oVel = [0, 0];
+let gTurn = null;
 function godAt(p, dt) {
   const k = p.orbit;
-  if (k < 0.001) { oShape = null; return { x: 0, y: p.Gy, r: p.rG, front: 0, back: 0, R: p.oR, rot: p.oRot, want: [p.oR, p.oRot] }; }
+  if (k < 0.001) { oShape = null; gTurn = null; return { x: 0, y: p.Gy, r: p.rG, front: 0, back: 0, R: p.oR, rot: p.oRot, want: [p.oR, p.oRot] }; }
   const want = orbitShape(p);
   if (!oShape || frozen !== null) { oShape = want.slice(); oVel = [0, 0]; }
   else {
@@ -765,7 +766,16 @@ function godAt(p, dt) {
   const [R, rot] = oShape, [x, y, s] = orbitAt(p, orb, R, rot);
   // in front of the world or behind it, with only a quick crossfade where he crosses its edge
   const nearSide = Math.min(1, Math.max(0, (s + 0.1) / 0.2)), ns = nearSide * nearSide * (3 - 2 * nearSide);
-  return { x: k * x, y: lerp(p.Gy, y, k), r: p.rG * (1 + 0.2 * s * k), front: k * ns, back: k * (1 - ns), R, rot, want };
+  // Between his place above and his place on the orbit he goes round man, never through him: the blend is of his
+  // angle and distance about man, the shorter way round, and that way is kept from frame to frame once chosen.
+  const aA = Math.atan2(p.Gy - p.Sy, 0), rA = Math.abs(p.Gy - p.Sy), rB = Math.hypot(x, y - p.Sy);
+  let turn = Math.atan2(y - p.Sy, x) - aA;
+  const near = gTurn === null ? 0 : gTurn;
+  turn -= 2 * Math.PI * Math.round((turn - near) / (2 * Math.PI));
+  gTurn = k >= 1 ? null : turn;                   // (fully on the orbit, either way gives the same place)
+  const kb = (k - 0.001) / 0.999;                  // (from 0 where the orbit begins above, so he starts without a step)
+  const a = aA + turn * kb, d = lerp(rA, rB, kb);
+  return { x: d * Math.cos(a), y: p.Sy + d * Math.sin(a), r: p.rG * (1 + 0.2 * s * k), front: k * ns, back: k * (1 - ns), R, rot, want };
 }
 // ---------- spirits ----------
 // Nine small presences wander the world. The first five can turn dark and close in on man; the rest can
@@ -817,7 +827,7 @@ function frame(now) {
   arrow = frozen !== null ? frozen * 0.04 * p.flow : arrow + dt * 0.04 * p.flow * (reduced ? 0 : 1);
   orb = frozen !== null ? Math.PI / 2 + frozen * p.oSpd : orb + dt * p.oSpd * (reduced ? 0 : 1);
   const G = godAt(p, dt);
-  window.__G = { ...G, cx, cy, unit };                // for tests of where God has got to
+  window.__G = { ...G, cx, cy, unit, sy: p.Sy };      // for tests of where God has got to, and man
 
   const css = rgb(p.acc);
   if (css !== accent) { accent = css; document.documentElement.style.setProperty('--red', css); }
