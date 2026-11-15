@@ -90,7 +90,9 @@ export function createMenu(root, items, { isBuilt, onSelect }) {
     mouseNear = false;
     px = e.clientX; py = e.clientY;
     const wasOpen = openT > 0.6 && depth > 0.6;
-    if (px < TOUCH_EDGE || (wasOpen && px < menuW + 20)) {
+    // a button of the page's own that reaches into the strip (on a phone, the name of the first act) keeps its tap
+    const theirs = !wasOpen && !root.contains(e.target) && e.target.closest && e.target.closest('button, a');
+    if (!theirs && (px < TOUCH_EDGE || (wasOpen && px < menuW + 20))) {
       // a tap chooses the name under the finger as it came down, however the lens moves afterwards
       let hit = -1;
       if (wasOpen) for (let i = 0; i < N; i++) if (py >= ys[i] && py < ys[i] + hs[i]) hit = i;
