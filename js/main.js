@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=36';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=36';
-import { CATALOGUE } from './catalogue.js?v=36';
-import { createMenu } from './menu.js?v=36';
+import { createPainter } from './paint.js?v=37';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=37';
+import { CATALOGUE } from './catalogue.js?v=37';
+import { createMenu } from './menu.js?v=37';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -144,6 +144,7 @@ function go(wv, act) {
   t0 = performance.now();
   dur = reduced ? 1 : moved ? 4200 : 2600;
   history.replaceState(null, '', `#${wv}/${actOf().slug}`);
+  if (moved) startGlide(wv);
   renderText(false, moved);
   if (moved) { menu.setCurrent(wv); menu.peek(1600); }
 }
@@ -180,7 +181,36 @@ const headBottom = () => document.querySelector('.head').getBoundingClientRect()
 const actHeight = (Hh) => Hh - document.querySelector('.act').getBoundingClientRect().top + 4;
 // beside: the painting's centre stays at least 0.45 of its unit to the right of the words, as at 1024 x 768
 const wideUnit = (W, Hh) => Math.min(Hh / 2, W / 1.5, (W / 2 - document.querySelector('.t').getBoundingClientRect().right) / 0.45);
-const narrowUnit = (W, Hh) => Math.min((Hh - headBottom() - actHeight(Hh)) / 1.94, W / 1.85);
+// With the title above and the words below, the painting gets the room between them. Each worldview keeps room
+// for its own title and for the tallest of its acts, found by trying each, so that the painting keeps one size and
+// place from act to act. (The act's box is held at that height, and shorter words sit at its top, just under the
+// line of history.) Between worldviews the size may change, and then it glides, while the words are away.
+let narrowRoom = {};
+function measureNarrowRoom(Hh) {
+  const act = document.querySelector('.act'), els = [$('name'), $('actName'), $('actText'), moveBtn];
+  const keep = els.map((e) => e.textContent), out = {};
+  for (const [id, wv] of Object.entries(WORLDVIEWS)) {
+    $('name').textContent = wv.name;
+    moveBtn.textContent = wv.move.q;
+    act.style.minHeight = '';
+    let tall = 0;
+    for (const a of wv.acts) {
+      $('actName').textContent = a.name;
+      $('actText').textContent = a.text;
+      tall = Math.max(tall, act.getBoundingClientRect().height);
+    }
+    act.style.minHeight = `${Math.ceil(tall)}px`;
+    out[id] = { head: headBottom(), tall: Math.ceil(tall), act: actHeight(Hh) };
+  }
+  els.forEach((e, i) => { e.textContent = keep[i]; });
+  act.style.minHeight = '';
+  return out;
+}
+const narrowUnit = (W, Hh, r) => Math.min((Hh - r.head - r.act) / 1.94, W / 1.85);
+function narrowPlace(W, Hh, wv) {
+  const r = narrowRoom[wv], u = narrowUnit(W, Hh, r);
+  return { unit: u, cx: W / 2, cy: r.head + (Hh - r.head - r.act) / 2 + 0.02 * u, ext: W / 2 / u - 0.13 };
+}
 const longest = (pick) => Object.values(WORLDVIEWS).flatMap(pick).reduce((a, b) => (b.length > a.length ? b : a), '');
 const LONGEST = [longest((w) => [w.name]), longest((w) => [w.tagline]), longest((w) => w.acts.map((a) => a.name)),
   longest((w) => w.acts.map((a) => a.text)), longest((w) => [w.move.q])];
@@ -203,24 +233,29 @@ function wordsFit(W, Hh, u) {
 let pageLayout = 'wide';
 function resize(choose = true) {
   const W = innerWidth, Hh = innerHeight, body = document.body.classList;
+  // (the washes gain nothing visible beyond 1.5 pixels per point, and twice the density costs nearly twice as much)
+  scale = Math.min(window.devicePixelRatio || 1, 1.5) * quality;
+  if (painter) painter.resize(Math.round(W * scale), Math.round(Hh * scale));
   const set = (l) => { for (const c of ['narrow', 'compact', 'short']) body.toggle(c, l === c); };
   if (choose) {
     let best = 'short', u = 0;
     if (Hh < 520) { set('short'); u = Hh / 2; }               // (there is no room for words below)
     else for (const l of ['wide', 'compact']) { set(l); if (wordsFit(W, Hh, wideUnit(W, Hh))) { best = l; u = wideUnit(W, Hh); break; } }
     set('narrow');
-    // (in a tall window the words below use the page better, so beside must win clearly)
-    pageLayout = narrowUnit(W, Hh) * 1.15 > u ? 'narrow' : best;
+    narrowRoom = measureNarrowRoom(Hh);
+    // (in a tall window the words below use the page better, so beside must win clearly; and the choice is made
+    // for the worldview that leaves the painting least room)
+    const nu = Math.min(...Object.values(narrowRoom).map((r) => narrowUnit(W, Hh, r)));
+    pageLayout = nu * 1.15 > u ? 'narrow' : best;
   }
   set(pageLayout);
   const narrow = pageLayout === 'narrow', short = pageLayout === 'short';
+  document.querySelector('.act').style.minHeight = narrow ? `${narrowRoom[cur.wv].tall}px` : '';
   if (narrow) {
     // title above, painting in the middle, the act's words below
-    const topH = headBottom();
-    unit = narrowUnit(W, Hh);
-    cx = W / 2;
-    cy = topH + (Hh - topH - actHeight(Hh)) / 2 + 0.02 * unit;
-    ext = W / 2 / unit - 0.13;
+    const to = narrowPlace(W, Hh, cur.wv);
+    if (glide) { glide.to = to; return; }
+    ({ unit, cx, cy, ext } = to);
   } else if (short) {
     // a phone held sideways: the words take the whole height on the left, and the painting, with the line of
     // history under it, is centred in the room to their right, which leaves the painting about 1.2 of its unit on
@@ -236,9 +271,28 @@ function resize(choose = true) {
     cy = Hh / 2;
     ext = Math.min(1.05, W / 2 / unit - 0.16);
   }
-  // (the washes gain nothing visible beyond 1.5 pixels per point, and twice the density costs nearly twice as much)
-  scale = Math.min(window.devicePixelRatio || 1, 1.5) * quality;
-  if (painter) painter.resize(Math.round(W * scale), Math.round(Hh * scale));
+  glide = null;
+  fit();
+}
+// the size of the painting gliding to that of the next worldview, over the time its words are away
+let glide = null;
+function startGlide(wv) {
+  if (pageLayout !== 'narrow' || reduced || frozen !== null) return;
+  glide = { from: { unit, cx, cy, ext }, to: narrowPlace(innerWidth, innerHeight, wv), t0: performance.now() };
+}
+function stepGlide(now) {
+  if (!glide) return;
+  const k = ease(Math.min(1, (now - glide.t0) / 560)), f = glide.from, to = glide.to;
+  unit = f.unit + (to.unit - f.unit) * k;
+  cx = f.cx + (to.cx - f.cx) * k;
+  cy = f.cy + (to.cy - f.cy) * k;
+  ext = f.ext + (to.ext - f.ext) * k;
+  if (k === 1) glide = null;
+  fit();
+}
+// everything placed by the painting's size and place
+function fit() {
+  const W = innerWidth, Hh = innerHeight, narrow = pageLayout === 'narrow', short = pageLayout === 'short';
   marks.forEach((b, i) => {
     b.style.left = `${cx + ext * (-0.72 + 0.48 * i) * unit}px`;
     b.style.top = `${cy + 0.795 * unit}px`;
@@ -763,6 +817,7 @@ function frame(now) {
   const css = rgb(p.acc);
   if (css !== accent) { accent = css; document.documentElement.style.setProperty('--red', css); }
 
+  stepGlide(now);
   layout(p, G, dt);
   if (p.spirits > 0.01) spiritsAt(p, t);
   if (painter) {
