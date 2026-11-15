@@ -272,9 +272,12 @@ void main(){
     float m2 = smoothstep(.45, .7, fbm(p * 2.6 - wL + 13. - t * .015));
     vec3 sea = mix(uSea, vec3(.42, .52, .58), uDull * .7);
     vec3 land = mix(uLand, vec3(.44, .51, .5), uDull * .7);
+    float snow = 0.;
     if (uSeasons > .001) {
       // the year turning, about once a minute: spring, summer, autumn, winter
       float x = fract(t * .02) * 4.;
+      // in winter the land lies under snow: the sea's wash beneath it is lifted, or the earth would read as all sea
+      snow = uSeasons * (x < 3. ? smoothstep(2., 3., x) : 1. - smoothstep(3., 4., x));
       vec3 sp = vec3(.6, .78, .42), su = vec3(.42, .66, .34), au = vec3(.88, .58, .3), wi = vec3(.84, .87, .9);
       vec3 c = x < 1. ? mix(sp, su, smoothstep(0., 1., x)) : x < 2. ? mix(su, au, smoothstep(1., 2., x)) : x < 3. ? mix(au, wi, smoothstep(2., 3., x)) : mix(wi, sp, smoothstep(3., 4., x));
       land = mix(land, mix(c, vec3(.44, .51, .5), uDull * .7), uSeasons);
@@ -285,9 +288,9 @@ void main(){
     dens *= 1. - .5 * lit;
     sea = mix(sea, vec3(.99, .8, .42), lit);
     land = mix(land, vec3(.99, .9, .62), lit);
-    vec3 Aw = K(sea) * dens * (1. - m1 * .7) * bloom(q * 2.6, 47.) * (.75 + .7 * v2);
+    vec3 Aw = K(sea) * dens * (1. - m1 * (.7 + .25 * snow)) * bloom(q * 2.6, 47.) * (.75 + .7 * v2);
     Aw += K(land) * dens * m1 * (.6 + .5 * v1);
-    Aw += K(vec3(.86, .66, .3)) * dens * m2 * uWarm * (1. - .6 * uDull);
+    Aw += K(vec3(.86, .66, .3)) * dens * m2 * uWarm * (1. - .6 * uDull) * (1. - .8 * snow);
     Aw += K(mix(uShade, vec3(.95, .6, .3), lit)) * dens * smoothstep(-.3, 1., dot(p, vec2(.45, -.9)) / rW) * (.4 + .5 * v1);
     if (uStrata > .001) {
       // two storeys, one resting on the other: the lower one in bands that slide against each other, by turns
@@ -532,6 +535,8 @@ void main(){
   }
 
   // ---------- the triple moon: waxing, full and waning, side by side ----------
+  // (the light round them reaches past the box the moons are drawn in, so it is laid outside it, with no edge)
+  if (uMoons > .001) A *= 1. - .45 * uMoons * exp(-pow(length(q - G) / (rG * 1.7), 2.));
   if (uMoons > .001 && length(q - G) < rG * 1.9 + .1) {
     vec2 nL, nM, nF; float nPW;
     field(q - G, nL, nM, nF, nPW);
@@ -542,7 +547,6 @@ void main(){
     float dWax = max(length(r - cL) - R0 * .85, -(length(r - cL + vec2(R0 * .55, 0.)) - R0 * .8));
     float dWane = max(length(r - cR) - R0 * .85, -(length(r - cR - vec2(R0 * .55, 0.)) - R0 * .8));
     float d = min(dFull, min(dWax, dWane));
-    A *= 1. - .45 * uMoons * exp(-pow(length(q - G) / (rG * 1.7), 2.));
     A += K(uGodC) * layersAt(d, 3., .02, .004, tide, nM, nF) * (.75 + .5 * v1) * uMoons;
     A += K(uGodRim) * layersAt(dFull + R0 * .45, 7., .03, .01, .3, nM, nF) * .35 * uMoons;
     ink += penW(d + .008 + nM.x * .01, nPW) * .8 * uMoons;
