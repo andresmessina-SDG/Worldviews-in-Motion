@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=33';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=33';
-import { CATALOGUE } from './catalogue.js?v=33';
-import { createMenu } from './menu.js?v=33';
+import { createPainter } from './paint.js?v=34';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=34';
+import { CATALOGUE } from './catalogue.js?v=34';
+import { createMenu } from './menu.js?v=34';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -199,7 +199,7 @@ function resize(choose = true) {
   const set = (l) => { for (const c of ['narrow', 'compact', 'short']) body.toggle(c, l === c); };
   if (choose) {
     let best = 'short', u = 0;
-    if (Hh < 520) { set('short'); u = wideUnit(W, Hh); }      // (fitting or not: there is no room for words below)
+    if (Hh < 520) { set('short'); u = Hh / 2; }               // (there is no room for words below)
     else for (const l of ['wide', 'compact']) { set(l); if (wordsFit(W, Hh, wideUnit(W, Hh))) { best = l; u = wideUnit(W, Hh); break; } }
     set('narrow');
     // (in a tall window the words below use the page better, so beside must win clearly)
@@ -214,6 +214,15 @@ function resize(choose = true) {
     cx = W / 2;
     cy = topH + (Hh - topH - actHeight(Hh)) / 2 + 0.02 * unit;
     ext = W / 2 / unit - 0.13;
+  } else if (short) {
+    // a phone held sideways: the words take the whole height on the left, and the painting, with the line of
+    // history under it, is centred in the room to their right, which leaves the painting about 1.2 of its unit on
+    // each side for its labels and the line, so that the line starts clear of the words
+    const right = document.querySelector('.t').getBoundingClientRect().right;
+    cx = (right + W) / 2;
+    unit = Math.min(Hh / 2, (W - right) / 2 / 1.2);
+    cy = Hh / 2;
+    ext = Math.min(1.05, (W - cx) / unit - 0.12);
   } else {
     unit = wideUnit(W, Hh);
     cx = W / 2;
@@ -227,7 +236,7 @@ function resize(choose = true) {
     b.style.left = `${cx + ext * (-0.72 + 0.48 * i) * unit}px`;
     b.style.top = `${cy + 0.795 * unit}px`;
   });
-  const room = (x) => `${Math.max(60, (W / 2 / unit - x - 0.1) * unit)}px`;
+  const room = (x) => `${Math.max(60, ((W - cx) / unit - x - 0.1) * unit)}px`;   // (room to the right edge)
   labels.bridge.el.style.maxWidth = room(Math.max(0.22, actOf().p.lBrX));
   labels.self.el.style.maxWidth = room(0.56);
   labels.sin.el.style.maxWidth = room(0.56);

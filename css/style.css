@@ -272,13 +272,14 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 .compact #moves button { font-size: clamp(.8rem, 1.8vmin, 1rem); padding: 4px 11px 5px; }
 
 /* ---------- wide but short screens, such as a phone held sideways ---------- */
-.short .t { left: 4vw; top: 6vh; width: 23vw; }
-.short h1 { font-size: 1.6rem; }
+/* the words take the whole height here, and the painting is centred in the room to their right (see resize() in main.js) */
+.short .t { left: 4vw; top: 5vh; width: 30vw; }
+.short h1 { font-size: 1.4rem; }
 .short .k { font-size: .62rem; }
 .short .tag { display: none; }
 .short .act { margin-top: 9px; padding-top: 8px; }
 .short .act h2 { font-size: 1.1rem; }
-.short .act p { font-size: .9rem; margin-top: 4px; }
+.short .act p { font-size: .9rem; line-height: 1.18; margin-top: 4px; }
 .short #moves { margin-top: 8px; }
 .short #moves button { font-size: .8rem; padding: 4px 11px 5px; }
 .short .l { font-size: .78rem; }
