@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=32';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=32';
-import { CATALOGUE } from './catalogue.js?v=32';
-import { createMenu } from './menu.js?v=32';
+import { createPainter } from './paint.js?v=33';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=33';
+import { CATALOGUE } from './catalogue.js?v=33';
+import { createMenu } from './menu.js?v=33';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -118,7 +118,7 @@ function renderText(instant, wholePage) {
     marks.forEach((b, i) => { b.textContent = wv.acts[i].name; });
     moveBtn.textContent = wv.move.q;
     document.body.classList.remove('swap', 'swap-all');
-    if (!instant) resize();                     // new words may take a different amount of room
+    if (!instant) resize(false);                // new words may take a different amount of room
   };
   clearTimeout(swapTimer);
   if (instant) return fill();
@@ -162,22 +162,60 @@ setInterval(() => { if (auto && !document.hidden) go(cur.wv, (cur.act + 1) % 4);
 let unit = 1, ext = 1, cx = 0, cy = 0, scale = 1, quality = 1, markH = 0;
 let wordsRight = -1e9, wordsBottom = 1e9;       // the corner of the words on the left, in scene units
 const rects = new Float32Array(12);
-function resize() {
-  const W = innerWidth, Hh = innerHeight;
-  const narrow = W / Hh < 1.3;
-  document.body.classList.toggle('narrow', narrow);
-  const short = !narrow && Hh < 520;
-  document.body.classList.toggle('short', short);
+// Three layouts: the words beside the painting; the same with smaller words, for squarish windows; or the title
+// above the painting and the words below. (A window too short for words below has a fourth: smaller words and
+// smaller lettering.) Each window gets the first beside layout that leaves the words room above the names of the
+// acts, unless the layout with words below gives a painting nearly as large. The choice is made only when the window
+// itself changes, never when the words of a new act arrive, so the page never flips from one layout to another
+// while someone reads; and so it is made for the longest words on the site.
+// Each sum below reads the page as it is laid out at that moment, so the right class must be on the body first.
+const headBottom = () => document.querySelector('.head').getBoundingClientRect().bottom + 4;
+const actHeight = (Hh) => Hh - document.querySelector('.act').getBoundingClientRect().top + 4;
+// beside: the painting's centre stays at least 0.45 of its unit to the right of the words, as at 1024 x 768
+const wideUnit = (W, Hh) => Math.min(Hh / 2, W / 1.5, (W / 2 - document.querySelector('.t').getBoundingClientRect().right) / 0.45);
+const narrowUnit = (W, Hh) => Math.min((Hh - headBottom() - actHeight(Hh)) / 1.94, W / 1.85);
+const longest = (pick) => Object.values(WORLDVIEWS).flatMap(pick).reduce((a, b) => (b.length > a.length ? b : a), '');
+const LONGEST = [longest((w) => [w.name]), longest((w) => [w.tagline]), longest((w) => w.acts.map((a) => a.name)),
+  longest((w) => w.acts.map((a) => a.text)), longest((w) => [w.move.q])];
+// where the words on the left would end with the longest title, tagline, act and question on the site
+function tallestWords() {
+  const els = [$('name'), $('tag'), $('actName'), $('actText'), moveBtn], keep = els.map((e) => e.textContent);
+  els.forEach((e, i) => { e.textContent = LONGEST[i]; });
+  const bottom = moveBtn.getBoundingClientRect().bottom;
+  els.forEach((e, i) => { e.textContent = keep[i]; });
+  return bottom;
+}
+// in a beside layout, do the words end above the names of the acts, with room under them for a label
+// that drops below them (as the name of the problem does)? Names wholly to the right of the words need no room.
+function wordsFit(W, Hh, u) {
+  const ext = Math.min(1.05, W / 2 / u - 0.16);
+  if (W / 2 - 0.96 * ext * u > document.querySelector('.t').getBoundingClientRect().right) return true;
+  const top = Hh / 2 + 0.795 * u - marks[0].offsetHeight / 2;
+  return tallestWords() + 0.03 * u + 2 * parseFloat(getComputedStyle(labels.sin.el).fontSize) + 4 < top;
+}
+let pageLayout = 'wide';
+function resize(choose = true) {
+  const W = innerWidth, Hh = innerHeight, body = document.body.classList;
+  const set = (l) => { for (const c of ['narrow', 'compact', 'short']) body.toggle(c, l === c); };
+  if (choose) {
+    let best = 'short', u = 0;
+    if (Hh < 520) { set('short'); u = wideUnit(W, Hh); }      // (fitting or not: there is no room for words below)
+    else for (const l of ['wide', 'compact']) { set(l); if (wordsFit(W, Hh, wideUnit(W, Hh))) { best = l; u = wideUnit(W, Hh); break; } }
+    set('narrow');
+    // (in a tall window the words below use the page better, so beside must win clearly)
+    pageLayout = narrowUnit(W, Hh) * 1.15 > u ? 'narrow' : best;
+  }
+  set(pageLayout);
+  const narrow = pageLayout === 'narrow', short = pageLayout === 'short';
   if (narrow) {
     // title above, painting in the middle, the act's words below
-    const topH = document.querySelector('.head').getBoundingClientRect().bottom + 4;
-    const botH = Hh - document.querySelector('.act').getBoundingClientRect().top + 4;
-    unit = Math.min((Hh - topH - botH) / 1.94, W / 1.85);
+    const topH = headBottom();
+    unit = narrowUnit(W, Hh);
     cx = W / 2;
-    cy = topH + (Hh - topH - botH) / 2 + 0.02 * unit;
+    cy = topH + (Hh - topH - actHeight(Hh)) / 2 + 0.02 * unit;
     ext = W / 2 / unit - 0.13;
   } else {
-    unit = Math.min(Hh / 2, W / 1.5);
+    unit = wideUnit(W, Hh);
     cx = W / 2;
     cy = Hh / 2;
     ext = Math.min(1.05, W / 2 / unit - 0.16);
