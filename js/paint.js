@@ -45,6 +45,12 @@ float fbm(vec2 p){
   for (int i = 0; i < 5; i++){ s += a * noise(p); p = M * p + vec2(17.1, 9.2); a *= .5; }
   return s;
 }
+// fewer octaves, for noise carried with a shape: the finest ones fall below a pixel
+float fbm3(vec2 p){
+  float a = .5, s = 0.;
+  for (int i = 0; i < 3; i++){ s += a * noise(p); p = M * p + vec2(17.1, 9.2); a *= .5; }
+  return s * (.96875 / .875);              // the same average as five octaves
+}
 float paperH(vec2 f){ return .5 * noise(f * .42) + .3 * noise(f * .95 + 7.3) + .2 * noise(f * .13 + 3.1); }
 float sdSeg(vec2 p, vec2 a, vec2 b){
   vec2 pa = p - a, ba = b - a;
@@ -57,23 +63,35 @@ vec2 q, wL, wM, wF;
 float H, PW;
 
 // A wash built from five misregistered glazes, each with its own tide line.
-float layers(float d, float seed, float spread, float ew, float tide){
+// m and f are the noise that wobbles its edge: the paper's own, or noise carried along with a moving shape.
+float layersAt(float d, float seed, float spread, float ew, float tide, vec2 m, vec2 f){
   float s = 0.;
   for (int i = 0; i < 5; i++){
     float fi = float(i);
     float a = seed + fi * 2.399;
     vec2 dir = vec2(cos(a), sin(a));
-    float n = dot(wM, dir) * 2.2 + dot(wF, dir.yx) * .7;
+    float n = dot(m, dir) * 2.2 + dot(f, dir.yx) * .7;
     float di = d + n * spread + fi * spread * .12;
     s += smoothstep(ew, -ew, di) + exp(-pow((di + ew * 2.) / (ew * 2. + .003), 2.)) * tide;
   }
   return s * .2;
 }
-float bloom(vec2 p, float seed){
-  float b = fbm(p * 1.7 + wL * 1.3 + seed) + wF.x * .05 + wM.y * .06;
+float layers(float d, float seed, float spread, float ew, float tide){ return layersAt(d, seed, spread, ew, tide, wM, wF); }
+float bloomAt(vec2 p, float seed, vec2 l, vec2 m, vec2 f){
+  float b = fbm(p * 1.7 + l * 1.3 + seed) + f.x * .05 + m.y * .06;
   return 1. - .32 * smoothstep(.55, .59, b) + .5 * exp(-pow((b - .548) / .016, 2.));
 }
-float pen(float d){ return smoothstep(PW, PW * .3, abs(d)); }
+float bloom(vec2 p, float seed){ return bloomAt(p, seed, wL, wM, wF); }
+float penW(float d, float pw){ return smoothstep(pw, pw * .3, abs(d)); }
+float pen(float d){ return penW(d, PW); }
+// The paper's noise, but sampled in a shape's own frame (r is the place relative to its centre), so that a shape
+// that moves carries its brushwork with it: its edges, tide lines and pen strokes keep their look instead of crawling.
+void field(vec2 r, out vec2 l, out vec2 m, out vec2 f, out float pw){
+  l = vec2(fbm3(r * 1.2 + uT * .012), fbm3(r * 1.2 + vec2(31.7, 11.3) - uT * .012)) - .5;
+  m = vec2(fbm(r * 4.5 + 5.), fbm(r * 4.5 + vec2(7., 23.))) - .5;
+  f = vec2(fbm3(r * 22. + 1.), fbm3(r * 22. + vec2(13., 4.))) - .5;
+  pw = .0028 * (.5 + noise(r * 9.));
+}
 float rule(float d, float w){ return smoothstep(w, w * .35, abs(d)); }       // a ruled line: even, exact
 float clockHand(vec2 p, float a, float r0, float r1, float w){
   vec2 dir = vec2(sin(a), cos(a));
@@ -102,11 +120,19 @@ void main(){
   vec2 G = vec2(uGx, uG.x);  float rG = uG.y;
   vec2 Wc = vec2(0., uW.x); float rW = uW.y;
   vec2 Sc = vec2(0., uSy);  float rS = .066;
-  float dG = length(q + hand - G) - rG;
-  vec2 bq = abs(q + hand.yx * .5 - Wc) - (rW - .035);
-  float dW = mix(length(q + hand.yx - Wc) - rW, length(max(bq, 0.)) + min(max(bq.x, bq.y), 0.) - .035, uBox);
+  // each shape's own noise, worked out only where it shows: over God, along the world's edge, and around man
+  vec2 gL = wL, gM = wM, gF = wF, kL = wL, kM = wM, kF = wF, sL = wL, sM = wM, sF = wF;
+  float gPW = PW, kPW = PW, sPW = PW;
+  if (length(q - G) < rG * (1. + 1.5 * uOne) + .16 && uGodA > .001) field(q - G, gL, gM, gF, gPW);
+  vec2 bq0 = abs(q - Wc) - (rW - .035);
+  if (abs(mix(length(q - Wc) - rW, length(max(bq0, 0.)) + min(max(bq0.x, bq0.y), 0.) - .035, uBox)) < .1 && uWorldA > .001) field(q - Wc, kL, kM, kF, kPW);
+  if (length(q - Sc) < .17) field(q - Sc, sL, sM, sF, sPW);
+  float gwob = gM.x * .025 + gF.y * .006, kwob = kM.x * .025 + kF.y * .006, swob = sM.x * .025 + sF.y * .006;
+  float dG = length(q + gL * .06 - G) - rG;
+  vec2 bq = abs(q + kL.yx * .03 - Wc) - (rW - .035);
+  float dW = mix(length(q + kL.yx * .06 - Wc) - rW, length(max(bq, 0.)) + min(max(bq.x, bq.y), 0.) - .035, uBox);
   float pres = smoothstep(0., .3, uGodA);                       // is there anything above at all
-  float dS = length(q + hand * .4 - Sc) - rS;
+  float dS = length(q + sL * .024 - Sc) - rS;
   if (uBundle > .001) {
     // no single self: five small parts held loosely together, each going its own way
     float db = 1e3;
@@ -114,7 +140,7 @@ void main(){
       float fi = float(i);
       float a = fi * 1.2566 + t * (.04 + .025 * fi);
       float rr = (.056 + .01 * sin(t * .23 + fi * 2.1)) * (1. + 3.5 * uScatter);
-      db = min(db, length(q + hand * .4 - Sc - vec2(cos(a), sin(a)) * rr) - (.021 + .003 * sin(t * .6 + fi)));
+      db = min(db, length(q + sL * .024 - Sc - vec2(cos(a), sin(a)) * rr) - (.021 + .003 * sin(t * .6 + fi)));
     }
     dS = mix(dS, db, uBundle);
   }
@@ -150,16 +176,16 @@ void main(){
   float wave = max(0., sin((rg - rG) * 16. - t * .9 + wM.x * 2.));
   A *= 1. - .3 * uWave * wave * wave * exp(-(rg - rG) * 2.6) * smoothstep(rG, rG + .05, rg);
 
-  A *= 1. - .93 * max(layers(dG, 11., .04, .0045, 0.) * pres * (1. - uOne), layers(dW, 17., .04, .0045, 0.) * uWorldA);
+  A *= 1. - .93 * max(layersAt(dG, 11., .04, .0045, 0., gM, gF) * pres * (1. - uOne), layersAt(dW, 17., .04, .0045, 0., kM, kF) * uWorldA);
   float ink = 0.;
 
   // ---------- the world ----------
   {
-    float dens = layers(dW, 2., .03, .0045, tide) * uWorldA;
+    float dens = layersAt(dW, 2., .03, .0045, tide, kM, kF) * uWorldA;
     vec2 p = q - Wc;
     // drained: the wash thin at the top, heavier where it gathered
     dens *= mix(1., mix(.1, 1., smoothstep(.75, -1., p.y / rW + (v2 - .5) * 1.2)), uDrain);
-    float gaveOut = mix(1., step(.5, noise(q * 4. + 2.)), uDrain);
+    float gaveOut = mix(1., step(.5, noise(p * 4. + 2.)), uDrain);
     // nothing lasts: the wash gathers and thins by turns, and small rings open and vanish all over it
     if (uFlux > .001) {
       float ph = .5 + .5 * sin(t * .3 + 6.2832 * fbm(p * 2.2 + 31.));
@@ -200,7 +226,7 @@ void main(){
       Aw = mix(Aw, At, uYin);
     }
     A += Aw;
-    ink += pen(dW + .01 - wob) * gaveOut + pen(dW - .024 + wob * 1.3) * step(.5, noise(q * 5. + 8.)) * (1. - uClock) * mix(1., .6, uDrain);
+    ink += penW(dW + .01 - kwob, kPW) * gaveOut + penW(dW - .024 + kwob * 1.3, kPW) * step(.5, noise(p * 5. + 8.)) * (1. - uClock) * mix(1., .6, uDrain);
 
     // what ran off: drips from the foot of the world, drops falling from them, and a pool beneath
     if (uDrain > .001) {
@@ -288,32 +314,35 @@ void main(){
 
   // ---------- the Ultimate ----------
   {
-    float dens = layers(dG, 1., mix(.03, .1, uOne), mix(.0045, .03, uOne), mix(tide, .25, uOne)) * uGodA;
+    float dens = layersAt(dG, 1., mix(.03, .1, uOne), mix(.0045, .03, uOne), mix(tide, .25, uOne), gM, gF) * uGodA;
+    vec2 gq = q - G;
+    float gv1 = v1, gv2 = v2;
+    if (dens > .001) { gv1 = fbm(gq * 1.1 + gL * 1.6 + 2.); gv2 = fbm(gq * 2.3 - gL * 2.2 + 7.); }
     // going round: in front of the world it covers what lies under it; behind, the world hides it
     float inG = smoothstep(.012, -.02, dG) * pres, inW = smoothstep(.004, -.02, dW) * uWorldA;
     A *= 1. - .88 * uGf * inG;
     ink *= 1. - uGf * inG;
     dens *= 1. - .93 * uGb * inW;
-    float hole = length(q + hand - G) - rG * .34;
+    float hole = length(q + gL * .06 - G) - rG * .34;
     dens *= mix(1., smoothstep(-.012, .014, hole), uBi);
     float ink0 = ink;
-    float bandsG = mix(1., .6 + .5 * sin(rg * 15. + wM.x * 7. + wL.y * 5. - t * .15), uMaya);
-    float core = mix(.42, 1.05, smoothstep(0., rG, rg + wM.x * .1));
-    A += K(uGodC) * dens * core * bloom(q * 2.4, 31.) * (.85 + .6 * v2);
-    A += K(uGodRim) * dens * smoothstep(rG * .5, rG, rg + wM.y * .15) * (.2 + .55 * v1) * bandsG;
+    float bandsG = mix(1., .6 + .5 * sin(rg * 15. + gM.x * 7. + gL.y * 5. - t * .15), uMaya);
+    float core = mix(.42, 1.05, smoothstep(0., rG, rg + gM.x * .1));
+    A += K(uGodC) * dens * core * bloomAt(gq * 2.4, 31., gL, gM, gF) * (.85 + .6 * gv2);
+    A += K(uGodRim) * dens * smoothstep(rG * .5, rG, rg + gM.y * .15) * (.2 + .55 * gv1) * bandsG;
     A *= 1. - .35 * uOne * exp(-rg * rg / .03);
-    ink += (pen(dG + .012 + wob) + pen(dG - .02 - wob * 1.4) * step(.45, noise(q * 6. + 2.))) * (1. - uOne) * (1. - .93 * uGb * inW);
-    ink += pen(hole + .004 - wob * .6) * uBi;
+    ink += (penW(dG + .012 + gwob, gPW) + penW(dG - .02 - gwob * 1.4, gPW) * step(.45, noise(gq * 6. + 2.))) * (1. - uOne) * (1. - .93 * uGb * inW);
+    ink += penW(hole + .004 - gwob * .6, gPW) * uBi;
     // the many things: rings drawn on the surface, moving outward and never arriving
     if (uMaya > .001) {
-      float rr = length(q + hand - G);
+      float rr = length(q + gL * .06 - G);
       float u = rr * 6.5 - t * .04;
       float id = floor(u);
-      ink += pen((fract(u) - .5) / 6.5) * step(.42, noise(q * 4.5 + id * 7.3)) * smoothstep(.05, .13, rr) * smoothstep(rG + .2, rG - .06, rr) * .6 * uMaya;
+      ink += penW((fract(u) - .5) / 6.5, gPW) * step(.42, noise(gq * 4.5 + id * 7.3)) * smoothstep(.05, .13, rr) * smoothstep(rG + .2, rG - .06, rr) * .6 * uMaya;
     }
     // drawn by hand, each ring turning at its own pace
-    float loose = pen(dG - .075 + wob * .8) * step(.4, noise(rot(q - G, t * .05) * 4. + 5.)) * .8;
-    loose += pen(dG - .13 - wob) * step(.55, noise(rot(q - G, -t * .035) * 3. + 9.)) * .6;
+    float loose = penW(dG - .075 + gwob * .8, gPW) * step(.4, noise(rot(gq, t * .05) * 4. + 5.)) * .8;
+    loose += penW(dG - .13 - gwob, gPW) * step(.55, noise(rot(gq, -t * .035) * 3. + 9.)) * .6;
     loose += smoothstep(.006, .003, abs(dG - .185)) * step(.72, fract(ang * 60. / 6.2832 + t * .06)) * .7;
     // ruled, and stepping once a second
     float ruled = rule(rg - rG - .07, .0022) * .7;
@@ -327,10 +356,14 @@ void main(){
 
   // ---------- the problem: a stain, or a haze ----------
   {
-    float creep = fbm(q * 5. + vec2(t * .05, -t * .04)) - .5;
     vec2 sc = mix(Sc + vec2(-.02, -.02), vec2(0., .03), uStainUp);
-    float d = length(q + wL * .12 + wM * .05 - sc) - uStainR * (1. + .07 * sin(t * .8)) - wM.x * .06 - creep * .07;
-    A += K(uStainC) * layers(d, 6., mix(.03, .05, uStainS), mix(.012, .03, uStainS), mix(.5, .3, uStainS)) * uStainA;
+    if (uStainA > .001 && length(q - sc) < uStainR + .22) {
+      vec2 cL, cM, cF; float cPW;
+      field(q - sc, cL, cM, cF, cPW);
+      float creep = fbm((q - sc) * 5. + vec2(t * .05, -t * .04)) - .5;
+      float d = length(q + cL * .12 + cM * .05 - sc) - uStainR * (1. + .07 * sin(t * .8)) - cM.x * .06 - creep * .07;
+      A += K(uStainC) * layersAt(d, 6., mix(.03, .05, uStainS), mix(.012, .03, uStainS), mix(.5, .3, uStainS), cM, cF) * uStainA;
+    }
   }
 
   // ---------- meaning of man's own making: his colour brushed outward into a world that has none ----------
@@ -361,13 +394,13 @@ void main(){
 
   // ---------- man ----------
   {
-    float dens = layers(dS, 5., .01, .0035, tide) * uManA;
+    float dens = layersAt(dS, 5., .01, .0035, tide, sM, sF) * uManA;
     A += K(mix(uManC, vec3(.6, .42, .38), uDull * .8)) * dens * 1.1 + K(gold) * dens * .4 * (1. - uDull) * uRing;
     float ring = exp(-pow((dS - .024) / .009, 2.)) * (1. - .5 * uDull);
     A *= 1. - .85 * ring * uRing;
     A += K(vec3(.98, .72, .18)) * ring * (.85 + .25 * sin(t * 1.6)) * uRing;
     float hollow = mix(1., step(.42, fract(atan(q.y - Sc.y, q.x) * 14. / 6.2832 + t * .012)), uHollow);
-    ink += (pen(dS - .012 + wob * .4) * hollow + pen(dS - .037 - wob * .3) * step(.4, noise(q * 14. + 3.)) * .7 * (1. - uClock) * (1. - uBox)) * mix(mix(.35, .8, uHollow), 1., uManA) * uManI;
+    ink += (penW(dS - .012 + swob * .4, sPW) * hollow + penW(dS - .037 - swob * .3, sPW) * step(.4, noise((q - Sc) * 14. + 3.)) * .7 * (1. - uClock) * (1. - uBox)) * mix(mix(.35, .8, uHollow), 1., uManA) * uManI;
   }
 
   A += K(vec3(.2, .13, .1)) * min(ink, 1.) * (.5 + H);

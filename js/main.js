@@ -1,7 +1,7 @@
-import { createPainter } from './paint.js?v=25';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=25';
-import { CATALOGUE } from './catalogue.js?v=25';
-import { createMenu } from './menu.js?v=25';
+import { createPainter } from './paint.js?v=26';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=26';
+import { CATALOGUE } from './catalogue.js?v=26';
+import { createMenu } from './menu.js?v=26';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -238,7 +238,7 @@ function layout(p, G) {
     lg.dot.setAttribute('opacity', show.toFixed(3));
   }
   place('world', 0, worldY);
-  place('bridge', p.lBrX, p.lBrY, p.tBrX, p.tBrY);
+  place('bridge', p.lBrX, p.lBrY, p.tBrX, p.tBrY + p.tBrS * p.Sy);    // (a target can be set relative to man, and then moves with him)
   place('self', p.rW + p.lSide, p.Sy + 0.03, 0.105, p.Sy);
   // lettering on the left drops below the words there if it would run into them
   // (once the stain has been lifted onto the cross, its name moves up beside it)
