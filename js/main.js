@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=55';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=55';
-import { CATALOGUE } from './catalogue.js?v=55';
-import { createMenu } from './menu.js?v=55';
+import { createPainter } from './paint.js?v=56';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=56';
+import { CATALOGUE } from './catalogue.js?v=56';
+import { createMenu } from './menu.js?v=56';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -657,6 +657,25 @@ function drawConn(p, c, G) {
       dots += `<circle cx="${f(x)}" cy="${f(y)}" r=".028" fill="${PAP}" stroke="${ACC}" stroke-width=".0055" opacity="${f(op)}"/>`;
     });
     g += lines + rite + dots;
+  }
+
+  // ----- uploading: bits going up from man to a chip set in the place left empty above -----
+  if (p.upload > 0.01) {
+    const cy = p.Gy - p.rG * 0.42, S = 0.052, y0 = p.Sy + 0.09, y1 = cy - S - 0.012;
+    let pins = '';
+    for (let i = -1.5; i <= 1.5; i++) {
+      const o = i * 0.026;
+      pins += `M${f(o)},${f(-(cy + S))} v-.016 M${f(o)},${f(-(cy - S))} v.016 M${f(-S)},${f(-(cy + o))} h-.016 M${f(S)},${f(-(cy + o))} h.016 `;
+    }
+    const chip = `M${f(-S)},${f(-(cy + S))} H${f(S)} V${f(-(cy - S))} H${f(-S)}Z`;
+    g += `<g opacity="${f(p.upload)}">`;
+    if (y1 > y0) {
+      const d = `M0,${f(-y0)} V${f(-y1)}`;
+      g += `<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".02" stroke-dasharray=".014 .018" stroke-dashoffset="${f(-c.t * 0.03 + 0.002)}" opacity=".92"/>`;
+      g += `<path d="${d}" fill="none" stroke="${ACC}" stroke-width=".011" stroke-dasharray=".01 .022" stroke-dashoffset="${f(-c.t * 0.03)}"/>`;
+    }
+    g += `${stroke(pins, ACC, 0.004)}<path d="${chip}" fill="${PAP}" fill-opacity=".9" stroke="${PAP}" stroke-width=".016" stroke-linejoin="round" opacity=".92"/><path d="${chip}" fill="none" stroke="${ACC}" stroke-width=".0045"/>`;
+    g += `<rect x="${f(-S * 0.45)}" y="${f(-(cy + S * 0.45))}" width="${f(S * 0.9)}" height="${f(S * 0.9)}" fill="none" stroke="${ACC}" stroke-width=".0025" opacity=".7"/></g>`;
   }
 
   // ----- progress: a stair from the world up to where man has climbed, with a mark going up it -----

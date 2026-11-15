@@ -59,6 +59,7 @@ uniform float uPyr, uLevel;     // the world as a pyramid of society; the pyrami
 uniform float uStrata, uSplit, uChurn;  // the pyramid in two storeys, split at a height (in the world's radii); its lower storey churning
 uniform float uStainOn;         // the stain moved off man and onto the top of the pyramid
 uniform float uShards, uDominant, uPlay, uGap, uScript;  // the world as a collage of shards; one story's colour over most; shards shifting; cracks between; handwriting over all
+uniform float uCircuit;        // circuit traces spreading out from man, how far
 uniform float uStar, uLaw;      // a ruled eight-pointed star in the Ultimate; the world patterned with such stars, as law
 uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
 uniform vec3 uHands;            // second, minute and hour hands, radians clockwise from the top
@@ -411,6 +412,23 @@ void main(){
              * (1. - sweep) * inside * uScan * .8;
       }
     }
+  }
+
+  // ---------- circuits: traces spreading out from man across the world, with pulses of data running out along them ----------
+  if (uCircuit > .001 && dW < .01) {
+    vec2 cp = (q - Wc) / .055, cf = fract(cp) - .5, cid = floor(cp);
+    float h = hash(cid + 3.7), d;
+    if (h < .33) d = abs(cf.y);
+    else if (h < .66) d = abs(cf.x);
+    else d = abs(length(cf - sign(vec2(hash(cid + 1.), hash(cid + 2.)) - .5) * .5) - .5);
+    float rr = length(q - Sc), R = uCircuit * 1.15;
+    float on = smoothstep(R, R - .07, rr) * smoothstep(-.012, -.03, dW) * uWorldA;
+    float tr = smoothstep(.0032, .0012, d * .055) * on;
+    float pd = smoothstep(.0028, .001, abs(length(cf) * .055 - .0065)) * step(.72, hash(cid + 9.)) * on;
+    float pulse = smoothstep(.8, 1., fract(rr * 5. - t * .45));
+    A += K(vec3(.24, .7, .74)) * (tr + pd) * (.55 + .5 * v1);
+    A *= 1. - .55 * tr * pulse;
+    ink += tr * .3 + pd * .7;
   }
 
   // ---------- the world under God's law: small stars in a ruled pattern, laid over all of it ----------
