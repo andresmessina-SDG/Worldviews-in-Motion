@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=44';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=44';
-import { CATALOGUE } from './catalogue.js?v=44';
-import { createMenu } from './menu.js?v=44';
+import { createPainter } from './paint.js?v=45';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=45';
+import { CATALOGUE } from './catalogue.js?v=45';
+import { createMenu } from './menu.js?v=45';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -831,6 +831,8 @@ function spiritsAt(p, t) {
 // steps, or a hard max or min between two moving values, makes a shape shake all through a move (the orbit
 // once did): search by halving, use smax() and smin(), and follow a jumping target on a spring.
 let lastDraw = 0, ceiling = 1, raisedAt = -1e9, calm = 0;
+const U = {};             // the shader's uniforms, refilled each painting
+let autoU = null;         // [uniform, value] pairs filled by name, found at the first painting
 function frame(now) {
   requestAnimationFrame(frame);
   // If frames come slowly, paint at a lower resolution rather than stutter. Normally the change waits until nothing
@@ -876,20 +878,29 @@ function frame(now) {
   layout(p, G, dt);
   if (p.spirits > 0.01) spiritsAt(p, t);
   if (painter) {
+    // Values named for a uniform (glow for uGlow) go to the shader by themselves; the rest are worked out here,
+    // and set after them, so that these win where a name is shared (uSoul, uTick).
+    if (!autoU) autoU = Object.keys(p).map((k) => [`u${k[0].toUpperCase()}${k.slice(1)}`, k]).filter(([u]) => painter.uniforms.has(u));
+    for (const [u, k] of autoU) U[u] = p[k];
     const entry = p.Wy + p.rW - 0.02;
-    // Every uniform the shader declares must be passed here under the same name: one never set reads as 0,
-    // and its part of the painting silently disappears. An array of vec4 goes as a Float32Array (as uSp).
-    painter.draw({
-      uRes: [canvas.width, canvas.height], uCen: [cx * scale, canvas.height - cy * scale], uUnit: unit * scale, uT: t,
-      uG: [G.y, G.r], uGx: G.x, uGf: G.front, uGb: G.back, uW: [p.Wy, p.rW], uSy: p.Sy,
-      uGlory: p.glory, uSky: p.sky, uFar: p.far, uLow: p.low, uDeep: p.deep, uSea: p.sea, uLand: p.land, uShade: p.shade,
-      uGodC: p.godC, uGodRim: p.godRim, uStainC: p.stainC, uBg: p.bg, uWarm: p.warm, uGodA: p.godA,
-      uBox: p.box, uLat: p.lat, uPulse: p.pulse, uBare: p.bare, uManA: p.manA, uManC: p.manC, uDrain: p.drain, uPool: p.pool, uHollow: p.hollow, uSelfR: p.selfR, uSelfA: p.selfA, uSelfC: p.selfC,
-      uOne: p.one, uMaya: p.maya, uWorldA: p.worldA, uManI: p.manI,
-      uWave: p.wave, uHaloL: p.haloL, uHaloR: p.haloR, uClock: p.clock, uRing: p.ring, uStainS: p.stainS,
-      uStainUp: p.stainUp, uCopies: p.copies, uCopyDark: p.copyDark, uSoul: [spirits[0], spirits[1], p.spirits > 0.01 ? p.soul * p.spirits * (1 - 0.8 * p.anger) : 0], uLit: p.lit, uScan: p.scan, uSpA: p.spirits, 'uSp[0]': spirits, uBi: p.bi, uYin: p.yin, uMist: p.mist, uFlux: p.flux, uBundle: p.bundle, uScatter: p.scatter, uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
-      uTick: hd.whole, uHands: [hd.sec, hd.min, hd.hour], 'uLab[0]': rects, uLabA: lifts,
-    });
+    U.uRes = [canvas.width, canvas.height];
+    U.uCen = [cx * scale, canvas.height - cy * scale];
+    U.uUnit = unit * scale;
+    U.uT = t;
+    U.uG = [G.y, G.r];
+    U.uGx = G.x;
+    U.uGf = G.front;
+    U.uGb = G.back;
+    U.uW = [p.Wy, p.rW];
+    U.uSoul = [spirits[0], spirits[1], p.spirits > 0.01 ? p.soul * p.spirits * (1 - 0.8 * p.anger) : 0];
+    U.uSpA = p.spirits;
+    U['uSp[0]'] = spirits;
+    U.uRipY = entry + (p.Sy - entry) * p.ripAt;
+    U.uTick = hd.whole;
+    U.uHands = [hd.sec, hd.min, hd.hour];
+    U['uLab[0]'] = rects;
+    U.uLabA = lifts;
+    painter.draw(U);
   }
   drawConn(p, { t, arrow, orb, tock: hd.tock }, G);
 }

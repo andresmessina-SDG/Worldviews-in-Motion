@@ -3,8 +3,10 @@
 // so one painting can turn into another by blending those values.
 //
 // Rules for adding to the painting:
-// - A new part reads a uniform declared below and passed by name in main.js (painter.draw), and is
-//   wrapped in if (uX > .001), so that worldviews without it pay nothing for it.
+// - A new part reads a uniform declared below and is wrapped in if (uX > .001), so that worldviews without it
+//   pay nothing for it. A uniform named after a value in worldviews.js (uGlow for glow) is filled from it by
+//   itself; any other must be worked out in main.js (frame). One left without a value would read as 0, and
+//   its part would silently vanish, so the first painting reports any such in the browser's console.
 // - The whole cost of the page is work per pixel, done millions of times a frame. Work a part out only
 //   where it can show (the copies, the spirits and the soul skip every pixel out of their reach), keep
 //   loops short, and remember that a move between two worldviews runs both worldviews' parts at once.
@@ -497,7 +499,8 @@ export function createPainter(canvas) {
     if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
     return s;
   };
-  let prog;
+  let prog, checked = false;
+  const uniforms = new Set();          // the uniforms the shader uses (an array as uSp[0])
   const init = () => {
   prog = gl.createProgram();
   gl.attachShader(prog, sh(gl.VERTEX_SHADER, 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }'));
@@ -511,6 +514,9 @@ export function createPainter(canvas) {
   gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
   gl.viewport(0, 0, canvas.width, canvas.height);
   locs = {};
+  uniforms.clear();
+  for (let i = 0, n = gl.getProgramParameter(prog, gl.ACTIVE_UNIFORMS); i < n; i++) uniforms.add(gl.getActiveUniform(prog, i).name);
+  checked = false;
   };
   init();
   // a phone may take the graphics context away while the page is in the background
@@ -520,6 +526,7 @@ export function createPainter(canvas) {
   const loc = (n) => (n in locs ? locs[n] : (locs[n] = gl.getUniformLocation(prog, n)));
 
   return {
+    uniforms,
     resize(w, h) {
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
@@ -530,6 +537,11 @@ export function createPainter(canvas) {
     // values: { name: number | [x, y] | [x, y, z] | Float32Array (vec4 array) }
     draw(values) {
       if (lost) return;
+      if (!checked) {
+        checked = true;
+        const missing = [...uniforms].filter((n) => !(n in values));
+        if (missing.length) console.error(`paint.js: no value for ${missing.join(', ')}`);
+      }
       for (const name in values) {
         const v = values[name];
         const l = loc(name);
