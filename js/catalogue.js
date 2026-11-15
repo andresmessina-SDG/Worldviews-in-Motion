@@ -22,6 +22,7 @@ export const CATALOGUE = [
   { id: 'individualism', name: 'Expressive Individualism', family: 'lived', c: ['#f08a5d', '#b06ab3'] },
   { id: 'transhumanism', name: 'Transhumanism', family: 'lived', c: ['#40e0d0', '#6a5acd'] },
   { id: 'new-age', name: 'New Age', family: 'lived', c: ['#f0a0c0', '#a070d0'] },
+  { id: 'neo-paganism', name: 'Neo-Paganism', family: 'lived', c: ['#6f9a4a', '#cfc8e8'] },
 
   { id: 'hindu-monism', name: 'Hindu Monism', family: 'eastern', c: ['#f29a2e', '#d9458f'] },
   { id: 'buddhism', name: 'Buddhism', family: 'eastern', c: ['#e9a23b', '#8c2f2f'] },

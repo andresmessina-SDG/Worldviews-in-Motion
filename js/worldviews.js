@@ -34,11 +34,11 @@ const DEFAULTS = {
   box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  aura: 0, circuit: 0, shards: 0, dominant: 0, play: 0, gap: 0, script: 0, pyr: 0, level: 0, strata: 0, split: 0, churn: 0, stainOn: 0, star: 0, law: 0,
+  moons: 0, seasons: 0, aura: 0, circuit: 0, shards: 0, dominant: 0, play: 0, gap: 0, script: 0, pyr: 0, level: 0, strata: 0, split: 0, churn: 0, stainOn: 0, star: 0, law: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  spiral: 0, spiralW: 0, rings: 0, ringDir: 0, fence: 0, burst: 0, upload: 0, steps: 0, covenant: 0, broken: 0, tablets: 0, awaited: 0, sent: 0, scales: 0, extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
+  wheelYr: 0, cast: 0, spiral: 0, spiralW: 0, rings: 0, ringDir: 0, fence: 0, burst: 0, upload: 0, steps: 0, covenant: 0, broken: 0, tablets: 0, awaited: 0, sent: 0, scales: 0, extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
   // lettering
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.145, tBrX: 0.05, tBrY: 0.11, tBrS: 0,
 };
@@ -191,6 +191,19 @@ const newAgeBase = {
   mist: 1, aura: 0.75,
   acc: [140, 62, 150],
   lBrX: 0.22, lBrY: 0.2, tBrX: 0.012, tBrY: 0.2,
+};
+
+const paganBase = {
+  // the Goddess as the triple moon above; the earth below, turning through the seasons inside the wheel of the year
+  Gy: 0.62, rG: 0.2, Wy: -0.2, rW: 0.36, Sy: -0.12,
+  glory: [0.96, 0.96, 0.98], sky: [0.84, 0.86, 0.92], far: [0.8, 0.82, 0.9], low: [0.86, 0.9, 0.84], deep: [0.66, 0.74, 0.7],
+  sea: [0.36, 0.55, 0.55], land: [0.5, 0.7, 0.42], shade: [0.2, 0.3, 0.3], warm: 0.25, bg: 0.4,
+  godC: [0.9, 0.9, 0.96], godRim: [0.75, 0.78, 0.9],
+  stainC: [0.3, 0.26, 0.22],
+  manC: [0.6, 0.4, 0.3],
+  moons: 1, seasons: 1, wheelYr: 1,
+  acc: [62, 112, 58],
+  lGodK: -1.05, lSide: 0.16, lBrX: 0.36, lBrY: 0.22, tBrX: 0.31, tBrY: 0.107,
 };
 
 const transhumanBase = {
@@ -1038,7 +1051,7 @@ export const WORLDVIEWS = {
   'new-age': {
     name: 'New Age',
     tagline: 'All is one, all is divine, and so are you.',
-    move: { to: 'hindu-monism', q: 'What if the self must be lost in the One, not exalted?' },
+    move: { to: 'neo-paganism', q: 'What if the gods are many, and the earth itself is sacred?' },
     acts: build(newAgeBase, [
       {
         slug: 'all-is-one',
@@ -1086,6 +1099,63 @@ export const WORLDVIEWS = {
           world: ['The new age', 'Always about to dawn'],
           bridge: ['Reincarnation', 'Life after life, and no Saviour'],
           self: ['The soul', 'Rising, with no judgement to face'],
+        },
+      },
+    ]),
+  },
+
+  'neo-paganism': {
+    name: 'Neo-Paganism',
+    tagline: 'The earth is sacred, and the wheel of the year turns for ever.',
+    move: { to: 'hindu-monism', q: 'What if the many gods are faces of one?' },
+    acts: build(paganBase, [
+      {
+        slug: 'the-sacred-earth',
+        name: 'The Sacred Earth',
+        text: 'The divine lives within nature. Wiccans honour a Goddess and a God, other pagans many gods. The earth is the Goddess’s body, and all life shares in her.',
+        p: {},
+        labels: {
+          god: ['The Goddess', 'Maiden, Mother and Crone'],
+          world: ['The earth', 'Her body, and divine'],
+          bridge: ['The wheel of the year', 'Eight festivals, turning for ever'],
+          self: ['Man', 'A child of the earth'],
+        },
+      },
+      {
+        slug: 'disconnection',
+        name: 'Disconnection',
+        text: 'Nothing in us is sinful. What has gone wrong is that people have lost touch with nature and the old ways, cut off by cities, machines and the churches.',
+        p: { wheelYr: 0.35, stainR: 0.11, stainA: 0.45, dull: 0.45, moons: 0.7 },
+        labels: {
+          god: ['The Goddess', 'Forgotten, not offended'],
+          world: ['The earth', 'Wounded by industry'],
+          self: ['Man', 'Cut off from the earth'],
+          sin: ['Disconnection', 'Imbalance, not sin'],
+        },
+      },
+      {
+        slug: 'ritual-and-magic',
+        name: 'Ritual and Magic',
+        text: 'Rites at the full moon and the festivals restore the bond. Magic works by will and the energies of nature, bound only by the Rede: “An it harm none, do what ye will.”',
+        p: { cast: 1, stainR: 0.06, stainA: 0.15, glow: 0.4, rip: 0.5, lBrX: 0.47, lBrY: 0.12, tBrX: 0.09, tBrY: -0.03 },
+        labels: {
+          god: ['The Goddess', 'Called down in the rite'],
+          world: ['The earth', 'Served in place of its Maker'],
+          bridge: ['Magic', 'Power sought, not grace received'],
+          self: ['The pagan', '“Harm none”, by his own measure'],
+          sin: ['Disconnection', 'Healed by ritual, with nothing to forgive'],
+        },
+      },
+      {
+        slug: 'the-wheel-turns',
+        name: 'The Wheel Turns',
+        text: 'Death is part of the cycle, like winter. The soul rests in the Summerland and is born again. The wheel turns, and nothing ends or is made new.',
+        p: { manA: 0.3, hollow: 1, manI: 0.7, dull: 0.2 },
+        labels: {
+          god: ['The Goddess', 'Crone, and then Maiden again'],
+          world: ['The earth', 'Always turning, never made new'],
+          bridge: ['The wheel of the year', 'Round and round, with no last day'],
+          self: ['Man', 'Back to the earth, and born again'],
         },
       },
     ]),

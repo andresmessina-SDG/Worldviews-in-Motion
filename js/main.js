@@ -349,6 +349,16 @@ function fit() {
   $('marks').style.setProperty('--gap', `${Math.max(24, gap - 4).toFixed(0)}px`);
   markH = marks[0].offsetHeight / unit;
   marks.forEach((b, i) => { markW[i] = b.offsetWidth / unit - 2 * parseFloat(getComputedStyle(b).paddingLeft) / unit; });
+  // When only the open act keeps its name, a long name on an outer mark can reach past the edge of the page, or on
+  // the left into the strip where the menu's dabs sit: it is moved in just far enough to clear them.
+  const tightNow = $('marks').classList.contains('tight');
+  marks.forEach((b, i) => {
+    markDx[i] = 0;
+    if (!tightNow || i !== cur.act) return;
+    const x = cx + ext * (-0.72 + 0.48 * i) * unit, w = b.offsetWidth;
+    const nx = Math.min(Math.max(x, 52 + w / 2), W - 8 - w / 2);
+    if (nx !== x) { b.style.left = `${nx}px`; markDx[i] = (nx - x) / unit; }
+  });
   const words = narrow ? null : $('moves').getBoundingClientRect();
   wordsRight = words ? (words.right - cx) / unit : -1e9;
   wordsBottom = words ? (cy - words.bottom) / unit : 1e9;
@@ -427,6 +437,7 @@ function layout(p, G, dt) {
 const MOVABLE = ['bridge', 'self', 'sin'];
 const slide = { bridge: [0, 0], self: [0, 0], sin: [0, 0] };   // [distance, speed], in scene units, up positive
 const markW = [0, 0, 0, 0];                                    // the widths of the act names, in scene units
+const markDx = [0, 0, 0, 0];                                   // how far a name has been moved in from its mark (fit)
 // a label's box as [left, bottom, right, top] in scene units
 function boxOf(k, x, y) {
   const L = labels[k], a = ALIGN[k], l = a === 'center' ? x - L.w / 2 : a === 'left' ? x : x - L.w;
@@ -440,7 +451,7 @@ function keepApart(at, godY, worldY, dt) {
   const tight = $('marks').classList.contains('tight');
   for (let i = 0; i < 4; i++) {
     if (tight && i !== cur.act) continue;
-    const x = ext * (-0.72 + 0.48 * i);
+    const x = ext * (-0.72 + 0.48 * i) + markDx[i];
     fixed.push([x - markW[i] / 2, -0.795 - markH / 2, x + markW[i] / 2, -0.795 + markH / 2]);
   }
   if (wordsRight > -1e8) fixed.push([-1e9, wordsBottom, wordsRight, 1e9]);
@@ -657,6 +668,33 @@ function drawConn(p, c, G) {
       dots += `<circle cx="${f(x)}" cy="${f(y)}" r=".028" fill="${PAP}" stroke="${ACC}" stroke-width=".0055" opacity="${f(op)}"/>`;
     });
     g += lines + rite + dots;
+  }
+
+  // ----- the wheel of the year: a ring round the world with its eight festivals, the solstices and equinoxes as small
+  //       circles and the days between as ticks, and a mark going round as the year turns (once about every 50 s,
+  //       with the colours of the land in the painting) -----
+  if (p.wheelYr > 0.01) {
+    const R = p.rW + 0.075, wy = -p.Wy;
+    let ticks = '', quarters = '';
+    for (let i = 0; i < 8; i++) {
+      const a = (i * Math.PI) / 4 - Math.PI / 2, ca = Math.cos(a), sa = Math.sin(a);
+      if (i % 2) ticks += `M${f((R - 0.016) * ca)},${f(wy + (R - 0.016) * sa)} L${f((R + 0.016) * ca)},${f(wy + (R + 0.016) * sa)} `;
+      else quarters += `<circle cx="${f(R * ca)}" cy="${f(wy + R * sa)}" r=".013" fill="${PAP}" stroke="${ACC}" stroke-width=".0045"/>`;
+    }
+    const ya = ((c.t * 0.02) % 1) * 2 * Math.PI - Math.PI / 2;
+    g += `<g opacity="${f(p.wheelYr)}"><circle cx="0" cy="${f(wy)}" r="${f(R)}" fill="none" stroke="${PAP}" stroke-width=".0165" opacity=".92"/><circle cx="0" cy="${f(wy)}" r="${f(R)}" fill="none" stroke="${ACC}" stroke-width=".0045"/>`;
+    g += `${stroke(ticks, ACC, 0.0045)}${quarters}<circle cx="${f(R * Math.cos(ya))}" cy="${f(wy + R * Math.sin(ya))}" r=".011" fill="${ACC}" stroke="${PAP}" stroke-width=".004"/></g>`;
+  }
+  // ----- the circle cast round man for the rite, with the four quarters marked -----
+  if (p.cast > 0.01) {
+    const r = 0.125, sy = -p.Sy;
+    let marks = '';
+    for (let i = 0; i < 4; i++) {
+      const a = (i * Math.PI) / 2, x = r * Math.cos(a), y = sy + r * Math.sin(a);
+      marks += `<circle cx="${f(x)}" cy="${f(y)}" r=".009" fill="${ACC}" stroke="${PAP}" stroke-width=".004"/>`;
+    }
+    g += `<g opacity="${f(p.cast)}"><circle cx="0" cy="${f(sy)}" r="${r}" fill="none" stroke="${PAP}" stroke-width=".0145" opacity=".92"/><circle cx="0" cy="${f(sy)}" r="${r}" fill="none" stroke="${ACC}" stroke-width=".0045"/>`;
+    g += `<circle cx="0" cy="${f(sy)}" r="${r}" fill="none" stroke="${PAP}" stroke-width=".0036" stroke-linecap="round" stroke-dasharray=".001 .05" stroke-dashoffset="${f(-c.t * 0.02)}"/>${marks}</g>`;
   }
 
   // ----- a beam of consciousness rising from man to the Universe; widened, a spiral of lives winding up toward it -----

@@ -59,6 +59,7 @@ uniform float uPyr, uLevel;     // the world as a pyramid of society; the pyrami
 uniform float uStrata, uSplit, uChurn;  // the pyramid in two storeys, split at a height (in the world's radii); its lower storey churning
 uniform float uStainOn;         // the stain moved off man and onto the top of the pyramid
 uniform float uShards, uDominant, uPlay, uGap, uScript;  // the world as a collage of shards; one story's colour over most; shards shifting; cracks between; handwriting over all
+uniform float uMoons, uSeasons;  // the Ultimate as a triple moon (waxing, full, waning); the land's colour turning through the year
 uniform float uAura;           // a soft rainbow aura round man, and how far it reaches
 uniform float uCircuit;        // circuit traces spreading out from man, how far
 uniform float uStar, uLaw;      // a ruled eight-pointed star in the Ultimate; the world patterned with such stars, as law
@@ -271,6 +272,13 @@ void main(){
     float m2 = smoothstep(.45, .7, fbm(p * 2.6 - wL + 13. - t * .015));
     vec3 sea = mix(uSea, vec3(.42, .52, .58), uDull * .7);
     vec3 land = mix(uLand, vec3(.44, .51, .5), uDull * .7);
+    if (uSeasons > .001) {
+      // the year turning, about once a minute: spring, summer, autumn, winter
+      float x = fract(t * .02) * 4.;
+      vec3 sp = vec3(.6, .78, .42), su = vec3(.42, .66, .34), au = vec3(.88, .58, .3), wi = vec3(.84, .87, .9);
+      vec3 c = x < 1. ? mix(sp, su, smoothstep(0., 1., x)) : x < 2. ? mix(su, au, smoothstep(1., 2., x)) : x < 3. ? mix(au, wi, smoothstep(2., 3., x)) : mix(wi, sp, smoothstep(3., 4., x));
+      land = mix(land, mix(c, vec3(.44, .51, .5), uDull * .7), uSeasons);
+    }
     // lit by God himself: his gold falling on the world from above, while the world keeps its own colours below
     float lit = uLit * smoothstep(-.75, .35, p.y / rW + (v1 - .5) * .7 + wM.x * .3);
     A *= 1. - .85 * lit * smoothstep(.02, -.04, dW);
@@ -521,6 +529,23 @@ void main(){
     ruled += smoothstep(.005, .0025, abs(rg - rG - .13)) * step(.72, fract(ang * 60. / 6.2832 + uTick * .5)) * .55;
     ink += loose * uHaloL + ruled * uHaloR;
     ink = mix(ink0, ink, pres);
+  }
+
+  // ---------- the triple moon: waxing, full and waning, side by side ----------
+  if (uMoons > .001 && length(q - G) < rG * 1.9 + .1) {
+    vec2 nL, nM, nF; float nPW;
+    field(q - G, nL, nM, nF, nPW);
+    vec2 r = q + nL * .03 - G;
+    float R0 = rG * .5;
+    vec2 cL = vec2(-rG * 1.2, 0.), cR = vec2(rG * 1.2, 0.);
+    float dFull = length(r) - R0;
+    float dWax = max(length(r - cL) - R0 * .85, -(length(r - cL + vec2(R0 * .55, 0.)) - R0 * .8));
+    float dWane = max(length(r - cR) - R0 * .85, -(length(r - cR - vec2(R0 * .55, 0.)) - R0 * .8));
+    float d = min(dFull, min(dWax, dWane));
+    A *= 1. - .45 * uMoons * exp(-pow(length(q - G) / (rG * 1.7), 2.));
+    A += K(uGodC) * layersAt(d, 3., .02, .004, tide, nM, nF) * (.75 + .5 * v1) * uMoons;
+    A += K(uGodRim) * layersAt(dFull + R0 * .45, 7., .03, .01, .3, nM, nF) * .35 * uMoons;
+    ink += penW(d + .008 + nM.x * .01, nPW) * .8 * uMoons;
   }
 
   // ---------- light lifted around man ----------
