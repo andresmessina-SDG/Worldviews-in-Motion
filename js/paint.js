@@ -47,7 +47,8 @@ uniform float uCopies, uCopyDark;  // copies of the eternal Forms, drifting in t
 uniform float uFlux, uBundle, uScatter;   // things arising and passing away; a self made of five parts; those parts drifting apart
 uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
 uniform vec3 uHands;            // second, minute and hour hands, radians clockwise from the top
-uniform vec4 uLab[3];
+uniform vec4 uLab[3];           // where lettering sits inside a shape, and its half size
+uniform vec3 uLabA;             // how much each of those three names shows
 
 float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 float noise(vec2 p){
@@ -464,9 +465,10 @@ void main(){
   float lift = 0.;
   for (int i = 0; i < 3; i++){
     vec4 L = uLab[i];
-    if (L.z <= 0.) continue;
+    float a = i == 0 ? uLabA.x : i == 1 ? uLabA.y : uLabA.z;
+    if (a <= .001) continue;
     vec2 b = abs(q + wM * .02 - L.xy) - L.zw + .03;
-    lift = max(lift, smoothstep(.05, -.02, length(max(b, 0.)) + min(max(b.x, b.y), 0.) - .03 + wF.x * .01));
+    lift = max(lift, a * smoothstep(.05, -.02, length(max(b, 0.)) + min(max(b.x, b.y), 0.) - .03 + wF.x * .01));
   }
   A *= 1. - .72 * lift;
 

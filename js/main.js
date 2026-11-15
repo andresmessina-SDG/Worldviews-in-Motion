@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=35';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=35';
-import { CATALOGUE } from './catalogue.js?v=35';
-import { createMenu } from './menu.js?v=35';
+import { createPainter } from './paint.js?v=36';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=36';
+import { CATALOGUE } from './catalogue.js?v=36';
+import { createMenu } from './menu.js?v=36';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -66,7 +66,7 @@ for (const k of KEYS) {
   dot.setAttribute('r', 2.6);
   g.append(path, dot);
   if (ALIGN[k] !== 'center' || k === 'god') $('lines').appendChild(g);
-  labels[k] = { el, g, path, dot, on: false, timer: null, w: 0, h: 0 };
+  labels[k] = { el, g, path, dot, on: false, timer: null, w: 0, h: 0, show: 0, lift: 0 };
 }
 // (the line and its dot fade themselves, rather than their group, for the reason given at flatten() below)
 function fadeLeader(L, a) {
@@ -82,12 +82,15 @@ function setLabel(k, content, instant, wait = 550) {
   const apply = () => {
     L.el.innerHTML = html;
     L.on = !!content;
+    L.show = L.on ? 1 : 0;
+    if (instant) L.lift = L.show;
     L.el.style.opacity = L.on ? 1 : 0;
     fadeLeader(L, L.on ? 1 : 0);
     measure();
   };
   if (instant) return apply();
   L.el.style.opacity = 0;
+  L.show = 0;
   fadeLeader(L, 0);
   L.timer = setTimeout(apply, wait);
 }
@@ -165,7 +168,7 @@ setInterval(() => { if (auto && !document.hidden) go(cur.wv, (cur.act + 1) % 4);
 // ---------- layout ----------
 let unit = 1, ext = 1, cx = 0, cy = 0, scale = 1, quality = 1, markH = 0;
 let wordsRight = -1e9, wordsBottom = 1e9;       // the corner of the words on the left, in scene units
-const rects = new Float32Array(12);
+const rects = new Float32Array(12), lifts = [0, 0, 0];
 // Three layouts: the words beside the painting; the same with smaller words, for squarish windows; or the title
 // above the painting and the words below. (A window too short for words below has a fourth: smaller words and
 // smaller lettering.) Each window gets the first beside layout that leaves the words room above the names of the
@@ -280,7 +283,7 @@ function place(k, x, y, tx, ty) {
   L.dot.setAttribute('cy', Y(ty));
 }
 
-function layout(p, G) {
+function layout(p, G, dt) {
   // the world's name sits low in its shape, but never down among the names of the acts
   const godY = p.Gy + p.rG * p.lGodK, worldY = Math.max(p.Wy - p.rW * 0.6, -0.795 + markH / 2 + labels.world.h / 2);
   place('god', 0, godY);
@@ -306,8 +309,15 @@ function layout(p, G) {
   const sinY = sinX - labels.sin.w < wordsRight + 0.03 ? Math.min(sinY0, wordsBottom - labels.sin.h / 2 - 0.03) : sinY0;
   place('sin', sinX, sinY, lerp(-0.02 - p.stainR * 0.8, -0.115, p.stainUp), lerp(p.Sy - 0.06, 0.03, p.stainUp));
   const bl = labels.bridge;
+  // The paper under a name is lifted only while the name shows, and fades with it (over the .5s of .l in the stylesheet),
+  // so no pale patch is left behind while the shapes move and the new names wait to appear.
+  ['god', 'world', 'bridge'].forEach((k, i) => {
+    const L = labels[k];
+    L.lift = L.show > L.lift ? Math.min(L.show, L.lift + dt / 0.5) : Math.max(L.show, L.lift - dt / 0.5);
+    lifts[i] = L.lift * L.lift * (3 - 2 * L.lift);
+  });
   rects.set([0, godY, labels.god.w / 2 + 0.02, labels.god.h / 2 + 0.012, 0, worldY, labels.world.w / 2 + 0.02, labels.world.h / 2 + 0.012,
-    p.lBrX + bl.w / 2, p.lBrY, bl.on ? bl.w / 2 + 0.02 : 0, bl.h / 2 + 0.012]);
+    p.lBrX + bl.w / 2, p.lBrY, bl.w / 2 + 0.02, bl.h / 2 + 0.012]);
 }
 
 // ---------- connectors ----------
@@ -753,7 +763,7 @@ function frame(now) {
   const css = rgb(p.acc);
   if (css !== accent) { accent = css; document.documentElement.style.setProperty('--red', css); }
 
-  layout(p, G);
+  layout(p, G, dt);
   if (p.spirits > 0.01) spiritsAt(p, t);
   if (painter) {
     const entry = p.Wy + p.rW - 0.02;
@@ -768,7 +778,7 @@ function frame(now) {
       uOne: p.one, uMaya: p.maya, uWorldA: p.worldA, uManI: p.manI,
       uWave: p.wave, uHaloL: p.haloL, uHaloR: p.haloR, uClock: p.clock, uRing: p.ring, uStainS: p.stainS,
       uStainUp: p.stainUp, uCopies: p.copies, uCopyDark: p.copyDark, uSoul: [spirits[0], spirits[1], p.spirits > 0.01 ? p.soul * p.spirits * (1 - 0.8 * p.anger) : 0], uLit: p.lit, uScan: p.scan, uSpA: p.spirits, 'uSp[0]': spirits, uBi: p.bi, uYin: p.yin, uMist: p.mist, uFlux: p.flux, uBundle: p.bundle, uScatter: p.scatter, uStainR: p.stainR, uStainA: p.stainA, uGlow: p.glow, uDull: p.dull, uRip: p.rip, uRipY: entry + (p.Sy - entry) * p.ripAt,
-      uTick: hd.whole, uHands: [hd.sec, hd.min, hd.hour], 'uLab[0]': rects,
+      uTick: hd.whole, uHands: [hd.sec, hd.min, hd.hour], 'uLab[0]': rects, uLabA: lifts,
     });
   }
   drawConn(p, { t, arrow, orb, tock: hd.tock }, G);
