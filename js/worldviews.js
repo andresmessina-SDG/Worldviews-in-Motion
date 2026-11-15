@@ -3,11 +3,10 @@
 // Every value is a number or a colour, so any act can blend into any other.
 //
 // Rules for working in this file:
-// - Every base must hold every key, in the same form (a number, or a colour as [r, g, b] from 0 to 1).
-//   A move blends key by key, so a key missing on either side becomes NaN and the painting goes blank.
-//   A new key goes into all the bases at once, set to the value that means "not here" (usually 0).
-//   To check, from the top folder:
-//   node -e "import('./js/worldviews.js').then(({WORLDVIEWS:W})=>{const k=Object.keys(W.christian.acts[0].p);for(const[id,w]of Object.entries(W))for(const a of w.acts){const m=k.filter(x=>!(x in a.p)),e=Object.keys(a.p).filter(x=>!k.includes(x));if(m.length||e.length)console.log(id,a.slug,m,e)}})"
+// - Every key is in DEFAULTS below, in the one form it always takes (a number, or a colour as [r, g, b] from
+//   0 to 1). A base, or an act, gives only the keys where it differs. A new key goes into DEFAULTS, set to the
+//   value that means "not here" (usually 0). A move blends key by key, so a key in a base or an act but not in
+//   DEFAULTS (a misspelt name, say) is reported in the browser's console as the page loads.
 // - Places are in scene units: x across, y up, 0 at the middle of the painting, about 1 from the
 //   middle to the top. Gy, Wy and Sy are the heights of the Ultimate, the world and man.
 // - acc is the accent colour of the connectors and of the open act's name: dark enough to read on paper.
@@ -21,212 +20,186 @@
 //   Avoid stock formulas such as "an X that Y" ("matter that thinks"); say it as a person would.
 // - Act names stay short: all four share the line of history, even on a small phone.
 
-const christianBase = {
+// Each value as most worldviews have it, so that each base below lists only where its worldview differs.
+const DEFAULTS = {
   // where things stand (scene units, y up)
-  Gy: 0.445, rG: 0.29, Wy: -0.43, rW: 0.36, Sy: -0.4, bOff: 0.03,
+  Gy: 0.56, rG: 0.15, Wy: -0.43, rW: 0.36, Sy: -0.02, bOff: 0,
   // palette
-  glory: [1, 0.94, 0.66], sky: [0.97, 0.76, 0.56], far: [0.8, 0.7, 0.82], low: [0.72, 0.88, 0.85], deep: [0.5, 0.68, 0.8],
-  sea: [0.22, 0.6, 0.66], land: [0.3, 0.62, 0.42], shade: [0.14, 0.28, 0.5], warm: 0.55, bg: 0.5,
-  godC: [0.98, 0.78, 0.3], godRim: [0.9, 0.46, 0.34], godA: 1,
-  stainC: [0.13, 0.11, 0.22], stainS: 0,
+  glory: [0.95, 0.95, 0.94], sky: [0.97, 0.76, 0.56], far: [0.8, 0.84, 0.86], low: [0.72, 0.88, 0.85], deep: [0.5, 0.68, 0.8],
+  sea: [0.22, 0.6, 0.66], land: [0.3, 0.62, 0.42], shade: [0.14, 0.28, 0.5], warm: 0.25, bg: 0.4,
+  godC: [0.95, 0.94, 0.9], godRim: [0.86, 0.86, 0.84], godA: 0,
+  stainC: [0.13, 0.11, 0.22], stainS: 1,
   // what is present and what moves
-  wave: 1, haloL: 1, haloR: 0, clock: 0, ring: 1,
+  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
   box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
-  bridge: 0.95, bw: 0.044, bbot: -0.12, crim: 0, cross: 0, snap: 0, flow: 1,
+  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
   ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
   // lettering
-  lGodK: 0.38, lSide: 0.1, lBrX: 0.22, lBrY: 0.145, tBrX: 0.05, tBrY: 0.095, tBrS: 0,
+  lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.145, tBrX: 0.05, tBrY: 0.11, tBrS: 0,
+};
+
+const christianBase = {
+  // where things stand (scene units, y up)
+  Gy: 0.445, rG: 0.29, Sy: -0.4, bOff: 0.03,
+  // palette
+  glory: [1, 0.94, 0.66], far: [0.8, 0.7, 0.82],
+  warm: 0.55, bg: 0.5,
+  godC: [0.98, 0.78, 0.3], godRim: [0.9, 0.46, 0.34], godA: 1,
+  stainS: 0,
+  // what is present and what moves
+  wave: 1, haloL: 1, ring: 1,
+  // connectors
+  bridge: 0.95, bw: 0.044, bbot: -0.12, flow: 1,
+  // lettering
+  lGodK: 0.38, lBrX: 0.22, tBrY: 0.095,
 };
 
 const deismBase = {
-  Gy: 0.56, rG: 0.2, Wy: -0.35, rW: 0.31, Sy: -0.35, bOff: -0.1,
+  rG: 0.2, Wy: -0.35, rW: 0.31, Sy: -0.35, bOff: -0.1,
   glory: [0.98, 0.96, 0.86], sky: [0.94, 0.9, 0.78], far: [0.8, 0.81, 0.86], low: [0.82, 0.88, 0.9], deep: [0.6, 0.7, 0.8],
-  sea: [0.36, 0.56, 0.72], land: [0.46, 0.62, 0.66], shade: [0.14, 0.28, 0.5], warm: 0.25, bg: 0.42,
+  sea: [0.36, 0.56, 0.72], land: [0.46, 0.62, 0.66], bg: 0.42,
   godC: [0.97, 0.86, 0.56], godRim: [0.9, 0.74, 0.56], godA: 0.62,
-  stainC: [0.46, 0.46, 0.54], stainS: 1,
-  wave: 0, haloL: 0, haloR: 1, clock: 1, ring: 0,
-  box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
-  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
-  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.15, rip: 0, ripAt: 1,
-  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0.75, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 1, acc: [63, 98, 127],
-  lGodK: 0.12, lSide: 0.2, lBrX: 0.2, lBrY: 0.14, tBrX: 0.035, tBrY: 0.12, tBrS: 0,
+  stainC: [0.46, 0.46, 0.54],
+  haloR: 1, clock: 1,
+  dull: 0.15,
+  ghost: 0.75, tick: 1, acc: [63, 98, 127],
+  lGodK: 0.12, lSide: 0.2, lBrX: 0.2, lBrY: 0.14, tBrX: 0.035, tBrY: 0.12,
 };
 
 const mtdBase = {
-  // the self at the centre of everything, and a small, kindly God going round it.
   // Gy is where God's name stands, and where God would stand if he kept his place.
-  Gy: 0.72, rG: 0.13, Wy: -0.02, rW: 0.3, Sy: -0.02, bOff: 0,
+  Gy: 0.72, rG: 0.13, Wy: -0.02, rW: 0.3,
   glory: [1, 0.96, 0.8], sky: [0.98, 0.88, 0.87], far: [0.88, 0.84, 0.93], low: [0.96, 0.92, 0.84], deep: [0.9, 0.84, 0.88],
-  sea: [0.95, 0.72, 0.76], land: [0.96, 0.87, 0.56], shade: [0.66, 0.5, 0.64], warm: 0.25, bg: 0.4,
+  sea: [0.95, 0.72, 0.76], land: [0.96, 0.87, 0.56], shade: [0.66, 0.5, 0.64],
   godC: [0.98, 0.91, 0.58], godRim: [0.96, 0.74, 0.76], godA: 0.85,
-  stainC: [0.48, 0.5, 0.6], stainS: 1,
-  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
-  box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.52, 0.6], empty: 0, drain: 0, pool: 0, hollow: 0,
+  stainC: [0.48, 0.5, 0.6],
+  manC: [0.9, 0.52, 0.6],
   selfR: 0.05, selfA: 0.18, selfC: [0.95, 0.56, 0.64],
-  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
-  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 1, oR: 0.62, oTilt: 0.42, oRot: 0.45, oSpd: 0.12, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [182, 72, 108],
-  lGodK: 0, lSide: 0.1, lBrX: 0.32, lBrY: -0.3, tBrX: 0.085, tBrY: -0.06, tBrS: 1,
+  orbit: 1, oR: 0.62, oTilt: 0.42, oRot: 0.45, oSpd: 0.12, acc: [182, 72, 108],
+  lBrX: 0.32, lBrY: -0.3, tBrX: 0.085, tBrY: -0.06, tBrS: 1,
 };
 
 const naturalismBase = {
-  Gy: 0.56, rG: 0.19, Wy: -0.24, rW: 0.4, Sy: -0.2, bOff: 0,
-  glory: [0.95, 0.95, 0.93], sky: [0.87, 0.9, 0.9], far: [0.8, 0.84, 0.86], low: [0.8, 0.85, 0.8], deep: [0.62, 0.7, 0.76],
-  sea: [0.44, 0.58, 0.7], land: [0.5, 0.62, 0.5], shade: [0.14, 0.28, 0.5], warm: 0.4, bg: 0.42,
-  godC: [0.95, 0.94, 0.9], godRim: [0.86, 0.86, 0.84], godA: 0,
-  stainC: [0.34, 0.36, 0.42], stainS: 1,
-  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
-  box: 1, lat: 1, pulse: 1, bare: 1, manA: 1, manC: [0.3, 0.42, 0.54], empty: 0.8, drain: 0, pool: 0, hollow: 0,
-  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
-  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
-  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [70, 100, 78],
-  lGodK: 0, lSide: 0.1, lBrX: 0.26, lBrY: 0.29, tBrX: 0.16, tBrY: 0.17, tBrS: 0,
+  rG: 0.19, Wy: -0.24, rW: 0.4, Sy: -0.2,
+  glory: [0.95, 0.95, 0.93], sky: [0.87, 0.9, 0.9], low: [0.8, 0.85, 0.8], deep: [0.62, 0.7, 0.76],
+  sea: [0.44, 0.58, 0.7], land: [0.5, 0.62, 0.5], warm: 0.4, bg: 0.42,
+  stainC: [0.34, 0.36, 0.42],
+  box: 1, lat: 1, pulse: 1, bare: 1, manC: [0.3, 0.42, 0.54], empty: 0.8,
+  acc: [70, 100, 78],
+  lBrX: 0.26, lBrY: 0.29, tBrX: 0.16, tBrY: 0.17,
 };
 
 const nihilismBase = {
-  Gy: 0.62, rG: 0.15, Wy: 0, rW: 0.34, Sy: 0.04, bOff: 0,
-  glory: [0.95, 0.95, 0.94], sky: [0.9, 0.9, 0.9], far: [0.84, 0.84, 0.86], low: [0.86, 0.85, 0.84], deep: [0.76, 0.76, 0.79],
-  sea: [0.4, 0.43, 0.5], land: [0.5, 0.5, 0.55], shade: [0.14, 0.28, 0.5], warm: 0.12, bg: 0.34,
-  godC: [0.95, 0.94, 0.9], godRim: [0.86, 0.86, 0.84], godA: 0,
-  stainC: [0.3, 0.3, 0.36], stainS: 1,
-  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
-  box: 1, lat: 0.45, pulse: 0.3, bare: 0.6, manA: 1, manC: [0.42, 0.44, 0.5], empty: 0.45, drain: 0.35, pool: 0.25, hollow: 0,
-  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
-  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.6, rip: 0, ripAt: 1,
-  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [86, 82, 100],
-  lGodK: 0, lSide: 0.1, lBrX: 0.27, lBrY: -0.52, tBrX: 0.15, tBrY: -0.44, tBrS: 0,
+  Gy: 0.62, Wy: 0, rW: 0.34, Sy: 0.04,
+  sky: [0.9, 0.9, 0.9], far: [0.84, 0.84, 0.86], low: [0.86, 0.85, 0.84], deep: [0.76, 0.76, 0.79],
+  sea: [0.4, 0.43, 0.5], land: [0.5, 0.5, 0.55], warm: 0.12, bg: 0.34,
+  stainC: [0.3, 0.3, 0.36],
+  box: 1, lat: 0.45, pulse: 0.3, bare: 0.6, manC: [0.42, 0.44, 0.5], empty: 0.45, drain: 0.35, pool: 0.25,
+  dull: 0.6,
+  acc: [86, 82, 100],
+  lBrX: 0.27, lBrY: -0.52, tBrX: 0.15, tBrY: -0.44,
 };
 
 const existentialismBase = {
-  Gy: 0.62, rG: 0.15, Wy: -0.06, rW: 0.38, Sy: -0.02, bOff: 0,
-  glory: [0.95, 0.95, 0.94], sky: [0.9, 0.89, 0.88], far: [0.83, 0.83, 0.85], low: [0.85, 0.84, 0.83], deep: [0.74, 0.74, 0.77],
-  sea: [0.38, 0.4, 0.46], land: [0.47, 0.47, 0.51], shade: [0.14, 0.28, 0.5], warm: 0.1, bg: 0.36,
-  godC: [0.95, 0.94, 0.9], godRim: [0.86, 0.86, 0.84], godA: 0,
-  stainC: [0.26, 0.26, 0.32], stainS: 1,
-  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
-  box: 1, lat: 0.35, pulse: 0.3, bare: 0.6, manA: 1, manC: [0.85, 0.3, 0.2], empty: 0.4, drain: 0.4, pool: 0, hollow: 0,
-  selfR: 0.09, selfA: 0.3, selfC: [0.86, 0.33, 0.24],
-  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0.7, rip: 0, ripAt: 1,
-  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [190, 66, 44],
-  lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.42, tBrX: 0.13, tBrY: 0.11, tBrS: 0,
+  Gy: 0.62, Wy: -0.06, rW: 0.38,
+  sky: [0.9, 0.89, 0.88], far: [0.83, 0.83, 0.85], low: [0.85, 0.84, 0.83], deep: [0.74, 0.74, 0.77],
+  sea: [0.38, 0.4, 0.46], land: [0.47, 0.47, 0.51], warm: 0.1, bg: 0.36,
+  stainC: [0.26, 0.26, 0.32],
+  box: 1, lat: 0.35, pulse: 0.3, bare: 0.6, manC: [0.85, 0.3, 0.2], empty: 0.4, drain: 0.4,
+  selfR: 0.09, selfA: 0.3,
+  dull: 0.7,
+  acc: [190, 66, 44],
+  lBrY: 0.42, tBrX: 0.13,
 };
 
 const hinduBase = {
   // the Ultimate and the world are one shape: the world's own circle is not drawn
-  Gy: 0.08, rG: 0.36, Wy: 0.08, rW: 0.46, Sy: -0.02, bOff: 0,
+  Gy: 0.08, rG: 0.36, Wy: 0.08, rW: 0.46,
   glory: [0.99, 0.76, 0.34], sky: [0.9, 0.42, 0.58], far: [0.66, 0.5, 0.76], low: [0.92, 0.6, 0.6], deep: [0.7, 0.52, 0.76],
-  sea: [0.9, 0.5, 0.4], land: [0.92, 0.6, 0.3], shade: [0.14, 0.28, 0.5], warm: 0.3, bg: 0.46,
+  sea: [0.9, 0.5, 0.4], land: [0.92, 0.6, 0.3], warm: 0.3, bg: 0.46,
   godC: [0.96, 0.52, 0.16], godRim: [0.9, 0.4, 0.42], godA: 1,
-  stainC: [0.36, 0.22, 0.4], stainS: 1,
-  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
-  box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.74, 0.16, 0.24], empty: 0, drain: 0, pool: 0, hollow: 1,
-  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
-  one: 1, maya: 0.5, worldA: 0, manI: 1, wheel: 0,
-  spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
-  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [172, 44, 100],
-  lGodK: 0.45, lSide: 0.06, lBrX: 0.28, lBrY: 0.63, tBrX: 0.23, tBrY: 0.478, tBrS: 0,
+  stainC: [0.36, 0.22, 0.4],
+  manC: [0.74, 0.16, 0.24], hollow: 1,
+  one: 1, maya: 0.5, worldA: 0,
+  acc: [172, 44, 100],
+  lGodK: 0.45, lSide: 0.06, lBrX: 0.28, lBrY: 0.63, tBrX: 0.23, tBrY: 0.478,
 };
 
 const buddhistBase = {
   // no Ultimate drawn: its place and size only centre the wheel on the self
-  Gy: 0.04, rG: 0.3, Wy: 0.04, rW: 0.33, Sy: 0.04, bOff: 0,
+  Gy: 0.04, rG: 0.3, Wy: 0.04, rW: 0.33, Sy: 0.04,
   glory: [0.97, 0.93, 0.84], sky: [0.92, 0.86, 0.78], far: [0.8, 0.77, 0.76], low: [0.9, 0.85, 0.78], deep: [0.8, 0.74, 0.72],
-  sea: [0.93, 0.67, 0.32], land: [0.88, 0.55, 0.3], shade: [0.14, 0.28, 0.5], warm: 0.35, bg: 0.36,
-  godC: [0.95, 0.9, 0.8], godRim: [0.86, 0.8, 0.76], godA: 0,
-  stainC: [0.32, 0.12, 0.13], stainS: 1,
-  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
-  box: 0, lat: 0, pulse: 0, bare: 0.35, manA: 1, manC: [0.55, 0.18, 0.18], empty: 0, drain: 0, pool: 0, hollow: 0,
-  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
-  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 1, bundle: 1, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
-  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [140, 47, 47],
-  lGodK: 1.75, lSide: 0.08, lBrX: 0.3, lBrY: -0.38, tBrX: 0.26, tBrY: -0.26, tBrS: 0,
+  sea: [0.93, 0.67, 0.32], land: [0.88, 0.55, 0.3], warm: 0.35, bg: 0.36,
+  godC: [0.95, 0.9, 0.8], godRim: [0.86, 0.8, 0.76],
+  stainC: [0.32, 0.12, 0.13],
+  bare: 0.35, manC: [0.55, 0.18, 0.18],
+  flux: 1, bundle: 1,
+  acc: [140, 47, 47],
+  lGodK: 1.75, lSide: 0.08, lBrY: -0.38, tBrX: 0.26, tBrY: -0.26,
 };
 
 const taoistBase = {
   // the source is painted as mist above, with no edge and no outline
-  Gy: 0.5, rG: 0.28, Wy: -0.14, rW: 0.36, Sy: 0.02, bOff: 0,
+  Gy: 0.5, rG: 0.28, Wy: -0.14, Sy: 0.02,
   glory: [0.97, 0.96, 0.93], sky: [0.9, 0.91, 0.9], far: [0.82, 0.84, 0.84], low: [0.88, 0.9, 0.88], deep: [0.78, 0.82, 0.8],
-  sea: [0.32, 0.34, 0.36], land: [0.8, 0.89, 0.85], shade: [0.14, 0.28, 0.5], warm: 0, bg: 0.34,
-  godC: [0.58, 0.6, 0.61], godRim: [0.7, 0.72, 0.72], godA: 0,
-  stainC: [0.24, 0.2, 0.18], stainS: 1,
-  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
-  box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.76, 0.22, 0.15], empty: 0, drain: 0, pool: 0, hollow: 0,
-  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
-  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 1, mist: 1, current: 0.5, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
-  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [46, 112, 98],
-  lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.3, tBrX: 0.113, tBrY: -0.027, tBrS: 0,
+  sea: [0.32, 0.34, 0.36], land: [0.8, 0.89, 0.85], warm: 0, bg: 0.34,
+  godC: [0.58, 0.6, 0.61], godRim: [0.7, 0.72, 0.72],
+  stainC: [0.24, 0.2, 0.18],
+  manC: [0.76, 0.22, 0.15],
+  yin: 1, mist: 1, current: 0.5,
+  acc: [46, 112, 98],
+  lBrY: 0.3, tBrX: 0.113, tBrY: -0.027,
 };
 
 const confucianBase = {
   // round Heaven above, square Earth below
-  Gy: 0.565, rG: 0.215, Wy: -0.13, rW: 0.38, Sy: -0.05, bOff: 0,
-  glory: [0.97, 0.96, 0.92], sky: [0.86, 0.9, 0.9], far: [0.8, 0.84, 0.86], low: [0.94, 0.89, 0.8], deep: [0.86, 0.79, 0.68],
-  sea: [0.87, 0.72, 0.44], land: [0.8, 0.64, 0.42], shade: [0.14, 0.28, 0.5], warm: 0.3, bg: 0.38,
+  Gy: 0.565, rG: 0.215, Wy: -0.13, rW: 0.38, Sy: -0.05,
+  glory: [0.97, 0.96, 0.92], sky: [0.86, 0.9, 0.9], low: [0.94, 0.89, 0.8], deep: [0.86, 0.79, 0.68],
+  sea: [0.87, 0.72, 0.44], land: [0.8, 0.64, 0.42], warm: 0.3, bg: 0.38,
   godC: [0.74, 0.86, 0.83], godRim: [0.52, 0.7, 0.7], godA: 0.85,
-  stainC: [0.38, 0.32, 0.27], stainS: 1,
-  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
-  box: 1, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.64, 0.23, 0.17], empty: 0, drain: 0, pool: 0, hollow: 0,
-  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
-  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 1, bonds: 1, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
-  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [160, 58, 42],
-  lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.35, tBrX: 0.17, tBrY: 0.11, tBrS: 0,
+  stainC: [0.38, 0.32, 0.27],
+  box: 1, manC: [0.64, 0.23, 0.17],
+  bi: 1, bonds: 1,
+  acc: [160, 58, 42],
+  lBrY: 0.35, tBrX: 0.17,
 };
 
 const animistBase = {
   // the High God is small, faint and far off; the world below is full of spirits
-  Gy: 0.66, rG: 0.085, Wy: -0.1, rW: 0.4, Sy: -0.1, bOff: 0,
+  Gy: 0.66, rG: 0.085, Wy: -0.1, rW: 0.4, Sy: -0.1,
   glory: [0.96, 0.93, 0.85], sky: [0.89, 0.87, 0.79], far: [0.79, 0.8, 0.74], low: [0.87, 0.85, 0.75], deep: [0.72, 0.73, 0.63],
-  sea: [0.6, 0.72, 0.52], land: [0.8, 0.66, 0.45], shade: [0.14, 0.28, 0.5], warm: 0.45, bg: 0.4,
+  sea: [0.6, 0.72, 0.52], land: [0.8, 0.66, 0.45], warm: 0.45,
   godC: [0.96, 0.86, 0.6], godRim: [0.86, 0.7, 0.5], godA: 0.35,
-  stainC: [0.19, 0.16, 0.14], stainS: 1,
-  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
-  box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.56, 0.3, 0.2], empty: 0, drain: 0, pool: 0, hollow: 0,
-  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
-  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  spirits: 1, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
-  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [150, 90, 45],
-  lGodK: -2.25, lSide: 0.1, lBrX: 0.3, lBrY: 0.32, tBrX: 0.06, tBrY: -0.03, tBrS: 0,
+  stainC: [0.19, 0.16, 0.14],
+  manC: [0.56, 0.3, 0.2],
+  spirits: 1,
+  acc: [150, 90, 45],
+  lGodK: -2.25, lBrY: 0.32, tBrX: 0.06, tBrY: -0.03,
 };
 
 const platonistBase = {
   // two storeys: the Good and the Forms above, still and eternal; the world of becoming below, always changing
-  Gy: 0.64, rG: 0.12, Wy: -0.3, rW: 0.34, Sy: -0.3, bOff: 0,
+  Gy: 0.64, rG: 0.12, Wy: -0.3, rW: 0.34, Sy: -0.3,
   glory: [1, 0.97, 0.86], sky: [0.97, 0.94, 0.87], far: [0.88, 0.87, 0.93], low: [0.84, 0.82, 0.91], deep: [0.66, 0.62, 0.79],
-  sea: [0.58, 0.55, 0.75], land: [0.74, 0.7, 0.82], shade: [0.32, 0.29, 0.52], warm: 0.1, bg: 0.4,
+  sea: [0.58, 0.55, 0.75], land: [0.74, 0.7, 0.82], shade: [0.32, 0.29, 0.52], warm: 0.1,
   godC: [1, 0.9, 0.6], godRim: [0.96, 0.82, 0.58], godA: 0.9,
-  stainC: [0.24, 0.21, 0.36], stainS: 1,
-  wave: 0, haloL: 0, haloR: 0, clock: 0, ring: 0,
-  box: 0, lat: 0, pulse: 0, bare: 0, manA: 0.4, manC: [0.56, 0.42, 0.42], empty: 0, drain: 0, pool: 0, hollow: 0,
-  selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
-  one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  spirits: 1, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
-  bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 1, partake: 1, copies: 1, copyDark: 0, soul: 1, soulY: -0.3, ladder: 0, rebirth: 0, divide: 1, tick: 0, acc: [82, 72, 148],
-  lGodK: 0, lSide: 0.1, lBrX: 0.45, lBrY: 0.38, tBrX: 0.378, tBrY: 0.285, tBrS: 0,
+  stainC: [0.24, 0.21, 0.36],
+  manA: 0.4, manC: [0.56, 0.42, 0.42],
+  spirits: 1,
+  forms: 1, partake: 1, copies: 1, soul: 1, soulY: -0.3, divide: 1, acc: [82, 72, 148],
+  lBrX: 0.45, lBrY: 0.38, tBrX: 0.378, tBrY: 0.285,
 };
 
-const build = (base, acts) => acts.map((a) => ({ ...a, p: { ...base, ...a.p } }));
+// An act's values: the defaults, then its worldview's base, then its own. A key the defaults lack is a mistake
+// (a misspelt name would otherwise be carried along unread), so it is reported at once.
+const build = (base, acts) => acts.map((a) => {
+  for (const k of [...Object.keys(base), ...Object.keys(a.p)]) if (!(k in DEFAULTS)) console.error(`worldviews.js: unknown key ${k}`);
+  return { ...a, p: { ...DEFAULTS, ...base, ...a.p } };
+});
 
 export const WORLDVIEWS = {
   christian: {
