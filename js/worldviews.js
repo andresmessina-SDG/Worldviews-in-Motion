@@ -34,11 +34,11 @@ const DEFAULTS = {
   box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
-  pyr: 0, level: 0, strata: 0, split: 0, churn: 0, stainOn: 0,
+  pyr: 0, level: 0, strata: 0, split: 0, churn: 0, stainOn: 0, star: 0, law: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
+  sent: 0, scales: 0, extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
   // lettering
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.145, tBrX: 0.05, tBrY: 0.11, tBrS: 0,
 };
@@ -82,6 +82,19 @@ const mtdBase = {
   selfR: 0.05, selfA: 0.18, selfC: [0.95, 0.56, 0.64],
   orbit: 1, oR: 0.62, oTilt: 0.42, oRot: 0.45, oSpd: 0.12, acc: [182, 72, 108],
   lBrX: 0.32, lBrY: -0.3, tBrX: 0.085, tBrY: -0.06, tBrS: 1,
+};
+
+const islamBase = {
+  // God high above and far off, in glory; his will comes down, but he does not
+  Gy: 0.57, rG: 0.24, Wy: -0.3, rW: 0.34, Sy: -0.3,
+  glory: [1, 0.96, 0.84], sky: [0.95, 0.9, 0.78], far: [0.84, 0.86, 0.82], low: [0.9, 0.88, 0.8], deep: [0.72, 0.78, 0.72],
+  sea: [0.24, 0.55, 0.45], land: [0.85, 0.72, 0.42], shade: [0.16, 0.32, 0.3], warm: 0.35, bg: 0.42,
+  godC: [0.98, 0.88, 0.6], godRim: [0.9, 0.74, 0.42], godA: 1,
+  stainC: [0.2, 0.18, 0.2],
+  manC: [0.72, 0.38, 0.24],
+  star: 1,
+  acc: [30, 105, 80],
+  lBrX: 0.2, lBrY: 0.2, tBrX: 0.012, tBrY: 0.12,
 };
 
 const naturalismBase = {
@@ -333,7 +346,7 @@ export const WORLDVIEWS = {
   mtd: {
     name: 'Moralistic Therapeutic Deism',
     tagline: 'Be nice, be happy, and call on God when you need him.',
-    move: { to: 'naturalism', q: 'What if no one is up there at all?' },
+    move: { to: 'islam', q: 'What if God must be obeyed, not just called on?' },
     acts: build(mtdBase, [
       {
         slug: 'a-kindly-god',
@@ -380,6 +393,62 @@ export const WORLDVIEWS = {
           god: ['God', 'Still at their service'],
           world: ['The world', 'Left behind'],
           self: ['Good people', 'Good enough by their own measure'],
+        },
+      },
+    ]),
+  },
+
+  islam: {
+    name: 'Islam',
+    tagline: 'There is no god but God, and man must submit to him.',
+    move: { to: 'naturalism', q: 'What if no one is up there at all?' },
+    acts: build(islamBase, [
+      {
+        slug: 'creation',
+        name: 'Creation',
+        text: 'There is no god but God. He is one, with no partner and no son. He made the world by his command, “Be!”, and set man on the earth as his deputy.',
+        p: { rip: 0.8, ripAt: 0 },
+        labels: {
+          god: ['Allah', '“He neither begets nor is born”'],
+          world: ['Creation', 'Made by his word, “Be!”'],
+          self: ['Man', 'God’s deputy on earth'],
+        },
+      },
+      {
+        slug: 'forgetfulness',
+        name: 'Forgetfulness',
+        text: 'Adam disobeyed and God forgave him, so no sin is passed down. Man is born pure, but weak and forgetful. The worst sin is to set up partners beside God.',
+        p: { stainR: 0.1, stainA: 0.4, dull: 0.35, rip: -0.4 },
+        labels: {
+          god: ['Allah', 'Shirk alone he will not forgive'],
+          world: ['Creation', 'Full of signs, unheeded'],
+          self: ['Man', 'Born pure, but weak'],
+          sin: ['Forgetfulness', 'A weakness, not a fallen nature'],
+        },
+      },
+      {
+        slug: 'submission',
+        name: 'Submission',
+        text: 'God sent prophets, and last of all Muhammad, with the Quran. Jesus was a prophet, not the Son of God, and he was not crucified. Man must submit to God’s law and keep the Five Pillars.',
+        p: { sent: 1, law: 1, stainR: 0.07, stainA: 0.18, dull: 0.1, glow: 0.4, lBrY: 0.2, tBrX: 0.012, tBrY: 0.18 },
+        labels: {
+          god: ['Allah', 'He reveals his will, not himself'],
+          world: ['Creation', 'To be ruled by God’s law'],
+          bridge: ['The Quran', 'The word made book, not flesh'],
+          self: ['The Muslim', 'Saved by submitting, if God wills'],
+          sin: ['Forgetfulness', 'Forgiven, with no atonement'],
+        },
+      },
+      {
+        slug: 'judgement',
+        name: 'Judgement',
+        text: 'On the Last Day the dead will be raised and their deeds weighed. Those God accepts enter the Garden, and the rest go to the Fire. No one can be sure which awaits him.',
+        p: { scales: 1, law: 0.4, sea: [0.3, 0.62, 0.42], land: [0.62, 0.76, 0.4], glow: 0.3, lBrX: 0.3, lBrY: 0.24, tBrX: 0.2, tBrY: 0.2 },
+        labels: {
+          god: ['Allah', 'Judge, but never Father'],
+          world: ['The Garden', 'For those God accepts'],
+          bridge: ['The scales', 'Deeds weighed, and no one can be sure'],
+          self: ['Man', 'Hoping his good outweighs his bad'],
         },
       },
     ]),

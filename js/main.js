@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=51';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=51';
-import { CATALOGUE } from './catalogue.js?v=51';
-import { createMenu } from './menu.js?v=51';
+import { createPainter } from './paint.js?v=52';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=52';
+import { CATALOGUE } from './catalogue.js?v=52';
+import { createMenu } from './menu.js?v=52';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -657,6 +657,29 @@ function drawConn(p, c, G) {
       dots += `<circle cx="${f(x)}" cy="${f(y)}" r=".028" fill="${PAP}" stroke="${ACC}" stroke-width=".0055" opacity="${f(op)}"/>`;
     });
     g += lines + rite + dots;
+  }
+
+  // ----- the Quran sent down: a ruled line from God to man, with its pages coming down it. God himself stays above. -----
+  if (p.sent > 0.01) {
+    const y0 = G.y - G.r - 0.02, y1 = p.Sy + 0.095;
+    if (y0 > y1) {
+      const d = `M0,${f(-y0)} V${f(-y1)}`;
+      g += `<g opacity="${f(p.sent)}">${stroke(d, ACC, 0.0035)}`;
+      g += `<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".026" stroke-dasharray=".026 .05" stroke-dashoffset="${f(-c.t * 0.02 - 0.002)}" opacity=".92"/>`;
+      g += `<path d="${d}" fill="none" stroke="${ACC}" stroke-width=".016" stroke-dasharray=".022 .054" stroke-dashoffset="${f(-c.t * 0.02)}"/></g>`;
+    }
+  }
+
+  // ----- the scales of judgement: hung below God, tipping one way and then the other, never coming to rest -----
+  if (p.scales > 0.01) {
+    const py = G.y - G.r - 0.1, L = 0.2, a = 0.16 * Math.sin(c.t * 0.35) + 0.05 * Math.sin(c.t * 0.9);
+    const ex = L * Math.cos(a), ey = L * Math.sin(a);
+    let d = `M0,${f(-(G.y - G.r - 0.015))} V${f(-py)} M${f(-ex)},${f(-(py + ey))} L${f(ex)},${f(-(py - ey))} `;
+    for (const s of [-1, 1]) {
+      const x = s * ex, y = py - s * ey, by = y - 0.11;
+      d += `M${f(x)},${f(-y)} L${f(x - 0.05)},${f(-by)} M${f(x)},${f(-y)} L${f(x + 0.05)},${f(-by)} M${f(x + 0.05)},${f(-by)}${arcC(x, -by, 0.05, 0, Math.PI)} `;
+    }
+    g += `<g opacity="${f(p.scales)}">${stroke(d, ACC, 0.0045)}<circle cx="0" cy="${f(-py)}" r=".011" fill="${ACC}" stroke="${PAP}" stroke-width=".004"/></g>`;
   }
 
   // ----- what the workers make, drawn up in three streams to the few at the top of the pyramid -----

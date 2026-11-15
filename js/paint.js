@@ -58,6 +58,7 @@ uniform float uFlux, uBundle, uScatter;   // things arising and passing away; a 
 uniform float uPyr, uLevel;     // the world as a pyramid of society; the pyramid levelled into a plain
 uniform float uStrata, uSplit, uChurn;  // the pyramid in two storeys, split at a height (in the world's radii); its lower storey churning
 uniform float uStainOn;         // the stain moved off man and onto the top of the pyramid
+uniform float uStar, uLaw;      // a ruled eight-pointed star in the Ultimate; the world patterned with such stars, as law
 uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
 uniform vec3 uHands;            // second, minute and hour hands, radians clockwise from the top
 uniform vec4 uLab[3];           // where lettering sits inside a shape, and its half size
@@ -381,6 +382,19 @@ void main(){
     }
   }
 
+  // ---------- the world under God's law: small stars in a ruled pattern, laid over all of it ----------
+  if (uLaw > .001 && dW < .01) {
+    const float cs = .085;
+    vec2 gp = q - Wc + wM * .006;
+    vec2 c = (fract(gp / cs + .5) - .5) * cs;
+    vec2 a = abs(c) - .019, b = abs(rot(c, .7854)) - .019;
+    float d = min(max(a.x, a.y), max(b.x, b.y));
+    float inside = smoothstep(-.012, -.03, dW) * uWorldA;
+    float lines = rule(d, .0014) + rule(abs(c.x) - abs(c.y), .0012) * smoothstep(-.001, .004, d) * .5;
+    ink += lines * .55 * inside * uLaw;
+    A += K(vec3(.97, .86, .55)) * smoothstep(.002, -.002, d) * .3 * inside * uLaw;
+  }
+
   // ---------- copies of the Forms: circle, triangle, square and hexagon, each a little wrong and never the same twice.
   //            In the cave they darken and spread into shadows. ----------
   if (uCopies > .001 && dW < .01) {                 // (only inside the world, and only near each copy: the rest of the page skips this)
@@ -434,6 +448,13 @@ void main(){
     A *= 1. - .35 * uOne * exp(-rg * rg / .03);
     ink += (penW(dG + .012 + gwob, gPW) + penW(dG - .02 - gwob * 1.4, gPW) * step(.45, noise(gq * 6. + 2.))) * (1. - uOne) * (1. - .93 * uGb * inW);
     ink += penW(hole + .004 - gwob * .6, gPW) * uBi;
+    if (uStar > .001) {
+      // two squares, one turned on the other: ruled exactly, as in tilework, and broken round his name like a cartouche
+      vec2 a = abs(gq) - rG * .58, b = abs(rot(gq, .7854)) - rG * .58;
+      vec2 nb = abs(q - uLab[0].xy) - uLab[0].zw + .008;
+      float clear = 1. - uLabA.x * smoothstep(.01, -.004, max(nb.x, nb.y));
+      ink += (rule(min(max(a.x, a.y), max(b.x, b.y)), .0022) * .75 + rule(length(gq) - rG * .87, .0016) * .45) * uStar * clear;
+    }
     // the many things: rings drawn on the surface, moving outward and never arriving
     if (uMaya > .001) {
       float rr = length(q + gL * .06 - G);
