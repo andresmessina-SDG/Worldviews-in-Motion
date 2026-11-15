@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=41';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=41';
-import { CATALOGUE } from './catalogue.js?v=41';
-import { createMenu } from './menu.js?v=41';
+import { createPainter } from './paint.js?v=42';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=42';
+import { CATALOGUE } from './catalogue.js?v=42';
+import { createMenu } from './menu.js?v=42';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -29,15 +29,24 @@ const cur = { wv: HOME, act: 0 };
 // Names come from the address, which anyone can write: ask only whether WORLDVIEWS has a worldview of that name,
 // never whether it has the property, since every object has some (constructor, __proto__, toString ...).
 const built = (id) => Object.prototype.hasOwnProperty.call(WORLDVIEWS, id);
-function readHash() {
-  const [a, b] = location.hash.slice(1).split('/');
-  const wv = built(a) ? a : built(params.get('wv')) ? params.get('wv') : HOME;
+// The address is read loosely: in any case, with spaces or escapes, and with the act or the worldview left out.
+// What it does not name comes from the fallback.
+function readHash(fallback) {
+  let h = location.hash.slice(1);
+  try { h = decodeURIComponent(h); } catch (e) { /* a broken escape: read it as it is */ }
+  const [a = '', b = ''] = h.toLowerCase().split('/').map((x) => x.trim());
+  const wv = built(a) ? a : fallback.wv;
   const slug = built(a) ? b : a;
   const bySlug = WORLDVIEWS[wv].acts.findIndex((x) => x.slug === slug);
-  return { wv, act: bySlug >= 0 ? bySlug : Math.min(3, Math.max(0, (Number(params.get('act')) || 1) - 1)) };
+  return { wv, act: bySlug >= 0 ? bySlug : fallback.act };
 }
-Object.assign(cur, readHash());
+const wvParam = (params.get('wv') || '').toLowerCase();
+const start = { wv: built(wvParam) ? wvParam : HOME, act: Math.min(3, Math.max(0, (Number(params.get('act')) || 1) - 1)) };
+Object.assign(cur, readHash(start));
 const actOf = (c = cur) => WORLDVIEWS[c.wv].acts[c.act];
+// the address in its one proper form, put in place of any other way of writing it
+const address = () => `#${cur.wv}/${actOf().slug}`;
+if (location.hash && location.hash !== address()) history.replaceState(null, '', address());
 const target = () => ({ ...actOf().p, act: cur.act });
 
 // Every move, between acts or between worldviews, is this blend of every value at once. It walks the keys
@@ -150,7 +159,7 @@ function go(wv, act, step = false) {
   cur.act = act;
   t0 = performance.now();
   dur = reduced ? 1 : moved ? 4200 : 2600;
-  history[step && moved ? 'pushState' : 'replaceState'](null, '', `#${wv}/${actOf().slug}`);
+  history[step && moved ? 'pushState' : 'replaceState'](null, '', address());
   if (moved) startGlide(wv);
   renderText(false, moved);
   if (moved) { menu.setCurrent(wv); menu.peek(1600); }
@@ -164,7 +173,14 @@ menu.setCurrent(cur.wv);
 window.__menu = menu;
 // an address typed or pasted while the page is open
 // (and Back or Forward; some browsers report those as one of these events, some as the other, some as both)
-const fromAddress = () => { const h = readHash(); auto = false; go(h.wv, h.act); };
+// (an address that names nothing leaves the page where it is; but one with no # at all, as when Back returns to
+// the first page of the visit, goes back to where the visit began)
+const fromAddress = () => {
+  const h = readHash(location.hash.length > 1 ? cur : start);
+  auto = false;
+  go(h.wv, h.act);
+  if (location.hash !== address()) history.replaceState(null, '', address());
+};
 addEventListener('hashchange', fromAddress);
 addEventListener('popstate', fromAddress);
 if (frozen === null) menu.peek(2800);
