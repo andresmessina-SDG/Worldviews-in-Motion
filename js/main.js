@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=50';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=50';
-import { CATALOGUE } from './catalogue.js?v=50';
-import { createMenu } from './menu.js?v=50';
+import { createPainter } from './paint.js?v=51';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=51';
+import { CATALOGUE } from './catalogue.js?v=51';
+import { createMenu } from './menu.js?v=51';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -402,9 +402,11 @@ function layout(p, G, dt) {
   const at = { bridge: [p.lBrX, p.lBrY, p.tBrX, p.tBrY + p.tBrS * p.Sy], self: [p.rW + p.lSide, p.Sy + 0.03, 0.105, p.Sy] };
   // lettering on the left drops below the words there if it would run into them
   // (once the stain has been lifted onto the cross, its name moves up beside it)
-  const sinX = lerp(-(p.rW + p.lSide), -0.15, p.stainUp), sinY0 = lerp(p.Sy - 0.08, 0.03, p.stainUp);
+  // (in Marxism the stain sits on the top of the pyramid, not on man, and its name goes with it)
+  const onY = p.Wy + p.rW * 0.52;
+  const sinX = lerp(-(p.rW + p.lSide), -0.15, p.stainUp), sinY0 = lerp(lerp(p.Sy - 0.08, 0.03, p.stainUp), onY + 0.04, p.stainOn);
   const sinY = sinX - labels.sin.w < wordsRight + 0.03 ? Math.min(sinY0, wordsBottom - labels.sin.h / 2 - 0.03) : sinY0;
-  at.sin = [sinX, sinY, lerp(-0.02 - p.stainR * 0.8, -0.115, p.stainUp), lerp(p.Sy - 0.06, 0.03, p.stainUp)];
+  at.sin = [sinX, sinY, lerp(lerp(-0.02 - p.stainR * 0.8, -0.115, p.stainUp), -p.stainR * 0.8, p.stainOn), lerp(lerp(p.Sy - 0.06, 0.03, p.stainUp), onY, p.stainOn)];
   keepApart(at, godY, worldY, dt);
   for (const k of MOVABLE) place(k, at[k][0], at[k][1] + slide[k][0], at[k][2], at[k][3]);
   // The paper under a name is lifted only while the name shows, and fades with it,
@@ -655,6 +657,27 @@ function drawConn(p, c, G) {
       dots += `<circle cx="${f(x)}" cy="${f(y)}" r=".028" fill="${PAP}" stroke="${ACC}" stroke-width=".0055" opacity="${f(op)}"/>`;
     });
     g += lines + rite + dots;
+  }
+
+  // ----- what the workers make, drawn up in three streams to the few at the top of the pyramid -----
+  if (p.extract > 0.01) {
+    const yT = p.Wy + p.rW * 0.6;
+    let d = '', heads = '';
+    for (const s of [-1, 0, 1]) {
+      const x0 = 0.2 * s, y0 = s ? p.Sy - 0.02 : p.Sy + 0.085, xe = 0.035 * s;
+      d += `M${f(x0)},${f(-y0)} Q${f(x0 * 0.9)},${f(-(yT - 0.1))} ${f(xe)},${f(-yT)} `;
+      const deg = (Math.atan2(-(yT - (yT - 0.1)), xe - x0 * 0.9) * 180) / Math.PI;
+      heads += `<path transform="translate(${f(xe)},${f(-yT)}) rotate(${f(deg)})" d="M.012,0 L-.016,-.014 L-.016,.014Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/>`;
+    }
+    g += `<g opacity="${f(p.extract)}">${stroke(d, ACC, 0.0045)}<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".0045" stroke-linecap="round" stroke-dasharray=".004 .026" stroke-dashoffset="${f(-c.t * 0.03)}"/>${heads}</g>`;
+  }
+
+  // ----- revolution: a heavy arrow from the workers up to the top, which they take -----
+  if (p.revolt > 0.01) {
+    const y0 = p.Sy + 0.085, y1 = Math.max(y0 + 0.06, p.Wy + p.rW * lerp(0.8, 0.05, p.level));   // (lower as the pyramid is levelled)
+    g += `<g opacity="${f(p.revolt)}">${stroke(`M0,${f(-y0)} V${f(-(y1 - 0.035))}`, ACC, 0.014)}
+      <path d="M0,${f(-y0)} V${f(-(y1 - 0.04))}" fill="none" stroke="${PAP}" stroke-width=".005" stroke-linecap="round" stroke-dasharray=".012 .05" stroke-dashoffset="${f(c.t * 0.05)}"/>
+      ${shape(`M0,${f(-y1)} L-.034,${f(-(y1 - 0.05))} L.034,${f(-(y1 - 0.05))}Z`, ACC)}</g>`;
   }
 
   // ----- reason: a thin line climbing from man, with marks moving upward -----

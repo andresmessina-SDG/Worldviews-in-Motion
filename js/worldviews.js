@@ -34,10 +34,11 @@ const DEFAULTS = {
   box: 0, lat: 0, pulse: 0, bare: 0, manA: 1, manC: [0.9, 0.5, 0.3], empty: 0, drain: 0, pool: 0, hollow: 0,
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
+  pyr: 0, level: 0, strata: 0, split: 0, churn: 0, stainOn: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   // connectors
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
+  extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
   // lettering
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.145, tBrX: 0.05, tBrY: 0.11, tBrS: 0,
 };
@@ -114,6 +115,18 @@ const existentialismBase = {
   dull: 0.7,
   acc: [190, 66, 44],
   lBrY: 0.42, tBrX: 0.13,
+};
+
+const marxistBase = {
+  // nothing above; below, society as a pyramid in two storeys: what men make, and what rests on it
+  Gy: 0.62, rG: 0.2, Wy: -0.16, rW: 0.44, Sy: -0.27,
+  glory: [0.96, 0.94, 0.9], sky: [0.9, 0.86, 0.8], far: [0.82, 0.8, 0.8], low: [0.88, 0.82, 0.76], deep: [0.74, 0.66, 0.62],
+  sea: [0.74, 0.34, 0.26], land: [0.88, 0.84, 0.76], shade: [0.36, 0.2, 0.2], warm: 0.2, bg: 0.4,
+  stainC: [0.2, 0.12, 0.12],
+  bare: 0.5, manC: [0.42, 0.14, 0.12], empty: 0.8,
+  pyr: 1, strata: 1, split: 0.05, churn: 1,
+  acc: [168, 48, 32],
+  lBrX: 0.32, lBrY: 0.1, tBrX: 0.15, tBrY: -0.138,
 };
 
 const hinduBase = {
@@ -489,7 +502,7 @@ export const WORLDVIEWS = {
   existentialism: {
     name: 'Existentialism',
     tagline: 'The world has no meaning, so man must make his own.',
-    move: { to: 'hindu-monism', q: 'What if the separate self is an illusion?' },
+    move: { to: 'marxism', q: 'What if man is made by his society, not by his choices?' },
     acts: build(existentialismBase, [
       {
         slug: 'thrown',
@@ -541,6 +554,62 @@ export const WORLDVIEWS = {
     ]),
   },
 
+  marxism: {
+    name: 'Marxism',
+    tagline: 'History is a war of classes, and revolution will end it.',
+    move: { to: 'hindu-monism', q: 'What if matter is an illusion, and all is one?' },
+    acts: build(marxistBase, [
+      {
+        slug: 'matter-in-motion',
+        name: 'Matter in Motion',
+        text: 'Matter is all there is, and it moves forward through conflict. Man is a working animal. How he makes his living shapes his laws, his morals and his religion.',
+        p: {},
+        labels: {
+          god: ['Nothing above', '“The opium of the people”'],
+          world: ['Society', 'Built on how men make a living'],
+          bridge: ['The economic base', 'All ideas rest on it, even Marx’s'],
+          self: ['Man', 'The sum of his social relations'],
+        },
+      },
+      {
+        slug: 'alienation',
+        name: 'Alienation',
+        text: 'Private property split mankind into classes. The owners live on what the workers make, and the worker is cut off from his work, from others and from himself.',
+        p: { split: 0.35, land: [0.92, 0.7, 0.3], extract: 1, stainOn: 1, stainR: 0.09, stainA: 0.55, dull: 0.25, tBrX: 0.188, tBrY: -0.06 },
+        labels: {
+          god: ['Nothing above', '“The sigh of the oppressed”'],
+          world: ['Class society', 'Owners against workers'],
+          bridge: ['Surplus value', 'As if labour alone made value'],
+          self: ['The worker', 'A stranger to his own work'],
+          sin: ['Exploitation', 'Evil in the system, not the heart'],
+        },
+      },
+      {
+        slug: 'revolution',
+        name: 'Revolution',
+        text: 'The workers will rise and overthrow the owners by force. Their party will rule in their name, take the land and the factories, and plan all production from the centre.',
+        p: { split: 0.35, land: [0.6, 0.12, 0.12], churn: 0.5, revolt: 1, lat: 0.5, stainOn: 1, stainR: 0.1, stainA: 0.6, glow: 0.3, rip: 0.6, lBrY: 0.12, tBrX: 0.012, tBrY: 0 },
+        labels: {
+          god: ['Nothing above', 'Man must save himself'],
+          world: ['The workers’ state', 'Planned without prices to plan by'],
+          bridge: ['Revolution', 'Salvation by seizing power'],
+          self: ['The new man', 'To be remade by new conditions'],
+          sin: ['Exploitation', 'Still in the hearts of the new rulers'],
+        },
+      },
+      {
+        slug: 'communism',
+        name: 'Communism',
+        text: 'In the end the state will wither away. With no classes and no property, all will share: “from each according to his ability, to each according to his needs.”',
+        p: { level: 1, strata: 0, churn: 0, worldA: 0.6, sea: [0.92, 0.66, 0.56], land: [0.94, 0.8, 0.6], manA: 0.2, hollow: 1, manI: 0.6, glow: 0.3 },
+        labels: {
+          god: ['Nothing above', 'No judgement to come'],
+          world: ['The classless society', 'Heaven on earth, always to come'],
+          self: ['Man', 'Spent for a future he will not see'],
+        },
+      },
+    ]),
+  },
   'hindu-monism': {
     name: 'Hindu Monism',
     tagline: 'All is one, and the one is Brahman.',

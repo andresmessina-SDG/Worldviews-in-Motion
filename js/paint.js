@@ -55,6 +55,9 @@ uniform float uYin, uMist;      // the world as yin and yang turning; a nameless
 uniform vec3 uSoul;             // the soul as a small light: where it is, and how much of it there is
 uniform float uCopies, uCopyDark;  // copies of the eternal Forms, drifting in the world of becoming; how far they have darkened into shadows
 uniform float uFlux, uBundle, uScatter;   // things arising and passing away; a self made of five parts; those parts drifting apart
+uniform float uPyr, uLevel;     // the world as a pyramid of society; the pyramid levelled into a plain
+uniform float uStrata, uSplit, uChurn;  // the pyramid in two storeys, split at a height (in the world's radii); its lower storey churning
+uniform float uStainOn;         // the stain moved off man and onto the top of the pyramid
 uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
 uniform vec3 uHands;            // second, minute and hour hands, radians clockwise from the top
 uniform vec4 uLab[3];           // where lettering sits inside a shape, and its half size
@@ -91,6 +94,21 @@ float sdPoly(vec2 p, float r, float n){
   if (n < .5) return length(p) - r;
   float s = 6.2832 / n, a = atan(p.x, p.y) + 3.14159;
   return cos(floor(.5 + a / s) * s - a) * length(p) - r;
+}
+// a trapezoid, centred, its bottom and top half widths r1 and r2 and its half height he
+float sdTrap(vec2 p, float r1, float r2, float he){
+  vec2 k1 = vec2(r2, he), k2 = vec2(r2 - r1, 2. * he);
+  p.x = abs(p.x);
+  vec2 ca = vec2(p.x - min(p.x, p.y < 0. ? r1 : r2), abs(p.y) - he);
+  vec2 cb = p - k1 + k2 * clamp(dot(k1 - p, k2) / dot(k2, k2), 0., 1.);
+  float s = (cb.x < 0. && ca.y < 0.) ? -1. : 1.;
+  return s * sqrt(min(dot(ca, ca), dot(cb, cb)));
+}
+// the pyramid of society (r from the world's centre), with rounded corners; levelled, a low plain
+float pyrD(vec2 r, float rW){
+  float he = rW * mix(.9, .45, uLevel), r2 = mix(.03, rW * 1.05 - .03, uLevel);   // (levelled: a plain rectangle, no class above another)
+  r.y -= rW * mix(-.02, -.35, uLevel);
+  return sdTrap(r, rW * 1.05 - .03, r2, he - .03) - .03;
 }
 vec2 rot(vec2 v, float a){ float c = cos(a), s = sin(a); return vec2(c * v.x - s * v.y, s * v.x + c * v.y); }
 vec3 K(vec3 c){ return -log(c); }
@@ -169,12 +187,15 @@ void main(){
   float gPW = PW, kPW = PW, sPW = PW;
   if (length(q - G) < rG * (1. + 1.5 * uOne) + .16 && uGodA > .001) field(q - G, gL, gM, gF, gPW);
   vec2 bq0 = abs(q - Wc) - (rW - .035);
-  if (abs(mix(length(q - Wc) - rW, length(max(bq0, 0.)) + min(max(bq0.x, bq0.y), 0.) - .035, uBox)) < .1 && uWorldA > .001) field(q - Wc, kL, kM, kF, kPW);
+  float dW0 = mix(length(q - Wc) - rW, length(max(bq0, 0.)) + min(max(bq0.x, bq0.y), 0.) - .035, uBox);
+  if (uPyr > .001) dW0 = mix(dW0, pyrD(q - Wc, rW), uPyr);
+  if (abs(dW0) < .1 && uWorldA > .001) field(q - Wc, kL, kM, kF, kPW);
   if (length(q - Sc) < .17) field(q - Sc, sL, sM, sF, sPW);
   float gwob = gM.x * .025 + gF.y * .006, kwob = kM.x * .025 + kF.y * .006, swob = sM.x * .025 + sF.y * .006;
   float dG = length(q + gL * .06 - G) - rG;
   vec2 bq = abs(q + kL.yx * .03 - Wc) - (rW - .035);
   float dW = mix(length(q + kL.yx * .06 - Wc) - rW, length(max(bq, 0.)) + min(max(bq.x, bq.y), 0.) - .035, uBox);
+  if (uPyr > .001) dW = mix(dW, pyrD(q + kL.yx * .04 - Wc, rW), uPyr);
   float pres = smoothstep(0., .3, uGodA);                       // is there anything above at all
   float dS = length(q + sL * .024 - Sc) - rS;
   if (uBundle > .001) {
@@ -256,6 +277,20 @@ void main(){
     Aw += K(land) * dens * m1 * (.6 + .5 * v1);
     Aw += K(vec3(.86, .66, .3)) * dens * m2 * uWarm * (1. - .6 * uDull);
     Aw += K(mix(uShade, vec3(.95, .6, .3), lit)) * dens * smoothstep(-.3, 1., dot(p, vec2(.45, -.9)) / rW) * (.4 + .5 * v1);
+    if (uStrata > .001) {
+      // two storeys, one resting on the other: the lower one in bands that slide against each other, by turns
+      float sy = p.y - uSplit * rW + (noise(vec2(p.x * 7., 3.)) - .5) * .014 + kM.x * .012;
+      float above = smoothstep(-.01, .01, sy);
+      float ch = 1.;
+      if (uChurn > .001) {
+        float band = floor((p.y + kM.y * .02) / .055), dir = mod(band, 2.) * 2. - 1.;
+        ch = mix(1., .6 + .8 * noise(vec2(p.x * 5. - dir * t * .1 + band * 3.7, p.y * 12.)), uChurn);
+      }
+      vec3 As = K(sea) * dens * (1. - above) * (.75 + .6 * v2) * ch * bloom(q * 2.6, 47.) + K(land) * dens * above * (.65 + .6 * v1);
+      As += K(uShade) * dens * smoothstep(-.3, 1., dot(p, vec2(.45, -.9)) / rW) * (.3 + .4 * v1);
+      Aw = mix(Aw, As, uStrata);
+      ink += penW(sy, kPW) * smoothstep(-.008, -.025, dW) * step(.3, noise(p * 6. + 4.)) * uStrata;
+    }
     if (uYin > .001) {
       // yin and yang: two halves, each with a seed of the other, turning slowly for ever
       vec2 u = rot(p + wM * .012, t * .06);
@@ -423,6 +458,7 @@ void main(){
   // ---------- the problem: a stain, or a haze ----------
   {
     vec2 sc = mix(Sc + vec2(-.02, -.02), vec2(0., .03), uStainUp);
+    sc = mix(sc, Wc + vec2(0., rW * .52), uStainOn);
     if (uStainA > .001 && length(q - sc) < uStainR + .22) {
       vec2 cL, cM, cF; float cPW;
       field(q - sc, cL, cM, cF, cPW);
