@@ -1,7 +1,8 @@
-import { createPainter } from './paint.js?v=28';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=28';
-import { CATALOGUE } from './catalogue.js?v=28';
-import { createMenu } from './menu.js?v=28';
+import { createPainter } from './paint.js?v=29';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=29';
+import { CATALOGUE } from './catalogue.js?v=29';
+import { createMenu } from './menu.js?v=29';
+import { createInk } from './ink.js?v=29';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -175,6 +176,7 @@ function resize() {
   }
   scale = Math.min(window.devicePixelRatio || 1, 2) * quality;
   if (painter) painter.resize(Math.round(W * scale), Math.round(Hh * scale));
+  ink.resize(W, Hh, Math.min(window.devicePixelRatio || 1, 2));        // the strokes stay sharp whatever the painting's resolution
   marks.forEach((b, i) => {
     b.style.left = `${cx + ext * (-0.72 + 0.48 * i) * unit}px`;
     b.style.top = `${cy + 0.795 * unit}px`;
@@ -253,7 +255,7 @@ function layout(p, G) {
 // ---------- connectors ----------
 // Things that join, point and mark are drawn as plain strokes over the paint:
 // warm ink, one accent colour, and a paper-coloured edge so they read on any wash.
-const connSvg = $('conn');
+const ink = createInk($('conn'));
 // Platonism: the four Forms above (x, y, sides: 0 is the circle), their copies in the world (from its centre),
 // their size, and the height of the line between the seen and the known
 const FORMS = [[-0.32, 0.27, 0], [-0.16, 0.33, 3], [0.16, 0.33, 4], [0.32, 0.27, 6]];
@@ -282,6 +284,15 @@ function drawConn(p, c, G) {
   const top = -bTop, bot = -p.bbot;              // svg y grows downward
   const ACC = rgb(p.acc);
   let g = '';
+
+  // ----- the ascent: a ladder from man up through the dividing line toward the Forms -----
+  if (p.ladder > 0.01) {
+    const y0 = p.Sy + 0.09, y1 = DIVIDE + 0.15, HW = 0.024;
+    let d = `M${f(-HW)},${f(-y0)} V${f(-y1)} M${f(HW)},${f(-y0)} V${f(-y1)} `;
+    for (let y = y0 + 0.03; y < y1 - 0.01; y += 0.046) d += `M${f(-HW)},${f(-y)} H${f(HW)} `;
+    // (it fades quickly and lies under anything else, so that the bridge coming down in its place reads cleanly)
+    g += `<g opacity="${f(p.ladder * p.ladder)}">${stroke(d, ACC, 0.0045)}</g>`;
+  }
 
   // ----- the bridge from God to man, with arrowheads running down it -----
   if (p.bridge > 0.01) {
@@ -497,14 +508,6 @@ function drawConn(p, c, G) {
     g += `<g opacity="${f(p.forms)}"><path d="${d}" fill="${PAP}" fill-opacity=".55" stroke="${PAP}" stroke-width=".0145" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="none" stroke="${DARK}" stroke-width=".0038" stroke-linejoin="round"/></g>`;
   }
 
-  // ----- the ascent: a ladder from man up through the dividing line toward the Forms -----
-  if (p.ladder > 0.01) {
-    const y0 = p.Sy + 0.09, y1 = DIVIDE + 0.15, HW = 0.024;
-    let d = `M${f(-HW)},${f(-y0)} V${f(-y1)} M${f(HW)},${f(-y0)} V${f(-y1)} `;
-    for (let y = y0 + 0.03; y < y1 - 0.01; y += 0.046) d += `M${f(-HW)},${f(-y)} H${f(HW)} `;
-    g += `<g opacity="${f(p.ladder)}">${stroke(d, ACC, 0.0045)}</g>`;
-  }
-
   // ----- rebirth: souls not yet pure carried back down into the world, round and round -----
   if (p.rebirth > 0.01) {
     const P = [[0.37, 0.22], [0.58, 0.12], [0.52, -0.12], [0.32, -0.15]];
@@ -527,7 +530,7 @@ function drawConn(p, c, G) {
   const beat = lerp(0.004 * Math.sin(c.t * 2.4), 0.005 * c.tock, p.tick);     // a pulse, or the tick of a clock
   g += `<circle cx="${f(bx)}" cy="${ty}" r="${f(0.031 + beat)}" fill="none" stroke="${ACC}" stroke-width=".003"/><circle cx="${f(bx)}" cy="${ty}" r=".018" fill="${ACC}" stroke="${PAP}" stroke-width=".004"/>`;
 
-  connSvg.innerHTML = `<g transform="translate(${f(cx)},${f(cy)}) scale(${f(unit)})">${g}</g>`;
+  ink.draw(`<g transform="translate(${f(cx)},${f(cy)}) scale(${f(unit)})">${g}</g>`);
 }
 
 // ---------- time ----------
@@ -633,11 +636,17 @@ function spiritsAt(p, t) {
 
 function frame(now) {
   const dt = lastT ? Math.min(100, now - lastT) / 1000 : 0;
-  // if frames come slowly, paint at a lower resolution rather than stutter
-  if (frozen === null && lastT && now - lastT < 250) {      // a long gap means the page was hidden, not slow
+  // If frames come slowly, paint at a lower resolution rather than stutter; if they come quickly enough to afford it,
+  // go back up. The change is made only while nothing is moving, never partway through a move, where the
+  // painting would visibly jump in sharpness. (Cost grows with the number of pixels, the square of the scale.)
+  const moving = now - t0 < dur + 400;
+  if (moving) { acc = 0; nF = 0; }
+  else if (frozen === null && lastT && now - lastT < 250) {      // a long gap means the page was hidden, not slow
     acc += now - lastT;
     if (++nF === 40) {
-      if (acc / nF > 36 && quality > 0.5) { quality -= 0.25; resize(); }
+      const ms = acc / nF, up = Math.pow((quality + 0.25) / quality, 2);
+      if (ms > 36 && quality > 0.5) { quality -= 0.25; resize(); }
+      else if (ms * up < 24 && quality < 1) { quality += 0.25; resize(); }
       acc = 0; nF = 0;
     }
   }

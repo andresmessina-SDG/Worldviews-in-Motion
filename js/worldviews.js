@@ -869,7 +869,7 @@ export const WORLDVIEWS = {
         slug: 'release',
         name: 'Release',
         text: 'At death the purified soul leaves the body for good and returns to the Forms. Other souls are born again into new bodies.',
-        p: { soulY: 0.3, manA: 0.15, hollow: 1, manI: 0.6, ladder: 0.25, rebirth: 1, partake: 0.6, lBrX: 0.3, lBrY: 0.45, tBrX: 0.035, tBrY: 0.33 },
+        p: { soulY: 0.3, manA: 0.15, hollow: 1, manI: 0.6, ladder: 0.5, rebirth: 1, partake: 0.6, lBrX: 0.3, lBrY: 0.45, tBrX: 0.035, tBrY: 0.33 },
         labels: {
           god: ['The Good', 'Seen at last, but it cannot love'],
           world: ['The world of becoming', 'Where other souls are reborn'],

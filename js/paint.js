@@ -312,13 +312,14 @@ void main(){
 
   // ---------- copies of the Forms: circle, triangle, square and hexagon, each a little wrong and never the same twice.
   //            In the cave they darken and spread into shadows. ----------
-  if (uCopies > .001) {
+  if (uCopies > .001 && dW < .01) {                 // (only inside the world, and only near each copy: the rest of the page skips this)
     float inW = smoothstep(.0, -.03, dW) * uWorldA;
     for (int i = 0; i < 4; i++) {
       float fi = float(i);
       vec2 off = i == 0 ? vec2(-.19, .1) : i == 1 ? vec2(-.1, .2) : i == 2 ? vec2(.1, .2) : vec2(.19, .1);
       float n = i == 0 ? 0. : i == 1 ? 3. : i == 2 ? 4. : 6.;
       vec2 c = Wc + off + .016 * vec2(sin(t * .21 + fi * 1.7), cos(t * .17 + fi * 2.3));
+      if (length(q - c) > .11) continue;
       vec2 lp = rot(q - c, .4 * sin(t * .11 + fi * 1.3) + fi * .7);
       lp += (vec2(noise(lp * 7. + t * .15 + fi * 5.), noise(lp * 7. - t * .13 + fi * 5. + 9.)) - .5) * mix(.014, .03, uCopyDark);
       float sz = .036 * (1. + .14 * sin(t * .3 + fi * 1.7)) * (1. + .3 * uCopyDark);
@@ -411,7 +412,9 @@ void main(){
   if (uSpA > .001) {
     for (int i = 0; i < 9; i++) {
       vec4 s = uSp[i];
+      if (s.w < .002) continue;                     // (gone, as all but the soul are in Platonism)
       float d = length(q + hand * .3 - s.xy);
+      if (d > .3) continue;                         // (too far for any of its light to reach)
       float g1 = exp(-pow(d / .022, 2.)), g2 = exp(-pow(d / .048, 2.)), g3 = exp(-pow(d / .085, 2.));
       float lightA = s.w * (1. - s.z);
       A *= 1. - lightA * min(.92, .62 * g3 + .4 * g2);
@@ -433,8 +436,9 @@ void main(){
   }
 
   // ---------- the soul: a small gold light, in the body or climbing out of it ----------
-  if (uSoul.z > .001) {
-    float d = length(q - uSoul.xy);
+  float dSoul = length(q - uSoul.xy);
+  if (uSoul.z > .001 && dSoul < .3) {
+    float d = dSoul;
     float c1 = exp(-pow(d / .017, 2.)), c2 = exp(-pow(d / .045, 2.)), c3 = exp(-pow(d / .09, 2.));
     A *= 1. - uSoul.z * min(.9, .75 * c2 + .3 * c3);
     A += K(vec3(1., .82, .4)) * uSoul.z * (c1 * 1.1 + c2 * .28);
