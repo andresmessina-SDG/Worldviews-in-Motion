@@ -343,6 +343,7 @@ function fit() {
   $('marks').classList.toggle('tight', marks.some((b, i) => i < 3 && (b.offsetWidth + marks[i + 1].offsetWidth) / 2 - pad + 10 > gap));
   $('marks').style.setProperty('--gap', `${Math.max(24, gap - 4).toFixed(0)}px`);
   markH = marks[0].offsetHeight / unit;
+  marks.forEach((b, i) => { markW[i] = b.offsetWidth / unit - 2 * parseFloat(getComputedStyle(b).paddingLeft) / unit; });
   const words = narrow ? null : $('moves').getBoundingClientRect();
   wordsRight = words ? (words.right - cx) / unit : -1e9;
   wordsBottom = words ? (cy - words.bottom) / unit : 1e9;
@@ -387,23 +388,80 @@ function layout(p, G, dt) {
     if (lg.on) { lg.path.style.strokeOpacity = (0.9 * show).toFixed(3); lg.dot.style.fillOpacity = show.toFixed(3); }
   }
   place('world', 0, worldY);
-  place('bridge', p.lBrX, p.lBrY, p.tBrX, p.tBrY + p.tBrS * p.Sy);    // (a target can be set relative to man, and then moves with him)
-  place('self', p.rW + p.lSide, p.Sy + 0.03, 0.105, p.Sy);
+  // How much each name shows, following its fade (the .5s of .l in the stylesheet).
+  for (const k of KEYS) {
+    const L = labels[k];
+    L.lift = L.show > L.lift ? Math.min(L.show, L.lift + dt / 0.5) : Math.max(L.show, L.lift - dt / 0.5);
+  }
+  // (a target can be set relative to man, and then moves with him)
+  const at = { bridge: [p.lBrX, p.lBrY, p.tBrX, p.tBrY + p.tBrS * p.Sy], self: [p.rW + p.lSide, p.Sy + 0.03, 0.105, p.Sy] };
   // lettering on the left drops below the words there if it would run into them
   // (once the stain has been lifted onto the cross, its name moves up beside it)
   const sinX = lerp(-(p.rW + p.lSide), -0.15, p.stainUp), sinY0 = lerp(p.Sy - 0.08, 0.03, p.stainUp);
   const sinY = sinX - labels.sin.w < wordsRight + 0.03 ? Math.min(sinY0, wordsBottom - labels.sin.h / 2 - 0.03) : sinY0;
-  place('sin', sinX, sinY, lerp(-0.02 - p.stainR * 0.8, -0.115, p.stainUp), lerp(p.Sy - 0.06, 0.03, p.stainUp));
-  const bl = labels.bridge;
-  // The paper under a name is lifted only while the name shows, and fades with it (over the .5s of .l in the stylesheet),
+  at.sin = [sinX, sinY, lerp(-0.02 - p.stainR * 0.8, -0.115, p.stainUp), lerp(p.Sy - 0.06, 0.03, p.stainUp)];
+  keepApart(at, godY, worldY, dt);
+  for (const k of MOVABLE) place(k, at[k][0], at[k][1] + slide[k][0], at[k][2], at[k][3]);
+  // The paper under a name is lifted only while the name shows, and fades with it,
   // so no pale patch is left behind while the shapes move and the new names wait to appear.
-  ['god', 'world', 'bridge'].forEach((k, i) => {
-    const L = labels[k];
-    L.lift = L.show > L.lift ? Math.min(L.show, L.lift + dt / 0.5) : Math.max(L.show, L.lift - dt / 0.5);
-    lifts[i] = L.lift * L.lift * (3 - 2 * L.lift);
-  });
+  ['god', 'world', 'bridge'].forEach((k, i) => { const v = labels[k].lift; lifts[i] = v * v * (3 - 2 * v); });
+  const bl = labels.bridge;
   rects.set([0, godY, labels.god.w / 2 + 0.02, labels.god.h / 2 + 0.012, 0, worldY, labels.world.w / 2 + 0.02, labels.world.h / 2 + 0.012,
-    p.lBrX + bl.w / 2, p.lBrY, bl.w / 2 + 0.02, bl.h / 2 + 0.012]);
+    p.lBrX + bl.w / 2, p.lBrY + slide.bridge[0], bl.w / 2 + 0.02, bl.h / 2 + 0.012]);
+}
+
+// ---------- keeping the lettering apart ----------
+// Each act places its labels by hand (worldviews.js), and they are checked at rest. But while one act blends into
+// the next, or in a window of a size no one tried, a label can come to lie on another, on the names of the acts or
+// on the words at the left. Then the labels with leader lines (bridge, self and sin) slide up or down, by the least
+// distance that clears everything; the names inside the shapes, the act names and the words keep their places.
+// A label with room keeps the place it was given. The slide follows a damped spring, so a label never jumps; a
+// label that is out of sight takes its place at once, and so appears where it belongs.
+const MOVABLE = ['bridge', 'self', 'sin'];
+const slide = { bridge: [0, 0], self: [0, 0], sin: [0, 0] };   // [distance, speed], in scene units, up positive
+const markW = [0, 0, 0, 0];                                    // the widths of the act names, in scene units
+// a label's box as [left, bottom, right, top] in scene units
+function boxOf(k, x, y) {
+  const L = labels[k], a = ALIGN[k], l = a === 'center' ? x - L.w / 2 : a === 'left' ? x : x - L.w;
+  return [l, y - L.h / 2, l + L.w, y + L.h / 2];
+}
+const hits = (a, b) => a[0] < b[2] && a[2] > b[0] && a[1] < b[3] - 1e-6 && a[3] > b[1] + 1e-6;
+function keepApart(at, godY, worldY, dt) {
+  const gap = 6 / unit, fixed = [];
+  if (labels.god.on) fixed.push(boxOf('god', 0, godY));
+  if (labels.world.on) fixed.push(boxOf('world', 0, worldY));
+  const tight = $('marks').classList.contains('tight');
+  for (let i = 0; i < 4; i++) {
+    if (tight && i !== cur.act) continue;
+    const x = ext * (-0.72 + 0.48 * i);
+    fixed.push([x - markW[i] / 2, -0.795 - markH / 2, x + markW[i] / 2, -0.795 + markH / 2]);
+  }
+  if (wordsRight > -1e8) fixed.push([-1e9, wordsBottom, wordsRight, 1e9]);
+  const top = cy / unit - gap, bottom = -(innerHeight - cy) / unit + gap;
+  for (const k of MOVABLE) {
+    const L = labels[k], s = slide[k];
+    if (!L.on) continue;
+    const b = boxOf(k, at[k][0], at[k][1]);
+    // the distances that would set the label just above or just below each thing in its way, nearest first,
+    // keeping to the side it has already slid to unless the other is clearly nearer
+    const tries = [0];
+    for (const o of fixed) tries.push(o[3] + gap - b[1], o[1] - gap - b[3]);
+    const cost = (c) => Math.abs(c) + (c * s[0] < 0 ? 0.03 : 0);
+    tries.sort((m, n) => cost(m) - cost(n));
+    const ok = (c) => {
+      const m = [b[0], b[1] + c, b[2], b[3] + c];
+      if (c !== 0 && (m[3] > top || m[1] < bottom)) return false;
+      return !fixed.some((o) => hits(m, o));
+    };
+    const want = tries.find((c) => Math.abs(c) <= 0.35 && ok(c)) ?? 0;
+    if (frozen !== null || reduced || L.lift < 0.05) { s[0] = want; s[1] = 0; }
+    else {
+      const w = 9, n = Math.ceil(dt / 0.01), h = dt / Math.max(1, n);
+      for (let i = 0; i < n; i++) { s[1] += (w * w * (want - s[0]) - 2 * w * s[1]) * h; s[0] += s[1] * h; }
+    }
+    // later labels keep clear of this one where it is headed
+    fixed.push([b[0], b[1] + want, b[2], b[3] + want]);
+  }
 }
 
 // ---------- connectors ----------
