@@ -61,8 +61,7 @@ function paint(ctx, el, s) {
 
 export function createInk(canvas) {
   const ctx = canvas.getContext('2d');
-  const layer = document.createElement('canvas');       // for masked groups, drawn apart and then cut
-  const lctx = layer.getContext('2d');
+  let layer = null, lctx = null;                         // for masked groups, drawn apart and then cut (made only when needed)
   const parser = new DOMParser();
   let W = 0, H = 0, dpr = 1;
 
@@ -86,6 +85,8 @@ export function createInk(canvas) {
       const mask = ref(el, 'mask');
       if (mask && defs[mask] && c === ctx) {
         // draw the group by itself, cut the mask's black shapes out of it, then lay it down
+        if (!layer) { layer = document.createElement('canvas'); lctx = layer.getContext('2d'); }
+        if (layer.width !== canvas.width || layer.height !== canvas.height) { layer.width = canvas.width; layer.height = canvas.height; }
         lctx.setTransform(1, 0, 0, 1, 0, 0);
         lctx.clearRect(0, 0, layer.width, layer.height);
         lctx.setTransform(c.getTransform());
@@ -110,7 +111,15 @@ export function createInk(canvas) {
   return {
     resize(w, h, ratio) {
       W = w; H = h; dpr = ratio;
-      for (const cv of [canvas, layer]) { cv.width = Math.round(w * ratio); cv.height = Math.round(h * ratio); }
+      canvas.width = Math.round(w * ratio);
+      canvas.height = Math.round(h * ratio);
+    },
+    // Has anything actually reached the canvas near this point (in page pixels)? Some browsers can refuse a canvas
+    // without saying so, for instance when pages use more canvas memory than they allow.
+    shows(x, y) {
+      const px = ctx.getImageData(Math.round(x * dpr) - 3, Math.round(y * dpr) - 3, 7, 7).data;
+      for (let i = 3; i < px.length; i += 4) if (px[i] > 0) return true;
+      return false;
     },
     draw(svg) {
       ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -118,7 +127,7 @@ export function createInk(canvas) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const doc = parser.parseFromString(`<svg xmlns="http://www.w3.org/2000/svg">${svg}</svg>`, 'image/svg+xml');
       const root = doc.documentElement;
-      if (root.tagName !== 'svg') return;               // (a parse error: draw nothing rather than garbage)
+      if (root.tagName !== 'svg') throw new Error('the connectors could not be read');
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       walk(ctx, root, {}, {});
     },

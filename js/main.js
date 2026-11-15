@@ -1,8 +1,8 @@
-import { createPainter } from './paint.js?v=29';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=29';
-import { CATALOGUE } from './catalogue.js?v=29';
-import { createMenu } from './menu.js?v=29';
-import { createInk } from './ink.js?v=29';
+import { createPainter } from './paint.js?v=30';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=30';
+import { CATALOGUE } from './catalogue.js?v=30';
+import { createMenu } from './menu.js?v=30';
+import { createInk } from './ink.js?v=30';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -256,6 +256,17 @@ function layout(p, G) {
 // Things that join, point and mark are drawn as plain strokes over the paint:
 // warm ink, one accent colour, and a paper-coloured edge so they read on any wash.
 const ink = createInk($('conn'));
+// If the canvas fails in this browser (an error, or nothing reaching it), the connectors go back to being drawn
+// as SVG, which every browser shows, if less steadily under load.
+let inkFrames = 0, connSvg = null;
+function svgFallback(why) {
+  console.warn('Connectors drawn as SVG instead:', why);
+  connSvg = document.createElementNS(NS, 'svg');
+  connSvg.id = 'connSvg';
+  connSvg.setAttribute('aria-hidden', 'true');
+  $('conn').replaceWith(connSvg);
+}
+if (params.has('svgink')) svgFallback('asked for, with ?svgink');
 // Platonism: the four Forms above (x, y, sides: 0 is the circle), their copies in the world (from its centre),
 // their size, and the height of the line between the seen and the known
 const FORMS = [[-0.32, 0.27, 0], [-0.16, 0.33, 3], [0.16, 0.33, 4], [0.32, 0.27, 6]];
@@ -530,7 +541,14 @@ function drawConn(p, c, G) {
   const beat = lerp(0.004 * Math.sin(c.t * 2.4), 0.005 * c.tock, p.tick);     // a pulse, or the tick of a clock
   g += `<circle cx="${f(bx)}" cy="${ty}" r="${f(0.031 + beat)}" fill="none" stroke="${ACC}" stroke-width=".003"/><circle cx="${f(bx)}" cy="${ty}" r=".018" fill="${ACC}" stroke="${PAP}" stroke-width=".004"/>`;
 
-  ink.draw(`<g transform="translate(${f(cx)},${f(cy)}) scale(${f(unit)})">${g}</g>`);
+  const svg = `<g transform="translate(${f(cx)},${f(cy)}) scale(${f(unit)})">${g}</g>`;
+  window.__ink = svg;                                     // (kept for tests)
+  if (connSvg) { connSvg.innerHTML = svg; return; }
+  try {
+    ink.draw(svg);
+    // a few frames in, make sure the line of history (always drawn) has really reached the screen
+    if (++inkFrames === 6 && !ink.shows(cx, cy + 0.87 * unit)) svgFallback('nothing reached the canvas');
+  } catch (err) { svgFallback(err.message); connSvg.innerHTML = svg; }
 }
 
 // ---------- time ----------

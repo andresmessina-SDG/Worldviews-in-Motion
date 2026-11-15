@@ -17,14 +17,14 @@ html, body {
   touch-action: pinch-zoom;       /* nothing scrolls, so a sliding finger belongs to the page */
 }
 
-canvas, svg#lines {
+canvas, svg#lines, svg#connSvg {
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
   display: block;
 }
-svg#lines, #conn { pointer-events: none; }
+svg#lines, #conn, svg#connSvg { pointer-events: none; }
 svg#lines path { fill: none; stroke: var(--ink); stroke-width: 1.3; stroke-linecap: round; opacity: .9; }
 svg#lines circle { fill: var(--ink); }
 svg#lines g { transition: opacity .5s ease; }
