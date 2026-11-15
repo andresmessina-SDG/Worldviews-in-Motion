@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=37';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=37';
-import { CATALOGUE } from './catalogue.js?v=37';
-import { createMenu } from './menu.js?v=37';
+import { createPainter } from './paint.js?v=38';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=38';
+import { CATALOGUE } from './catalogue.js?v=38';
+import { createMenu } from './menu.js?v=38';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -11,7 +11,9 @@ import { createMenu } from './menu.js?v=37';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
-const frozen = params.has('t') ? Number(params.get('t')) : null;
+// (a number from the address, kept to a range; anything else gives the fallback)
+const num = (name, lo, hi, fallback) => { const v = Number(params.get(name)); return Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : fallback; };
+const frozen = params.has('t') ? num('t', 0, 1e5, 5) : null;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const canvas = $('c');
@@ -24,10 +26,13 @@ if (!params.has('nopaint')) {
 
 // ---------- where we are ----------
 const cur = { wv: HOME, act: 0 };
+// Names come from the address, which anyone can write: ask only whether WORLDVIEWS has a worldview of that name,
+// never whether it has the property, since every object has some (constructor, __proto__, toString ...).
+const built = (id) => Object.prototype.hasOwnProperty.call(WORLDVIEWS, id);
 function readHash() {
   const [a, b] = location.hash.slice(1).split('/');
-  const wv = WORLDVIEWS[a] ? a : WORLDVIEWS[params.get('wv')] ? params.get('wv') : HOME;
-  const slug = WORLDVIEWS[a] ? b : a;
+  const wv = built(a) ? a : built(params.get('wv')) ? params.get('wv') : HOME;
+  const slug = built(a) ? b : a;
   const bySlug = WORLDVIEWS[wv].acts.findIndex((x) => x.slug === slug);
   return { wv, act: bySlug >= 0 ? bySlug : Math.min(3, Math.max(0, (Number(params.get('act')) || 1) - 1)) };
 }
@@ -46,9 +51,9 @@ let from = live;
 let t0 = -1e9;
 let dur = 1;
 if (params.has('k')) {
-  const other = WORLDVIEWS[params.get('from')] ? params.get('from') : Object.keys(WORLDVIEWS).find((w) => w !== cur.wv);
-  const fa = params.has('fromAct') ? Math.min(3, Math.max(0, Number(params.get('fromAct')) - 1)) : cur.act;
-  live = blendP({ ...WORLDVIEWS[other].acts[fa].p, act: cur.act }, target(), Number(params.get('k')));
+  const other = built(params.get('from')) ? params.get('from') : Object.keys(WORLDVIEWS).find((w) => w !== cur.wv);
+  const fa = params.has('fromAct') ? Math.min(3, Math.max(0, (Number(params.get('fromAct')) || 1) - 1)) : cur.act;
+  live = blendP({ ...WORLDVIEWS[other].acts[fa].p, act: cur.act }, target(), num('k', 0, 1, 0.5));
 }
 
 // ---------- lettering ----------
@@ -134,7 +139,7 @@ function renderText(instant, wholePage) {
 }
 
 function go(wv, act) {
-  if (!WORLDVIEWS[wv]) return;
+  if (!built(wv)) return;
   act = Math.min(3, Math.max(0, act));
   if (wv === cur.wv && act === cur.act) return;
   const moved = wv !== cur.wv;
@@ -150,7 +155,7 @@ function go(wv, act) {
 }
 // ---------- the menu of worldviews ----------
 const menu = createMenu($('menu'), CATALOGUE, {
-  isBuilt: (id) => !!WORLDVIEWS[id],
+  isBuilt: built,
   onSelect: (id) => { auto = false; go(id, cur.act); },
 });
 menu.setCurrent(cur.wv);
