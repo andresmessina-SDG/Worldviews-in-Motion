@@ -19,6 +19,10 @@
 //   painting keeps its size and place, so BAKE paints them into two textures whenever it moves or is resized,
 //   and each frame reads them back instead of working them out again. Noise that moves with time, or with a
 //   shape (wL, field()), is worked out each frame as before.
+// - Most parts are switched off in most worldviews. A version of the shader for one worldview, or for the two
+//   in a move, is compiled in the background (see version() below) with every value that never changes there
+//   written in as a constant, so that the compiler leaves out the parts that cannot show. Until it is ready,
+//   or where a browser cannot compile in the background, the whole shader paints instead, with the same result.
 // - Colour is laid down as pigment. A holds how much light each pixel's paint absorbs: K(colour) adds a
 //   wash of that colour, A *= 1. - x lifts paint off, and the paper's colour is finally multiplied by exp(-A).
 
@@ -57,6 +61,7 @@ uniform vec4 uLab[3];           // where lettering sits inside a shape, and its 
 uniform vec3 uLabA;             // how much each of those three names shows
 uniform sampler2D uBakeA, uBakeB;  // the noise that stands still (see BAKE), when uBaked is 1
 uniform float uBaked;
+// (FIXED: a version of this shader for particular worldviews writes here, as #defines, the values that do not change in them)
 
 float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 float noise(vec2 p){
@@ -518,7 +523,6 @@ void main(){
 export function createPainter(canvas) {
   const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
   if (!gl) return null;
-  let locs = {};
   let lost = false;
   const sh = (type, src) => {
     const s = gl.createShader(type);
@@ -569,7 +573,7 @@ export function createPainter(canvas) {
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.useProgram(prog);
+    gl.useProgram(using.prog);
   };
   const init = () => {
   prog = link(FRAG);
@@ -581,21 +585,56 @@ export function createPainter(canvas) {
   gl.enableVertexAttribArray(0);
   gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
   gl.viewport(0, 0, canvas.width, canvas.height);
-  locs = {};
   uniforms.clear();
   for (let i = 0, n = gl.getProgramParameter(prog, gl.ACTIVE_UNIFORMS); i < n; i++) uniforms.add(gl.getActiveUniform(prog, i).name);
   checked = false;
   gl.uniform1i(gl.getUniformLocation(prog, 'uBakeA'), 0);
   gl.uniform1i(gl.getUniformLocation(prog, 'uBakeB'), 1);
   makeBake();
-  gl.uniform1f(gl.getUniformLocation(prog, 'uBaked'), canBake ? 1 : 0);
   };
   init();
   // a phone may take the graphics context away while the page is in the background
   canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); lost = true; });
-  canvas.addEventListener('webglcontextrestored', () => { init(); lost = false; });
+  canvas.addEventListener('webglcontextrestored', () => { init(); reset(); lost = false; });
 
-  const loc = (n) => (n in locs ? locs[n] : (locs[n] = gl.getUniformLocation(prog, n)));
+  // ---------- versions of the shader for particular worldviews ----------
+  // Each is compiled and linked without waiting for it (KHR_parallel_shader_compile), and used once it is ready.
+  const par = gl.getExtension('KHR_parallel_shader_compile');
+  let full, using, versions;
+  const reset = () => { full = { prog, locs: {} }; using = full; versions = new Map(); };
+  const VERT = 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }';
+  const MARK = '// (FIXED:';
+  function version(defines) {
+    if (!par || !defines) return null;
+    let v = versions.get(defines);
+    if (!v) {
+      const pr = gl.createProgram();
+      for (const [type, src] of [[gl.VERTEX_SHADER, VERT], [gl.FRAGMENT_SHADER, FRAG.replace(MARK, `${defines}\n${MARK}`)]]) {
+        const x = gl.createShader(type);
+        gl.shaderSource(x, src);
+        gl.compileShader(x);
+        gl.attachShader(pr, x);
+      }
+      gl.bindAttribLocation(pr, 0, 'p');
+      gl.linkProgram(pr);
+      versions.set(defines, (v = { prog: pr, locs: {}, state: 'compiling' }));
+    }
+    if (v.state === 'compiling' && gl.getProgramParameter(v.prog, par.COMPLETION_STATUS_KHR)) {
+      if (gl.getProgramParameter(v.prog, gl.LINK_STATUS)) {
+        gl.useProgram(v.prog);
+        gl.uniform1i(gl.getUniformLocation(v.prog, 'uBakeA'), 0);
+        gl.uniform1i(gl.getUniformLocation(v.prog, 'uBakeB'), 1);
+        gl.useProgram(using.prog);
+        v.state = 'ready';
+      } else {
+        v.state = 'failed';
+        console.error(`paint.js: a version of the shader failed: ${gl.getProgramInfoLog(v.prog)}`);
+      }
+    }
+    return v.state === 'ready' ? v : null;
+  }
+  reset();
+  const loc = (n) => (n in using.locs ? using.locs[n] : (using.locs[n] = gl.getUniformLocation(using.prog, n)));
 
   return {
     uniforms,
@@ -609,9 +648,15 @@ export function createPainter(canvas) {
         makeBake();
       }
     },
+    // start compiling a version, to have it ready when it is wanted (defines as for draw)
+    prepare(defines) { if (!lost) version(defines); },
     // values: { name: number | [x, y] | [x, y, z] | Float32Array (vec4 array) }
-    draw(values) {
+    // defines: the values that stay fixed in the worldviews now on the page, as #define lines (or none)
+    draw(values, defines) {
       if (lost) return;
+      const use = version(defines) || full;
+      if (use !== using) { using = use; gl.useProgram(use.prog); }
+      gl.uniform1f(loc('uBaked'), canBake ? 1 : 0);
       if (!checked) {
         checked = true;
         const missing = [...uniforms].filter((n) => !(n in values) && !OWN.has(n));

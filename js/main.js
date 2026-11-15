@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=49';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=49';
-import { CATALOGUE } from './catalogue.js?v=49';
-import { createMenu } from './menu.js?v=49';
+import { createPainter } from './paint.js?v=50';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=50';
+import { CATALOGUE } from './catalogue.js?v=50';
+import { createMenu } from './menu.js?v=50';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -56,6 +56,8 @@ const blendP = (a, b, k) => { const o = {}; for (const n in b) o[n] = lerp(a[n],
 const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 
 let live = target(), settled = -1;
+// the worldviews whose values are on the page: one at rest; during a move, those it blends between
+let onPage = new Set([cur.wv]);
 let from = live;
 let t0 = -1e9;
 let dur = 1;
@@ -63,6 +65,7 @@ if (params.has('k')) {
   const other = built(params.get('from')) ? params.get('from') : Object.keys(WORLDVIEWS).find((w) => w !== cur.wv);
   const fa = params.has('fromAct') ? Math.min(3, Math.max(0, (Number(params.get('fromAct')) || 1) - 1)) : cur.act;
   live = blendP({ ...WORLDVIEWS[other].acts[fa].p, act: cur.act }, target(), num('k', 0, 1, 0.5));
+  onPage = new Set([other, cur.wv]);
 }
 
 // ---------- lettering ----------
@@ -155,6 +158,8 @@ function go(wv, act, step = false) {
   act = Math.min(3, Math.max(0, act));
   if (wv === cur.wv && act === cur.act) return;
   const moved = wv !== cur.wv;
+  // (a move that interrupts another keeps the worldviews of both on the page until it settles)
+  onPage = performance.now() - t0 < dur ? new Set([...onPage, wv]) : new Set([cur.wv, wv]);
   from = { ...live };
   cur.wv = wv;
   cur.act = act;
@@ -895,6 +900,22 @@ function spiritsAt(p, t) {
 // once did): search by halving, use smax() and smin(), and follow a jumping target on a spring.
 let lastDraw = 0, ceiling = 1, raisedAt = -1e9, calm = 0;
 const U = {};             // the shader's uniforms, refilled each painting
+// The values that never change in some worldviews, as #defines for a version of the shader that leaves out what
+// cannot show there (see version() in paint.js). Only values passed by name are fixed in this way: never those
+// worked out in frame(), which change even where the value of the same name does not (uTick, uSoul).
+const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA']);
+const fixedMemo = new Map();
+let readyNext = false, workedChecked = false;
+function fixedIn(ids) {
+  const key = [...ids].sort().join(' ');
+  if (!fixedMemo.has(key)) {
+    const ps = [...ids].flatMap((id) => WORLDVIEWS[id].acts.map((a) => a.p));
+    fixedMemo.set(key, autoU
+      .filter(([u, k]) => !WORKED.has(u) && typeof ps[0][k] === 'number' && ps.every((q) => q[k] === ps[0][k]))
+      .map(([u, k]) => `#define ${u} ${Number.isInteger(ps[0][k]) ? ps[0][k].toFixed(1) : ps[0][k]}`).join('\n'));
+  }
+  return fixedMemo.get(key);
+}
 let autoU = null;         // [uniform, value] pairs filled by name, found at the first painting
 function frame(now) {
   requestAnimationFrame(frame);
@@ -928,7 +949,7 @@ function frame(now) {
   // (once a move is over the values stand still, so they are taken once rather than blended afresh each frame)
   if (!params.has('k')) {
     if (now - t0 < dur) { live = blendP(from, target(), ease((now - t0) / dur)); settled = -1; }
-    else if (settled !== t0) { live = target(); settled = t0; }
+    else if (settled !== t0) { live = target(); settled = t0; onPage = new Set([cur.wv]); readyNext = true; }
   }
   const p = live;
   const t = frozen !== null ? frozen : reduced ? 0 : now / 1000;
@@ -967,7 +988,15 @@ function frame(now) {
     U.uHands = [hd.sec, hd.min, hd.hour];
     U['uLab[0]'] = rects;
     U.uLabA = lifts;
-    painter.draw(U);
+    painter.draw(U, fixedIn(onPage));
+    // once a worldview has settled, its question's move is made ready in the background
+    if (readyNext) { readyNext = false; painter.prepare(fixedIn([cur.wv, WORLDVIEWS[cur.wv].move.to])); }
+    // (a value worked out here but missing from WORKED could be fixed wrongly: say so)
+    if (!workedChecked) {
+      workedChecked = true;
+      const byName = new Set(autoU.map(([u]) => u));
+      for (const u in U) if (!byName.has(u) && !WORKED.has(u)) console.error(`main.js: ${u} is worked out in frame() but missing from WORKED`);
+    }
   }
   drawConn(p, { t, arrow, orb, tock: hd.tock }, G);
 }
