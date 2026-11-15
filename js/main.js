@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=34';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=34';
-import { CATALOGUE } from './catalogue.js?v=34';
-import { createMenu } from './menu.js?v=34';
+import { createPainter } from './paint.js?v=35';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=35';
+import { CATALOGUE } from './catalogue.js?v=35';
+import { createMenu } from './menu.js?v=35';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -100,7 +100,10 @@ const marks = [0, 1, 2, 3].map((i) => {
 });
 const moveBtn = document.createElement('button');
 $('moves').appendChild(moveBtn);
-moveBtn.onclick = () => { auto = false; go(WORLDVIEWS[cur.wv].move.to, cur.act); };
+// The button goes where its words say. Its words change only when the old ones have faded, so a second click
+// in that time, as in a double-click, asks the old question again and finds us already there.
+let moveTo = null;
+moveBtn.onclick = () => { auto = false; go(moveTo, cur.act); };
 
 let swapTimer = null;
 function renderText(instant, wholePage) {
@@ -117,6 +120,7 @@ function renderText(instant, wholePage) {
     $('actText').textContent = a.text;
     marks.forEach((b, i) => { b.textContent = wv.acts[i].name; });
     moveBtn.textContent = wv.move.q;
+    moveTo = wv.move.to;
     document.body.classList.remove('swap', 'swap-all');
     if (!instant) resize(false);                // new words may take a different amount of room
   };
