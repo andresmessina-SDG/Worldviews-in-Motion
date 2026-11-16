@@ -51,6 +51,7 @@ uniform float uScan;            // man measuring the lattice around him, by a li
 uniform vec4 uSp[9];            // spirits: where each is, how dark, how present
 uniform float uSpA;
 uniform float uBi;              // the Ultimate as a jade disc of Heaven, with a round hole at its centre
+uniform float uUnbound;         // the Ultimate as light with no edge and no outline: beyond all knowing
 uniform float uYin, uMist;      // the world as yin and yang turning; a nameless source, painted as mist with no edge
 uniform vec3 uSoul;             // the soul as a small light: where it is, and how much of it there is
 uniform float uCopies, uCopyDark;  // copies of the eternal Forms, drifting in the world of becoming; how far they have darkened into shadows
@@ -59,6 +60,7 @@ uniform float uPyr, uLevel;     // the world as a pyramid of society; the pyrami
 uniform float uStrata, uSplit, uChurn;  // the pyramid in two storeys, split at a height (in the world's radii); its lower storey churning
 uniform float uStainOn;         // the stain moved off man and onto the top of the pyramid
 uniform float uShards, uDominant, uPlay, uGap, uScript;  // the world as a collage of shards; one story's colour over most; shards shifting; cracks between; handwriting over all
+uniform float uDemi, uDemiY, uDemiR;   // the maker of this world, a lesser god below the true one: how much of him, his height and size
 uniform float uMoons, uSeasons;  // the Ultimate as a triple moon (waxing, full, waning); the land's colour turning through the year
 uniform float uAura;           // a soft rainbow aura round man, and how far it reaches
 uniform float uCircuit;        // circuit traces spreading out from man, how far
@@ -252,7 +254,7 @@ void main(){
   float wave = max(0., sin((rg - rG) * 16. - t * .9 + wM.x * 2.));
   A *= 1. - .3 * uWave * wave * wave * exp(-(rg - rG) * 2.6) * smoothstep(rG, rG + .05, rg);
 
-  A *= 1. - .93 * max(layersAt(dG, 11., .04, .0045, 0., gM, gF) * pres * (1. - uOne), layersAt(dW, 17., .04, .0045, 0., kM, kF) * uWorldA);
+  A *= 1. - .93 * max(layersAt(dG, 11., .04, mix(.0045, .05, uUnbound), 0., gM, gF) * pres * (1. - uOne), layersAt(dW, 17., .04, .0045, 0., kM, kF) * uWorldA);
   float ink = 0.;
 
   // ---------- the world ----------
@@ -496,7 +498,8 @@ void main(){
 
   // ---------- the Ultimate ----------
   {
-    float dens = layersAt(dG, 1., mix(.03, .1, uOne), mix(.0045, .03, uOne), mix(tide, .25, uOne), gM, gF) * uGodA;
+    float soft = max(uOne, uUnbound);
+    float dens = layersAt(dG, 1., mix(.03, .1, soft), mix(.0045, .03, soft), mix(tide, .25, soft), gM, gF) * uGodA;
     vec2 gq = q - G;
     float gv1 = v1, gv2 = v2;
     if (dens > .001) { gv1 = fbm(gq * 1.1 + gL * 1.6 + 2.); gv2 = fbm(gq * 2.3 - gL * 2.2 + 7.); }
@@ -513,7 +516,7 @@ void main(){
     A += K(uGodC) * dens * core * bloomAt(gq * 2.4, 31., gL, gM, gF) * (.85 + .6 * gv2);
     A += K(uGodRim) * dens * smoothstep(rG * .5, rG, rg + gM.y * .15) * (.2 + .55 * gv1) * bandsG;
     A *= 1. - .35 * uOne * exp(-rg * rg / .03);
-    ink += (penW(dG + .012 + gwob, gPW) + penW(dG - .02 - gwob * 1.4, gPW) * step(.45, noise(gq * 6. + 2.))) * (1. - uOne) * (1. - .93 * uGb * inW);
+    ink += (penW(dG + .012 + gwob, gPW) + penW(dG - .02 - gwob * 1.4, gPW) * step(.45, noise(gq * 6. + 2.))) * (1. - uOne) * (1. - uUnbound) * (1. - .93 * uGb * inW);
     ink += penW(hole + .004 - gwob * .6, gPW) * uBi;
     if (uStar > .001) {
       // two squares, one turned on the other: ruled exactly, as in tilework, and broken round his name like a cartouche
@@ -538,6 +541,28 @@ void main(){
     ruled += smoothstep(.005, .0025, abs(rg - rG - .13)) * step(.72, fract(ang * 60. / 6.2832 + uTick * .5)) * .55;
     ink += loose * uHaloL + ruled * uHaloR;
     ink = mix(ink0, ink, pres);
+  }
+
+  // ---------- the maker of this world: a lesser god below the Fullness, a sun of smoky, borrowed light,
+  //            with a serpent's tail coiled about him ----------
+  if (uDemi > .001 && abs(q.x) < uDemiR * 2.2 + .12 && abs(q.y - uDemiY) < uDemiR * 2.2 + .12) {
+    vec2 dc = vec2(0., uDemiY);
+    vec2 nL, nM, nF; float nPW;
+    field(q - dc, nL, nM, nF, nPW);
+    vec2 r = q + nL * .05 - dc;
+    float rr = length(r), d = rr - uDemiR;
+    float dens = layersAt(d, 9., .03, .006, tide, nM, nF) * uDemi;
+    float smoke = fbm(r * 6. + vec2(t * .05, -t * .07));
+    A += K(vec3(.88, .6, .3)) * dens * (.75 + .5 * v2);
+    A += K(vec3(.45, .25, .2)) * dens * smoothstep(.85, .1, rr / uDemiR + (smoke - .5) * .6) * .85;
+    // the light he gives is dull and smoky, and does not reach far
+    A += K(vec3(.78, .62, .5)) * exp(-pow(max(d, 0.) / .06, 2.)) * smoothstep(-.01, .01, d) * (.25 + .5 * smoke) * .5 * uDemi;
+    ink += penW(d + .011 + nM.x * .012, nPW) * uDemi;
+    // the coil: a pen line winding out from him one and a half times, thinning to its tip
+    float a = atan(r.x, -r.y) / 6.2832 + .5, R0 = uDemiR * 1.14, pitch = uDemiR * .3;
+    float c0 = abs(rr - R0 - pitch * a), c1 = abs(rr - R0 - pitch * (a + 1.)) + step(.55, a);
+    float coil = min(c0, c1);
+    ink += penW(coil, nPW * (c1 < c0 ? 1. - .5 * (a + 1.) / 1.55 : 1. - .5 * a / 1.55)) * step(.3, noise(r * 18. + 3.)) * .85 * uDemi;
   }
 
   // ---------- the triple moon: waxing, full and waning, side by side ----------

@@ -11,6 +11,7 @@ export const CATALOGUE = [
   { id: 'islam', name: 'Islam', family: 'theistic', c: ['#d9b44a', '#1f7a5a'] },
 
   { id: 'platonism', name: 'Platonism', family: 'classical', c: ['#e8dcc0', '#8a7fc0'] },
+  { id: 'gnosticism', name: 'Gnosticism', family: 'classical', c: ['#dcd8ec', '#8a5a2a'] },
 
   { id: 'naturalism', name: 'Naturalism', family: 'secular', c: ['#b9c3b0', '#7f97a8'] },
   { id: 'humanism', name: 'Secular Humanism', family: 'secular', c: ['#f0c070', '#6aa6c8'] },

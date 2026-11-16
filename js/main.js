@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=66';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=66';
-import { CATALOGUE } from './catalogue.js?v=66';
-import { createMenu } from './menu.js?v=66';
+import { createPainter } from './paint.js?v=67';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=67';
+import { CATALOGUE } from './catalogue.js?v=67';
+import { createMenu } from './menu.js?v=67';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -529,7 +529,7 @@ const connSvg = $('conn');
 // Platonism: the four Forms above (x, y, sides: 0 is the circle), their copies in the world (from its centre),
 // their size, and the height of the line between the seen and the known
 const FORMS = [[-0.32, 0.27, 0], [-0.16, 0.33, 3], [0.16, 0.33, 4], [0.32, 0.27, 6]];
-const COPIES = [[-0.19, 0.1], [-0.1, 0.2], [0.1, 0.2], [0.19, 0.1]], FSZ = 0.044, DIVIDE = 0.14;
+const COPIES = [[-0.19, 0.1], [-0.1, 0.2], [0.1, 0.2], [0.19, 0.1]], FSZ = 0.044;
 const DARK = '#33271f', RED = [163, 38, 43], OCHRE = [176, 122, 30], GREY = '#6f6a66', PAP = '#f8f2e4';
 const f = (n) => n.toFixed(4);
 const rgb = (c) => `rgb(${c.map(Math.round).join(',')})`;
@@ -566,6 +566,7 @@ function flatten(el, a) {
   }
 }
 
+let plerR = null;           // the width of the ring of powers round God, in Gnosticism
 function drawConn(p, c, G) {
   const bTop = p.Gy - p.rG + p.bOff;
   const top = -bTop, bot = -p.bbot;              // svg y grows downward
@@ -574,7 +575,7 @@ function drawConn(p, c, G) {
 
   // ----- the ascent: a ladder from man up through the dividing line toward the Forms -----
   if (p.ladder > 0.01) {
-    const y0 = p.Sy + 0.09, y1 = DIVIDE + 0.15, HW = 0.024;
+    const y0 = p.Sy + 0.09, y1 = p.divY + 0.15, HW = 0.024;
     let d = `M${f(-HW)},${f(-y0)} V${f(-y1)} M${f(HW)},${f(-y0)} V${f(-y1)} `;
     for (let y = y0 + 0.03; y < y1 - 0.01; y += 0.046) d += `M${f(-HW)},${f(-y)} H${f(HW)} `;
     // (it fades quickly and lies under anything else, so that the bridge coming down in its place reads cleanly)
@@ -932,7 +933,7 @@ function drawConn(p, c, G) {
     let segs = '';
     for (let i = 0; i < 24; i++) {
       const x0 = -0.44 + (0.88 * i) / 24, x1 = x0 + 0.88 / 24 - 0.006, m = 1 - Math.pow(Math.abs((x0 + x1) / 2) / 0.44, 3);
-      segs += `<path d="M${f(x0)},${f(-DIVIDE)} H${f(x1)}" opacity="${f(m)}"/>`;
+      segs += `<path d="M${f(x0)},${f(-p.divY)} H${f(x1)}" opacity="${f(m)}"/>`;
     }
     g += `<g opacity="${f(p.divide * 0.55)}" stroke="${DARK}" stroke-width=".0026" stroke-linecap="round">${segs}</g>`;
   }
@@ -970,6 +971,74 @@ function drawConn(p, c, G) {
     const ang = (Math.atan2(-(P[3][1] - P[2][1]), P[3][0] - P[2][0]) * 180) / Math.PI;
     g += `<g opacity="${f(p.rebirth)}">${stroke(d, ACC, 0.0045)}<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".0045" stroke-linecap="round" stroke-dasharray=".001 .03" stroke-dashoffset="${f(-c.t * 0.03)}"/>`;
     g += `<path transform="translate(${f(P[3][0])},${f(-P[3][1])}) rotate(${f(ang)})" d="M.012,0 L-.018,-.017 L-.018,.017Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/></g>`;
+  }
+
+  // ----- Gnosticism: the Fullness, a ring of powers in pairs round the unknown Father. One pair has lost a partner:
+  //       Wisdom, who fell. Her place is left empty, and a dotted trail runs down from it to the maker she brought forth. -----
+  if (p.pleroma > 0.01) {
+    // (wide enough that the pairs level with God's name stay clear of it, whatever size the lettering has here;
+    // when the name changes, the ring eases to its new width rather than jumping)
+    const Ry = G.r + 0.1, want = Math.max(Ry, (labels.god.w / 2 + 0.035) / Math.cos(Math.PI / 8));
+    plerR = plerR === null ? want : lerp(plerR, want, 0.06);
+    const R = plerR, FALLEN = 1;
+    let rings = '', lost = '';
+    for (let i = 0; i < 8; i++) {
+      const a = (i + 0.5) * (Math.PI / 4);                          // (svg angles: a pair at each side of the bottom, none level with the name)
+      for (const s of [-1, 1]) {
+        const b = a + (s * 0.068 * Ry) / R, x = G.x + R * Math.cos(b), y = -G.y + Ry * Math.sin(b);
+        const r = 0.0125 * (1 + 0.12 * Math.sin(c.t * 0.7 + i * 1.3 + s));
+        const c0 = `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}"/>`;
+        if (i === FALLEN && s === 1) lost += c0; else rings += c0;
+      }
+    }
+    g += `<g opacity="${f(p.pleroma)}"><g fill="${PAP}" fill-opacity=".6" stroke="${PAP}" stroke-width=".0115" opacity=".92">${rings}</g><g fill="none" stroke="${DARK}" stroke-width=".0032">${rings}</g>`;
+    g += `<g opacity="${f(1 - p.sophia)}" fill="${PAP}" fill-opacity=".6" stroke="${DARK}" stroke-width=".0032">${lost}</g>`;
+    g += `<g opacity="${f(p.sophia)}" fill="none" stroke="${DARK}" stroke-width=".0026" stroke-dasharray=".006 .006">${lost}</g></g>`;
+    if (p.sophia > 0.01 && p.demi > 0.01) {
+      const b = (FALLEN + 0.5) * (Math.PI / 4) + (0.068 * Ry) / R, x0 = G.x + R * Math.cos(b), y0 = -G.y + Ry * Math.sin(b) + 0.02;
+      const x1 = p.demiR * 0.5, y1 = -(p.demiY + p.demiR + 0.025);
+      const d = `M${f(x0)},${f(y0)} C${f(x0 + 0.16)},${f(y0 + 0.02)} ${f(x1 + 0.2)},${f(y1 - 0.04)} ${f(x1)},${f(y1)}`;
+      g += `<g opacity="${f(p.sophia * Math.min(1, p.demi * 2) * p.pleroma)}"><path d="${d}" fill="none" stroke="${PAP}" stroke-width=".0135" stroke-linecap="round" stroke-dasharray=".001 .018" stroke-dashoffset="${f(-c.t * 0.015)}" opacity=".92"/><path d="${d}" fill="none" stroke="${ACC}" stroke-width=".0065" stroke-linecap="round" stroke-dasharray=".001 .018" stroke-dashoffset="${f(-c.t * 0.015)}"/></g>`;
+    }
+  }
+
+  // ----- Gnosticism: the seven heavens of the maker's rulers, arched over the world, each with its ruler going round.
+  //       On guard, the rulers gather at the top, where the way up lies; the gates there open for the Revealer coming
+  //       down and for the spark going home, and the rulers stand aside. -----
+  if (p.spheres > 0.01) {
+    const top = 1.5 * Math.PI, span = Math.PI / 2 - 0.42, N = 10;
+    let segs = '', rulers = '';
+    for (let i = 0; i < 7; i++) {
+      const r = p.rW + 0.05 + i * 0.026, half = (0.003 + 0.05 * p.gates) / r;   // (the gate's half width, as an angle)
+      for (const s of [-1, 1]) {
+        for (let k = 0; k < N; k++) {
+          const u0 = half + ((span - half) * k) / N, u1 = half + ((span - half) * (k + 1)) / N - 0.004 / r;
+          const m = 1 - Math.pow((u0 + u1) / 2 / span, 3);              // (fading out toward the ends)
+          const a0 = top + s * u0, a1 = top + s * u1;
+          segs += `<path d="M${f(r * Math.cos(a0))},${f(-p.Wy + r * Math.sin(a0))}${arcC(0, -p.Wy, r, a0, a1)}" opacity="${f(m)}"/>`;
+        }
+      }
+      // each ruler goes to and fro along his heaven; on guard he stands at the gate, to one side of it
+      const side = i % 2 ? 1 : -1;
+      const roam = top + side * (0.12 + (span - 0.3) * (0.5 + 0.5 * Math.sin(c.t * (0.05 + 0.011 * i) + i * 1.9)));
+      const post = top + side * (half + (0.016 + 0.01 * Math.sin(c.t * 0.6 + i)) / r);
+      const a = lerp(roam, post, p.guard);
+      rulers += `<circle cx="${f(r * Math.cos(a))}" cy="${f(-p.Wy + r * Math.sin(a))}" r=".0085"/>`;
+    }
+    g += `<g opacity="${f(p.spheres)}"><g opacity=".7" fill="none" stroke="${DARK}" stroke-width=".0026" stroke-linecap="round">${segs}</g>`;
+    g += `<g fill="${DARK}" stroke="${PAP}" stroke-width=".004">${rulers}</g></g>`;
+  }
+
+  // ----- Gnosticism: the Revealer, coming down from the Fullness past the maker and through the gates. He is an
+  //       outline only, dashed and never painted: he only seemed to have a body. -----
+  if (p.seeming > 0.01) {
+    const yR = p.Wy + p.rW + 0.12, rR = 0.04, y0 = G.y - G.r - 0.115;   // (from just below the ring of powers)
+    const d = `M${f(G.x)},${f(-y0)} C${f(G.x + 0.32)},${f(-(y0 - 0.12))} ${f(0.3)},${f(-(yR + 0.22))} 0,${f(-(yR + rR + 0.015))}`;
+    const d2 = `M0,${f(-(yR - rR - 0.015))} V${f(-(p.Sy + 0.085))}`;
+    const dots = (dd) => `<path d="${dd}" fill="none" stroke="${PAP}" stroke-width=".0125" stroke-linecap="round" stroke-dasharray=".001 .02" stroke-dashoffset="${f(-c.t * 0.02)}" opacity=".92"/><path d="${dd}" fill="none" stroke="${ACC}" stroke-width=".0055" stroke-linecap="round" stroke-dasharray=".001 .02" stroke-dashoffset="${f(-c.t * 0.02)}"/>`;
+    g += `<g opacity="${f(p.seeming)}">${dots(d)}${dots(d2)}`;
+    g += `<circle cx="0" cy="${f(-yR)}" r="${f(rR)}" fill="${PAP}" fill-opacity=".45" stroke="${PAP}" stroke-width=".0125" opacity=".92"/>`;
+    g += `<circle cx="0" cy="${f(-yR)}" r="${f(rR)}" fill="none" stroke="${ACC}" stroke-width=".0045" stroke-dasharray=".011 .009" stroke-dashoffset="${f(c.t * 0.01)}"/></g>`;
   }
 
   // ----- the line of history -----
@@ -1098,7 +1167,11 @@ function spiritsAt(p, t) {
     const dark = i < 5 ? p.anger : 0;
     let a1 = p.spirits * (i < 5 ? 1 : lerp(1, 0.55, p.near)) * (0.85 + 0.15 * Math.sin(t * 1.9 + i * 2.3));
     // one soul: the first light settles in man (or wherever the soul has climbed to) and the rest fade away
-    if (i === 0) { x = lerp(x, 0, p.soul); y = lerp(y, p.soulY, p.soul); } else a1 *= 1 - p.soul;
+    if (i === 0) {
+      x = lerp(x, 0, p.soul); y = lerp(y, p.soulY, p.soul);
+      // (in Gnosticism the spark going home passes round the maker, not through him, by the way the Revealer came)
+      x += p.pleroma * 0.2 * Math.exp(-(((y - p.demiY) / 0.13) ** 2));
+    } else a1 *= 1 - p.soul;
     spirits.set([x, y, dark, a1], i * 4);
   });
   return spirits;

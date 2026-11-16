@@ -35,10 +35,11 @@ const DEFAULTS = {
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   moons: 0, seasons: 0, aura: 0, circuit: 0, shards: 0, dominant: 0, play: 0, gap: 0, script: 0, pyr: 0, level: 0, strata: 0, split: 0, churn: 0, stainOn: 0, star: 0, law: 0,
-  spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
+  spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, unbound: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
+  demi: 0, demiY: 0.3, demiR: 0.085,
   // connectors
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  wheelYr: 0, cast: 0, spiral: 0, spiralW: 0, rings: 0, ringDir: 0, fence: 0, burst: 0, upload: 0, steps: 0, covenant: 0, broken: 0, tablets: 0, awaited: 0, sent: 0, scales: 0, extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, tick: 0, acc: [163, 38, 43],
+  wheelYr: 0, cast: 0, spiral: 0, spiralW: 0, rings: 0, ringDir: 0, fence: 0, burst: 0, upload: 0, steps: 0, covenant: 0, broken: 0, tablets: 0, awaited: 0, sent: 0, scales: 0, extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, divY: 0.14, pleroma: 0, sophia: 0, spheres: 0, guard: 0, gates: 0, seeming: 0, tick: 0, acc: [163, 38, 43],
   // lettering
   lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.145, tBrX: 0.05, tBrY: 0.11, tBrS: 0,
 };
@@ -305,6 +306,20 @@ const platonistBase = {
   spirits: 1,
   forms: 1, partake: 1, copies: 1, soul: 1, soulY: -0.3, divide: 1, acc: [82, 72, 148],
   lBrX: 0.45, lBrY: 0.38, tBrX: 0.378, tBrY: 0.285,
+};
+
+const gnosticBase = {
+  // three storeys: the true God in the Fullness, high and far; below the Limit, the lesser god who made the world;
+  // and the world itself, shut in by the seven heavens of his rulers, with a spark of the true God asleep in man
+  Gy: 0.66, rG: 0.1, Wy: -0.4, rW: 0.3, Sy: -0.4,
+  glory: [0.96, 0.96, 0.99], sky: [0.9, 0.89, 0.95], far: [0.8, 0.8, 0.9], low: [0.62, 0.6, 0.52], deep: [0.44, 0.42, 0.38],
+  sea: [0.36, 0.38, 0.32], land: [0.5, 0.44, 0.3], shade: [0.2, 0.17, 0.14], warm: 0.2,
+  godC: [0.99, 0.93, 0.74], godRim: [0.86, 0.84, 0.96], godA: 1.1,
+  stainC: [0.2, 0.17, 0.14],
+  manA: 0.8, manC: [0.6, 0.45, 0.34],
+  spirits: 1, soul: 1, soulY: -0.4,
+  demi: 1, demiY: 0.26, unbound: 1, pleroma: 1, spheres: 1, divide: 1, divY: 0.44, acc: [128, 84, 30],
+  lBrX: 0.3, lBrY: 0.26, tBrX: 0.09, tBrY: 0.26,
 };
 
 // An act's values: the defaults, then its worldview's base, then its own. A key the defaults lack is a mistake
@@ -1437,7 +1452,7 @@ export const WORLDVIEWS = {
   platonism: {
     name: 'Platonism',
     tagline: 'The real world lies above this one, and the soul must climb back to it.',
-    move: { to: 'christian', q: 'What if the Word became flesh?' },
+    move: { to: 'gnosticism', q: 'What if the maker is our jailer?' },
     acts: build(platonistBase, [
       {
         slug: 'two-worlds',
@@ -1487,6 +1502,63 @@ export const WORLDVIEWS = {
           world: ['The world of becoming', 'Where other souls are reborn'],
           bridge: ['The soul', 'Free of the body for ever'],
           self: ['The body', 'Left behind like a tomb'],
+        },
+      },
+    ]),
+  },
+  gnosticism: {
+    name: 'Gnosticism',
+    tagline: 'A lesser god made this world, and secret knowledge is the way out.',
+    move: { to: 'christian', q: 'What if God came in the flesh?' },
+    acts: build(gnosticBase, [
+      {
+        slug: 'the-fullness',
+        name: 'The Fullness',
+        text: 'The true God dwells far above in the Fullness, beyond all knowing. One of its powers fell, and from her error came a lesser god. He made this world, and thinks he is the only God.',
+        p: { sophia: 1 },
+        labels: {
+          god: ['The true God', 'Beyond all knowing'],
+          world: ['The world', 'Matter, made by mistake'],
+          bridge: ['The maker', 'A lesser god, and blind'],
+          self: ['Man', 'A spark of God in clay'],
+        },
+      },
+      {
+        slug: 'the-prison',
+        name: 'The Prison',
+        text: 'Sparks of the true God lie asleep in human bodies, held there by the maker’s rulers. The trouble is not sin but matter, and forgetting who you really are.',
+        p: { sophia: 0.3, guard: 1, anger: 0.5, stainR: 0.12, stainA: 0.45, dull: 0.5 },
+        labels: {
+          god: ['The true God', 'Beyond all knowing'],
+          world: ['The prison', 'Ruled by his powers'],
+          bridge: ['The maker', 'Jailer, not Father'],
+          self: ['The spark', 'Asleep in the body'],
+          sin: ['Matter', 'Evil in the stuff, not the will'],
+        },
+      },
+      {
+        slug: 'knowledge',
+        name: 'Knowledge',
+        text: 'A Revealer comes down in disguise. He only seems to have a body, and he dies for no one. He brings secret knowledge, and those with the spark wake up and remember their home.',
+        p: { guard: 0.4, gates: 0.75, seeming: 1, stainR: 0.07, stainA: 0.2, dull: 0.3, glow: 0.5, lBrY: 0.04, tBrX: 0.045, tBrY: 0.02 },
+        labels: {
+          god: ['The true God', 'Beyond all knowing'],
+          world: ['The world', 'Not worth saving'],
+          bridge: ['The Revealer', 'He only seemed to be flesh'],
+          self: ['The awakened few', 'Saved by knowing, not by grace'],
+          sin: ['Matter', 'Escaped, never forgiven'],
+        },
+      },
+      {
+        slug: 'the-return',
+        name: 'The Return',
+        text: 'At death the awakened spark rises past the rulers of the heavens, gives them the secret words and goes home. The body is left to rot, and in the end all matter is destroyed.',
+        p: { soulY: 0.5, gates: 1, demi: 0.45, worldA: 0.6, dull: 0.6, manA: 0.15, hollow: 1, manI: 0.6, glow: 0.3, lBrY: 0.39, tBrX: 0.03, tBrY: 0.5 },
+        labels: {
+          god: ['The true God', 'Reached, but still unknown'],
+          world: ['The world', 'Burned up, not made new'],
+          bridge: ['The spark', 'Home past the gatekeepers'],
+          self: ['The body', 'Thrown off for good'],
         },
       },
     ]),
