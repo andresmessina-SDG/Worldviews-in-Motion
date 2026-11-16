@@ -38,11 +38,22 @@ h1 { margin: 2px 0 0; font-size: clamp(2rem, 5.5vmin, 3.6rem); font-weight: 600;
 .act { margin-top: 3.2vh; padding-top: 2vh; border-top: 1.5px solid rgba(43, 33, 29, .35); transition: opacity .45s ease; }
 .act h2 { margin: 0; font-size: clamp(1.3rem, 3.2vmin, 2rem); font-weight: 600; color: var(--red); line-height: 1; }
 .act p { margin: 6px 0 0; font-size: clamp(1.05rem, 2.4vmin, 1.4rem); font-weight: 500; line-height: 1.22; text-wrap: pretty; }
-/* beside the painting, each act's words open with a drop cap in the accent, two lines deep, as a chapter would
-   (where the words are centred below the painting, a drop cap would pull them off centre: there is none) */
-@supports (initial-letter: 2) or (-webkit-initial-letter: 2) {
-  body:not(.narrow) .act p::first-letter { -webkit-initial-letter: 2; initial-letter: 2; color: var(--red); font-weight: 600; margin-inline-end: .07em; }
+/* Beside the painting, each act's words open with a drop cap in the accent, two lines deep, as a chapter would.
+   It is placed by hand rather than with initial-letter, which browsers place differently with a web font: its size
+   makes the top of the capital meet the top of the capitals in the first line, and its foot the baseline of the second;
+   its margins set it there and let the third line run full width. The sums use Cormorant's own proportions (capitals
+   .625 of the size; ascent .924 and descent .287) and the line height of the words (1.22, or 1.18 on a short screen).
+   (Where the words are centred below the painting a drop cap would pull them off centre: there is none.) */
+body:not(.narrow) .act p::first-letter {
+  float: left;
+  font-size: 2.952em;               /* 1.22 / .625 + 1 */
+  line-height: 1;
+  margin: -.091em .02em -.1em -.02em;
+  font-weight: 600;
+  color: var(--red);
 }
+body.short .act p::first-letter { font-size: 2.888em; margin-top: -.095em; margin-bottom: -.105em; }   /* 1.18 / .625 + 1 */
+
 .head { transition: opacity .45s ease; }
 .swap .act, .swap-all .act, .swap-all .head { opacity: 0; }
 
