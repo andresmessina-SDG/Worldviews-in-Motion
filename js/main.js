@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=69';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=69';
-import { CATALOGUE } from './catalogue.js?v=69';
-import { createMenu } from './menu.js?v=69';
+import { createPainter } from './paint.js?v=70';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=70';
+import { CATALOGUE } from './catalogue.js?v=70';
+import { createMenu } from './menu.js?v=70';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -88,6 +88,7 @@ let onPage = new Set([cur.wv]);
 let from = live;
 let t0 = -1e9;
 let dur = 1;
+let homeAt = -1e9;        // when the light of a homecoming is at its height
 let whole = false;        // is the move under way one between worldviews
 if (params.has('k')) {
   const other = built(params.get('from')) ? params.get('from') : Object.keys(WORLDVIEWS).find((w) => w !== cur.wv);
@@ -97,7 +98,9 @@ if (params.has('k')) {
 }
 
 // ---------- lettering ----------
+addEventListener('click', () => { if (pageLayout !== 'narrow') return; let any = false; for (const o of KEYS) any = labels[o].el.classList.toggle('open', false) || any; measure(); repaint = true; });
 const KEYS = ['god', 'world', 'bridge', 'self', 'sin'];
+const READ = ['god', 'world', 'self', 'bridge', 'sin'];     // the order they are read in
 const ALIGN = { god: 'center', world: 'center', bridge: 'left', self: 'left', sin: 'right' };
 const NS = 'http://www.w3.org/2000/svg';
 const labels = {};
@@ -105,6 +108,15 @@ for (const k of KEYS) {
   const el = document.createElement('div');
   el.className = `l ${ALIGN[k]}`;
   $('labels').appendChild(el);
+  // On a phone only a label's first line shows; a tap opens its second, and closes any other that was open.
+  el.addEventListener('click', (e) => {
+    if (pageLayout !== 'narrow') return;
+    e.stopPropagation();
+    for (const o of KEYS) if (o !== k) labels[o].el.classList.remove('open');
+    el.classList.toggle('open');
+    measure();
+    repaint = true;
+  });
   const g = document.createElementNS(NS, 'g');
   const path = document.createElementNS(NS, 'path');
   const dot = document.createElementNS(NS, 'circle');
@@ -124,12 +136,13 @@ const hang = (s, align) => (align === 'left' ? s.replace(/^([“‘])/, '<span c
   : align === 'right' ? s.replace(/([”’])$/, '<span class="hang-r">$1</span>') : s);
 function setLabel(k, content, instant, wait = 550) {
   const L = labels[k];
-  const html = content ? `${hang(content[0], ALIGN[k])}<small>${hang(content[1], ALIGN[k])}</small>` : '';
+  const html = content ? `<span class="ti">${hang(content[0], ALIGN[k])}</span><small>${hang(content[1], ALIGN[k])}</small>` : '';
   if (L.html === html) return;
   L.html = html;
   clearTimeout(L.timer);
   const apply = () => {
     L.el.innerHTML = html;
+    L.el.classList.remove('open');
     L.on = !!content;
     L.show = L.on ? 1 : 0;
     if (instant) L.lift = L.show;
@@ -155,6 +168,28 @@ $('moves').appendChild(moveBtn);
 // The button goes where its words say. Its words change only when the old ones have faded, so a second click
 // in that time, as in a double-click, asks the old question again and finds us already there.
 let moveTo = null;
+// Beside the question, the loop it belongs to: a ring with a dab for every worldview in the order the questions
+// lead through them, home at the top, and the one on the page marked.
+const LOOP = [HOME];
+while (WORLDVIEWS[LOOP[LOOP.length - 1]].move.to !== HOME && LOOP.length < 99) LOOP.push(WORLDVIEWS[LOOP[LOOP.length - 1]].move.to);
+const loopEl = document.createElement('div');
+loopEl.id = 'loop';
+$('moves').appendChild(loopEl);
+function drawLoop() {
+  const at = LOOP.indexOf(cur.wv), n = LOOP.length;
+  let d = '';
+  LOOP.forEach((id, i) => {
+    const a = -Math.PI / 2 + (i * 2 * Math.PI) / n, x = (15 * Math.cos(a)).toFixed(2), y = (15 * Math.sin(a)).toFixed(2);
+    const col = (CATALOGUE.find((c) => c.id === id) || { c: ['#999', '#999'] }).c[i ? 1 : 0];
+    d += i === at ? `<circle cx="${x}" cy="${y}" r="3.2" fill="var(--red)" stroke="#2b211d" stroke-width=".9"/>`
+      : `<circle cx="${x}" cy="${y}" r="${i ? 1.55 : 2.2}" fill="${col}"${i ? '' : ' stroke="#2b211d" stroke-width=".6"'}/>`;
+  });
+  loopEl.innerHTML = `<svg viewBox="-20 -20 40 40"><circle r="19.2" fill="#f8f2e4" stroke="#2b211d" stroke-width="1"/>${d}<path d="M-5.5,0 H5 M1.2,-3.6 L5.2,0 L1.2,3.6" fill="none" stroke="#2b211d" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function placeLoop() {
+  const s = loopEl.offsetWidth / 2;
+  loopEl.style.transform = `translate(${moveBtn.offsetLeft + moveBtn.offsetWidth - s - 1}px, ${moveBtn.offsetTop + moveBtn.offsetHeight / 2 - s}px)`;
+}
 moveBtn.onclick = () => { auto = false; go(moveTo, cur.act, true); };
 
 // Where a long word in an act's name may break, should the names have to take two lines on a phone (a soft hyphen,
@@ -171,7 +206,7 @@ const breakable = (name) => name.split(' ').map((w) => w.split('-').map((x) => S
 // long as the shapes travel; the words of the new worldview come only when it has gone.
 const ask = $('ask');
 let askTimers = [];
-function caption(q) {
+function caption(q, slow = 1) {
   askTimers.forEach(clearTimeout);
   ask.classList.remove('on');
   if (!q) return;
@@ -182,16 +217,17 @@ function caption(q) {
     ask.style.cssText = `left:${a.left}px; top:${top}px; width:${a.width}px; height:${bottom - top}px`;
     ask.textContent = q;
     ask.classList.add('on');
-  }, 520), setTimeout(() => ask.classList.remove('on'), 3300)];
+  }, 520), setTimeout(() => ask.classList.remove('on'), 3300 * slow)];
 }
 
 let swapTimer = null;
-function renderText(instant, wholePage, asked) {
+function renderText(instant, wholePage, asked, slow = 1) {
   const wv = WORLDVIEWS[cur.wv];
   const a = actOf();
   marks.forEach((b, i) => b.setAttribute('aria-current', i === cur.act));
   // between worldviews the lettering stays away until the shapes have nearly settled
-  KEYS.forEach((k) => setLabel(k, a.labels[k], instant, wholePage && !reduced ? 4300 : 550));
+  // (they come in the order the eye should read the picture: the Ultimate, the world, man, what joins them, the problem)
+  KEYS.forEach((k) => setLabel(k, a.labels[k], instant, (wholePage && !reduced ? 4300 * slow : 550) + (reduced ? 0 : 170 * READ.indexOf(k))));
   const fill = () => {
     document.title = `${wv.name} · Worldviews in Motion`;
     $('name').textContent = wv.name;
@@ -201,15 +237,17 @@ function renderText(instant, wholePage, asked) {
     marks.forEach((b, i) => { b.textContent = breakable(wv.acts[i].name); });
     moveBtn.textContent = wv.move.q;
     moveTo = wv.move.to;
+    drawLoop();
     $('scene').setAttribute('aria-label', `The painting. ${KEYS.filter((k) => a.labels[k]).map((k) => `${a.labels[k][0]}: ${a.labels[k][1]}.`).join(' ')}`);
     document.body.classList.remove('swap', 'swap-all');
     if (!instant) resize(false);                // new words may take a different amount of room
+    placeLoop();
   };
   clearTimeout(swapTimer);
   if (instant) { caption(null); return fill(); }
   document.body.classList.add(wholePage ? 'swap-all' : 'swap');
-  caption(asked);
-  swapTimer = setTimeout(fill, asked ? 3900 : 480);
+  caption(asked, slow);
+  swapTimer = setTimeout(fill, asked ? 3900 * slow : 480);
 }
 
 // A move to another worldview chosen on the page (by its question or from the menu) is a new step in the browser's
@@ -228,10 +266,13 @@ function go(wv, act, step = false) {
   cur.act = act;
   t0 = performance.now();
   whole = moved;
-  dur = reduced ? 1 : moved ? 5600 : 2600;
+  // (coming home, back to where the questions began, the move takes longer, and light floods the page as it lands)
+  const home = !!asked && wv === HOME && !reduced, slow = home ? 1.3 : 1;
+  homeAt = home ? t0 + 0.62 * 5600 * slow : -1e9;
+  dur = reduced ? 1 : moved ? 5600 * slow : 2600;
   history[step && moved ? 'pushState' : 'replaceState'](null, '', address());
   if (moved) startGlide(wv);
-  renderText(false, moved, reduced ? null : asked);
+  renderText(false, moved, reduced ? null : asked, slow);
   if (moved) { menu.setCurrent(wv); menu.peek(1600); }
 }
 // ---------- the menu of worldviews ----------
@@ -264,6 +305,7 @@ setInterval(() => { if (auto && !document.hidden) go(cur.wv, (cur.act + 1) % 4);
 
 // ---------- layout ----------
 let unit = 1, ext = 1, cx = 0, cy = 0, scale = 1, quality = 1, markH = 0, markY = -0.795;   // (markY: the middle of the names)
+const wordsBox = new Float32Array(4);           // where the words stand, for the painting to lift the paper under them: centre and half size
 let wordsRight = -1e9, wordsBottom = 1e9;       // the corner of the words on the left, in scene units
 const rects = new Float32Array(12), lifts = [0, 0, 0];
 // Three layouts: the words beside the painting; the same with smaller words, for squarish windows; or the title
@@ -441,6 +483,13 @@ function fit() {
   const words = narrow ? null : $('moves').getBoundingClientRect();
   wordsRight = words ? (words.right - cx) / unit : -1e9;
   wordsBottom = words ? (cy - words.bottom) / unit : 1e9;
+  {
+    // (beside the painting: from the title down to the question; on a phone: the act's words under the painting)
+    const a = document.querySelector('.act').getBoundingClientRect(), h = narrow ? a : document.querySelector('.head').getBoundingClientRect();
+    const l = Math.min(a.left, h.left), r = Math.max(a.right, h.right), t = h.top, b = Math.max(a.bottom, h.bottom);
+    wordsBox.set([((l + r) / 2 - cx) / unit, (cy - (t + b) / 2) / unit, (r - l) / 2 / unit, (b - t) / 2 / unit]);
+  }
+  placeLoop();
   measure();
 }
 function measure() {
@@ -1204,13 +1253,15 @@ function drawConn(p, c, G) {
   // ----- the line of history -----
   const ty = 0.87, bx = ext * (-0.72 + 0.48 * p.act);
   g += stroke(`M${f(-ext)},${ty} H${f(ext + 0.04)}`, DARK, 0.0055);
+  // (inked in as far as the open act: how much of the story has been told)
+  g += `<path d="M${f(-ext)},${ty} H${f(bx)}" fill="none" stroke="${ACC}" stroke-width=".0115" stroke-linecap="round"/>`;
   if (p.tick > 0.01) {
     let ticks = '';
     for (let i = 0; i <= 48; i++) ticks += `M${f(-ext + (2 * ext * i) / 48)},${ty + 0.012} v.014 `;
     g += `<path d="${ticks}" stroke="${DARK}" stroke-width=".002" opacity="${f(0.7 * p.tick)}"/>`;
   }
   g += `<path d="M${f(ext + 0.085)},${ty} L${f(ext + 0.03)},${ty - 0.026} L${f(ext + 0.03)},${ty + 0.026}Z" fill="${DARK}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/>`;
-  for (let i = 0; i < 4; i++) g += `<circle cx="${f(ext * (-0.72 + 0.48 * i))}" cy="${ty}" r=".013" fill="${PAP}" stroke="${DARK}" stroke-width=".0055"/>`;
+  for (let i = 0; i < 4; i++) g += `<circle cx="${f(ext * (-0.72 + 0.48 * i))}" cy="${ty}" r=".013" fill="${i < p.act - 0.5 ? ACC : PAP}" stroke="${DARK}" stroke-width=".0055"/>`;
   const beat = lerp(0.004 * Math.sin(c.t * 2.4), 0.005 * c.tock, p.tick);     // a pulse, or the tick of a clock
   g += `<circle cx="${f(bx)}" cy="${ty}" r="${f(0.031 + beat)}" fill="none" stroke="${ACC}" stroke-width=".003"/><circle cx="${f(bx)}" cy="${ty}" r=".018" fill="${ACC}" stroke="${PAP}" stroke-width=".004"/>`;
 
@@ -1345,7 +1396,7 @@ const U = {};             // the shader's uniforms, refilled each painting
 // The values that never change in some worldviews, as #defines for a version of the shader that leaves out what
 // cannot show there (see version() in paint.js). Only values passed by name are fixed in this way: never those
 // worked out in frame(), which change even where the value of the same name does not (uTick, uSoul).
-const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA']);
+const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA', 'uWords', 'uHome']);
 const fixedMemo = new Map();
 let readyNext = false, workedChecked = false;
 function fixedIn(ids) {
@@ -1430,6 +1481,8 @@ function frame(now) {
     U.uHands = [hd.sec, hd.min, hd.hour];
     U['uLab[0]'] = rects;
     U.uLabA = lifts;
+    U.uWords = wordsBox;
+    U.uHome = Math.exp(-(((now - homeAt) / 1100) ** 2));
     painter.draw(U, fixedIn(onPage), !reduced && frozen === null && !params.has('k') && now - t0 < dur);
     // once a worldview has settled, its question's move is made ready in the background
     if (readyNext) { readyNext = false; painter.prepare(fixedIn([cur.wv, WORLDVIEWS[cur.wv].move.to])); }

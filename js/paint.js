@@ -69,6 +69,8 @@ uniform float uStainR, uStainA, uGlow, uDull, uRip, uRipY, uTick;
 uniform vec3 uHands;            // second, minute and hour hands, radians clockwise from the top
 uniform vec4 uLab[3];           // where lettering sits inside a shape, and its half size
 uniform vec3 uLabA;             // how much each of those three names shows
+uniform vec4 uWords;            // where the page's words stand (centre and half size): the paper is lifted a little under them
+uniform float uHome;            // the light that floods the page on coming home to where the questions began
 uniform sampler2D uBakeA, uBakeB;  // the noise that stands still (see BAKE), when uBaked is 1
 uniform float uBaked;
 uniform sampler2D uWetM;           // how wet the paint still is, where a move has just laid it (see WET below)
@@ -657,6 +659,12 @@ void main(){
     A += K(vec3(1., .82, .4)) * uSoul.z * (c1 * 1.1 + c2 * .28);
   }
 
+  // coming home: gold light spreading from God over the whole page, and ebbing again
+  if (uHome > .001) {
+    float fl = uHome * exp(-pow(rg / (.35 + 1.7 * uHome), 2.));
+    A *= 1. - .8 * fl;
+    A += K(vec3(1., .88, .55)) * fl * .35;
+  }
   A += K(vec3(.2, .13, .1)) * min(ink, 1.) * (.5 + H);
 
   // lettering inside a shape: paper lifted a little with a damp brush
@@ -669,6 +677,11 @@ void main(){
     lift = max(lift, a * smoothstep(.05, -.02, length(max(b, 0.)) + min(max(b.x, b.y), 0.) - .03 + wF.x * .01));
   }
   A *= 1. - .72 * lift;
+  // the words of the page: the wash under them thinned with a damp brush, soft-edged, so they read on any colour
+  {
+    vec2 wb = abs(q + wM * .03 - uWords.xy) - uWords.zw;
+    A *= 1. - .5 * smoothstep(.1, -.06, length(max(wb, 0.)) + min(max(wb.x, wb.y), 0.) + wL.x * .06);
+  }
 
   // ---------- paper, grain and the taped margin ----------
   // wet paint is darker and richer than it will dry, and water fills the hollows of the paper

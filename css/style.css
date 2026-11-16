@@ -58,9 +58,9 @@ body.short .act p::first-letter { font-size: 2.888em; margin-top: -.095em; margi
 .swap .act, .swap-all .act, .swap-all .head { opacity: 0; }
 
 /* the question that leads to another worldview */
-#moves { margin-top: 2.4vh; }
+#moves { margin-top: 2.4vh; position: relative; }
 #moves button {
-  padding: 7px 16px 8px;
+  padding: 7px 37px 8px 16px;
   border: 1.4px solid var(--ink);
   border-radius: 999px;
   background: rgba(248, 242, 228, .55);
@@ -72,7 +72,9 @@ body.short .act p::first-letter { font-size: 2.888em; margin-top: -.095em; margi
   cursor: pointer;
   transition: background .3s, color .3s, border-color .3s;
 }
-#moves button::after { content: '  \2192'; font-style: normal; }
+/* the loop of questions, set like a seal on the end of the button (drawn and placed by main.js) */
+#loop { position: absolute; left: 0; top: 0; width: 38px; height: 38px; pointer-events: none; }
+#loop svg { display: block; width: 100%; height: 100%; }
 #moves button:hover { background: var(--ink); color: var(--paper); }
 
 /* ---------- the menu: a painter's test strip down the left margin ---------- */
@@ -288,7 +290,14 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 .narrow .act h2 { font-size: 1.35rem; }
 .narrow .act p { font-size: 1.05rem; }
 .narrow #moves { margin-top: 10px; }
-.narrow #moves button { font-size: .92rem; padding: 5px 14px 6px; }
+.narrow #moves button { font-size: .92rem; padding: 5px 32px 6px 14px; }
+.narrow #loop { width: 33px; height: 33px; }
+/* on a phone a label shows its first line; a tap opens the second */
+.narrow .l { cursor: pointer; }
+.narrow .l small { display: none; font-size: .86em; opacity: .9; }
+.narrow .l.open small { display: block; }
+.narrow .l .ti::after { content: '\00a0+'; font-style: normal; font-size: .8em; opacity: .5; }
+.narrow .l.open .ti::after { content: '\00a0\2212'; }
 .narrow .l { font-size: .82rem; }
 /* (on a phone the four names share a narrow line: small capitals need more width than lower case to read as well,
    so there the names keep the painting's lettering) */
@@ -304,7 +313,8 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 .compact .act h2 { font-size: clamp(1.1rem, 2.6vmin, 1.6rem); }
 .compact .act p { font-size: clamp(.9rem, 2vmin, 1.15rem); margin-top: 4px; }
 .compact #moves { margin-top: 1.6vh; }
-.compact #moves button { font-size: clamp(.8rem, 1.8vmin, 1rem); padding: 4px 11px 5px; }
+.compact #moves button { font-size: clamp(.8rem, 1.8vmin, 1rem); padding: 4px 30px 5px 11px; }
+.compact #loop { width: 32px; height: 32px; }
 
 /* ---------- wide but short screens, such as a phone held sideways ---------- */
 /* the words take the whole height here, and the painting is centred in the room to their right (see resize() in main.js) */
@@ -316,7 +326,8 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 .short .act h2 { font-size: 1.1rem; }
 .short .act p { font-size: .9rem; line-height: 1.18; margin-top: 4px; }
 .short #moves { margin-top: 8px; }
-.short #moves button { font-size: .8rem; padding: 4px 11px 5px; }
+.short #moves button { font-size: .8rem; padding: 4px 28px 5px 11px; }
+.short #loop { width: 30px; height: 30px; }
 .short .l { font-size: .78rem; }
 .short #marks button { font-size: .84rem; }
 
