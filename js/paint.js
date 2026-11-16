@@ -69,6 +69,8 @@ uniform vec4 uLab[3];           // where lettering sits inside a shape, and its 
 uniform vec3 uLabA;             // how much each of those three names shows
 uniform sampler2D uBakeA, uBakeB;  // the noise that stands still (see BAKE), when uBaked is 1
 uniform float uBaked;
+uniform sampler2D uWetM;           // how wet the paint still is, where a move has just laid it (see WET below)
+uniform float uWetOn;
 // (FIXED: a version of this shader for particular worldviews writes here, as #defines, the values that do not change in them)
 
 float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
@@ -119,12 +121,14 @@ vec2 rot(vec2 v, float a){ float c = cos(a), s = sin(a); return vec2(c * v.x - s
 vec3 K(vec3 c){ return -log(c); }
 
 vec2 q, wL, wM, wF;
-float H, PW;
+float H, PW, wet;
 
 // A wash built from five misregistered glazes, each with its own tide line.
 // m and f are the noise that wobbles its edge: the paper's own, or noise carried along with a moving shape.
+// Paint still wet has spread a little further, with soft edges, and its tide line has not yet formed.
 float layersAt(float d, float seed, float spread, float ew, float tide, vec2 m, vec2 f){
   float s = 0.;
+  if (wet > .001) { ew *= 1. + 4. * wet; spread *= 1. + .8 * wet; tide *= 1. - .85 * wet; d -= .008 * wet; }
   for (int i = 0; i < 5; i++){
     float fi = float(i);
     float a = seed + fi * 2.399;
@@ -176,6 +180,8 @@ void main(){
     PW = .0028 * (.5 + noise(q * 9.));
     grain = noise(frag * .02);
   }
+
+  wet = uWetOn > .5 ? texture2D(uWetM, frag / uRes).r : 0.;
 
   float v1 = fbm(q * 1.1 + wL * 1.6 + 2.), v2 = fbm(q * 2.3 - wL * 2.2 + 7.);
   float blooms = mix(1., bloom(q, 1.) * bloom(q * 2.1, 5.), .22);
@@ -640,14 +646,16 @@ void main(){
   A *= 1. - .72 * lift;
 
   // ---------- paper, grain and the taped margin ----------
-  A *= 1. + .63 * (.5 - H);
+  // wet paint is darker and richer than it will dry, and water fills the hollows of the paper
+  A *= 1. + .63 * (.5 - H) * (1. - .7 * wet);
+  A *= 1. + .4 * wet * (1. - lift);
   vec2 b = abs(frag - .5 * uRes) - (.5 * uRes - uUnit * .07);
   float dF = max(b.x, b.y) / uUnit + wF.x * .006 + wM.y * .004;
   float m = smoothstep(.003, -.003, dF);
   A = A * m + K(uSky) * exp(-pow((dF + .006) / .006, 2.)) * .3 * m;
 
   vec3 col = vec3(.982, .972, .945) * exp(-A);
-  col *= 1. + (H - Hx) * .2;
+  col *= 1. + (H - Hx) * .2 * (1. - .6 * wet);
   col *= .985 + .03 * grain;
   gl_FragColor = vec4(col, 1.);
 }`;
@@ -666,6 +674,30 @@ void main(){
   else gl_FragColor = vec4(paperH(frag), paperH(frag + vec2(1.2, 1.2)), noise(q * 9.), noise(frag * .02));
 }`;
 
+// WET: where a move lays new paint, it goes on wet and dries over a second or two. While a move runs, the
+// painting is also painted very small, each frame, with no wetness of its own; wherever that small copy changes
+// from one frame to the next, this pass soaks a mask of the same size, which dries a little every frame and
+// spreads a little, as water does. The painting reads the mask, softly enlarged, as how wet its paint is there.
+const WET = `
+precision mediump float;
+uniform sampler2D uCur, uPrev, uOld;
+uniform vec2 uPx;
+uniform float uKeep, uGain;
+void main(){
+  vec2 a = gl_FragCoord.xy * uPx;
+  float d = 0., w = 0.;
+  for (int i = 0; i < 5; i++){
+    vec2 o = (i == 0 ? vec2(0.) : i == 1 ? vec2(1., 0.) : i == 2 ? vec2(-1., 0.) : i == 3 ? vec2(0., 1.) : vec2(0., -1.)) * uPx;
+    float k = i == 0 ? .4 : .15;
+    d += k * dot(abs(texture2D(uCur, a + o).rgb - texture2D(uPrev, a + o).rgb), vec3(.3333));
+    w += k * texture2D(uOld, a + o).r;
+  }
+  gl_FragColor = vec4(min(1., w * uKeep + d * uGain), 0., 0., 1.);
+}`;
+const WET_DIV = 8;      // the small copy is this many times smaller across
+const WET_DRY = 0.75;   // seconds for wet paint to lose about two thirds of its water
+const WET_GAIN = 6;     // how wet a change of colour leaves the paper (a change of a sixth soaks it)
+
 export function createPainter(canvas) {
   const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
   if (!gl) return null;
@@ -677,9 +709,9 @@ export function createPainter(canvas) {
     if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
     return s;
   };
-  let prog, bakeProg, checked = false;
+  let prog, bakeProg, wetProg, checked = false;
   const uniforms = new Set();          // the uniforms the shader uses (an array as uSp[0])
-  const OWN = new Set(['uBakeA', 'uBakeB', 'uBaked']);   // (set here, not by main.js)
+  const OWN = new Set(['uBakeA', 'uBakeB', 'uBaked', 'uWetM', 'uWetOn']);   // (set here, not by main.js)
   const link = (frag) => {
     const pr = gl.createProgram();
     gl.attachShader(pr, sh(gl.VERTEX_SHADER, 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }'));
@@ -721,10 +753,78 @@ export function createPainter(canvas) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.useProgram(using.prog);
   };
+  // the wet: two small copies of the painting (this frame's and the last) and two masks, painted into by turns
+  let wetTex = [], wetFb = [], wetLoc = {}, wetW = 1, wetH = 1, canWet = false, cur = 0, src = 2, hasPrev = false, wetUntil = -1, wetLast = 0;
+  const makeWet = () => {
+    for (const tex of wetTex) gl.deleteTexture(tex);
+    for (const fb of wetFb) gl.deleteFramebuffer(fb);
+    wetTex = []; wetFb = []; hasPrev = false; wetUntil = -1; src = 2;
+    wetW = Math.max(1, Math.ceil(canvas.width / WET_DIV)); wetH = Math.max(1, Math.ceil(canvas.height / WET_DIV));
+    gl.activeTexture(gl.TEXTURE5);
+    canWet = true;
+    for (let i = 0; i < 4; i++) {
+      const tex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, wetW, wetH, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+      for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v);
+      const fb = gl.createFramebuffer();
+      gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+      canWet = canWet && gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
+      wetTex.push(tex); wetFb.push(fb);
+    }
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  };
+  // One frame of the wet, before the painting itself is painted with the values already set. wetting: a move is
+  // running, so the small copy is painted and compared with the last; otherwise the paint only dries.
+  const soak = (values, wetting, now) => {
+    const dt = Math.min(0.1, Math.max(0, (now - wetLast) / 1000));
+    wetLast = now;
+    if (wetting) wetUntil = now + WET_DRY * 6000;
+    if (!canWet || now > wetUntil) { hasPrev = false; return false; }
+    gl.viewport(0, 0, wetW, wetH);
+    const fresh = wetting && hasPrev;
+    if (wetting) {
+      // (the small copy is the painting with its place and size scaled down, and none of the wet in it)
+      const s = wetW / canvas.width;
+      gl.uniform2f(loc('uRes'), wetW, wetH);
+      gl.uniform2f(loc('uCen'), values.uCen[0] * s, values.uCen[1] * s);
+      gl.uniform1f(loc('uUnit'), values.uUnit * s);
+      gl.uniform1f(loc('uWetOn'), 0);
+      cur = 1 - cur;
+      gl.bindFramebuffer(gl.FRAMEBUFFER, wetFb[cur]);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.uniform2f(loc('uRes'), canvas.width, canvas.height);
+      gl.uniform2f(loc('uCen'), values.uCen[0], values.uCen[1]);
+      gl.uniform1f(loc('uUnit'), values.uUnit);
+      hasPrev = true;
+    } else hasPrev = false;
+    const dst = 5 - src;   // (the masks are textures 2 and 3)
+    gl.useProgram(wetProg);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, wetFb[dst]);
+    [wetTex[cur], wetTex[1 - cur], wetTex[src]].forEach((tex, i) => { gl.activeTexture(gl.TEXTURE3 + i); gl.bindTexture(gl.TEXTURE_2D, tex); });
+    gl.uniform2f(wetLoc.uPx, 1 / wetW, 1 / wetH);
+    gl.uniform1f(wetLoc.uKeep, Math.exp(-dt / WET_DRY));
+    gl.uniform1f(wetLoc.uGain, fresh ? WET_GAIN : 0);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    for (let i = 3; i < 6; i++) { gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, null); }
+    src = dst;
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, wetTex[src]);
+    gl.useProgram(using.prog);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    return true;
+  };
   const init = () => {
   prog = link(FRAG);
   bakeProg = link(BAKE);
   bakeLoc = { uCen: gl.getUniformLocation(bakeProg, 'uCen'), uUnit: gl.getUniformLocation(bakeProg, 'uUnit'), uPart: gl.getUniformLocation(bakeProg, 'uPart') };
+  wetProg = link(WET);
+  gl.useProgram(wetProg);
+  wetLoc = { uPx: gl.getUniformLocation(wetProg, 'uPx'), uKeep: gl.getUniformLocation(wetProg, 'uKeep'), uGain: gl.getUniformLocation(wetProg, 'uGain') };
+  ['uCur', 'uPrev', 'uOld'].forEach((n, i) => gl.uniform1i(gl.getUniformLocation(wetProg, n), 3 + i));
   gl.useProgram(prog);
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
@@ -736,7 +836,10 @@ export function createPainter(canvas) {
   checked = false;
   gl.uniform1i(gl.getUniformLocation(prog, 'uBakeA'), 0);
   gl.uniform1i(gl.getUniformLocation(prog, 'uBakeB'), 1);
+  gl.uniform1i(gl.getUniformLocation(prog, 'uWetM'), 2);
   makeBake();
+  wetTex = []; wetFb = [];
+  makeWet();
   };
   init();
   // a phone may take the graphics context away while the page is in the background
@@ -770,6 +873,7 @@ export function createPainter(canvas) {
         gl.useProgram(v.prog);
         gl.uniform1i(gl.getUniformLocation(v.prog, 'uBakeA'), 0);
         gl.uniform1i(gl.getUniformLocation(v.prog, 'uBakeB'), 1);
+        gl.uniform1i(gl.getUniformLocation(v.prog, 'uWetM'), 2);
         gl.useProgram(using.prog);
         v.state = 'ready';
       } else {
@@ -792,13 +896,15 @@ export function createPainter(canvas) {
         for (const tex of bakeTex) gl.deleteTexture(tex);
         for (const fb of bakeFb) gl.deleteFramebuffer(fb);
         makeBake();
+        makeWet();
       }
     },
     // start compiling a version, to have it ready when it is wanted (defines as for draw)
     prepare(defines) { if (!lost) version(defines); },
     // values: { name: number | [x, y] | [x, y, z] | Float32Array (vec4 array) }
     // defines: the values that stay fixed in the worldviews now on the page, as #define lines (or none)
-    draw(values, defines) {
+    // wetting: a move is laying down new paint (see WET)
+    draw(values, defines, wetting = false) {
       if (lost) return;
       const use = version(defines) || full;
       if (use !== using) { using = use; gl.useProgram(use.prog); }
@@ -818,6 +924,8 @@ export function createPainter(canvas) {
         else gl.uniform3f(l, v[0], v[1], v[2]);
       }
       if (canBake) bake(values.uCen, values.uUnit);
+      const wet = soak(values, wetting, performance.now());
+      gl.uniform1f(loc('uWetOn'), wet ? 1 : 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     },
   };

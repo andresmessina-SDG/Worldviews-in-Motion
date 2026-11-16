@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=63';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=63';
-import { CATALOGUE } from './catalogue.js?v=63';
-import { createMenu } from './menu.js?v=63';
+import { createPainter } from './paint.js?v=64';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=64';
+import { CATALOGUE } from './catalogue.js?v=64';
+import { createMenu } from './menu.js?v=64';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -1193,7 +1193,7 @@ function frame(now) {
     U.uHands = [hd.sec, hd.min, hd.hour];
     U['uLab[0]'] = rects;
     U.uLabA = lifts;
-    painter.draw(U, fixedIn(onPage));
+    painter.draw(U, fixedIn(onPage), !reduced && frozen === null && !params.has('k') && now - t0 < dur);
     // once a worldview has settled, its question's move is made ready in the background
     if (readyNext) { readyNext = false; painter.prepare(fixedIn([cur.wv, WORLDVIEWS[cur.wv].move.to])); }
     // (a value worked out here but missing from WORKED could be fixed wrongly: say so)
