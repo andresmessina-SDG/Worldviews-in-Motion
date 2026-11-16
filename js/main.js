@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=61';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=61';
-import { CATALOGUE } from './catalogue.js?v=61';
-import { createMenu } from './menu.js?v=61';
+import { createPainter } from './paint.js?v=62';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=62';
+import { CATALOGUE } from './catalogue.js?v=62';
+import { createMenu } from './menu.js?v=62';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -125,6 +125,16 @@ $('moves').appendChild(moveBtn);
 let moveTo = null;
 moveBtn.onclick = () => { auto = false; go(moveTo, cur.act, true); };
 
+// Where a long word in an act's name may break, should the names have to take two lines on a phone (a soft hyphen,
+// seen only where the word is broken). A word missing here simply does not break; then, if it is too wide, only the
+// open act keeps its name.
+const BREAKS = 'De-con-struc-tion For-get-ful-ness Dis-con-nec-tion Super-sti-tion Im-per-ma-nence En-hance-ment Sin-gu-lar-ity '
+  + 'Cul-ti-va-tion Re-mem-brance Ap-pease-ment Re-demp-tion Clock-mak-er Sub-mis-sion Ex-tinc-tion Alien-ation Rev-o-lu-tion '
+  + 'Re-pres-sion Ful-fil-ment Un-fin-ished For-get-ting Ig-no-rance Un-cer-tain Judge-ment Suf-fer-ing Com-mu-nism Awak-en-ing '
+  + 'As-cen-sion Knowl-edge An-ces-tors Ex-pres-sion';
+const SHY = Object.fromEntries(BREAKS.split(' ').map((w) => [w.replace(/-/g, ''), w.replace(/-/g, '\u00ad')]));
+const breakable = (name) => name.split(' ').map((w) => w.split('-').map((x) => SHY[x] ?? x).join('-')).join(' ');
+
 let swapTimer = null;
 function renderText(instant, wholePage) {
   const wv = WORLDVIEWS[cur.wv];
@@ -138,7 +148,7 @@ function renderText(instant, wholePage) {
     $('tag').textContent = wv.tagline;
     $('actName').textContent = a.name;
     $('actText').textContent = a.text;
-    marks.forEach((b, i) => { b.textContent = wv.acts[i].name; });
+    marks.forEach((b, i) => { b.textContent = breakable(wv.acts[i].name); });
     moveBtn.textContent = wv.move.q;
     moveTo = wv.move.to;
     $('scene').setAttribute('aria-label', `The painting. ${KEYS.filter((k) => a.labels[k]).map((k) => `${a.labels[k][0]}: ${a.labels[k][1]}.`).join(' ')}`);
@@ -199,7 +209,7 @@ addEventListener('keydown', (e) => {
 setInterval(() => { if (auto && !document.hidden) go(cur.wv, (cur.act + 1) % 4); }, 14000);
 
 // ---------- layout ----------
-let unit = 1, ext = 1, cx = 0, cy = 0, scale = 1, quality = 1, markH = 0;
+let unit = 1, ext = 1, cx = 0, cy = 0, scale = 1, quality = 1, markH = 0, markY = -0.795;   // (markY: the middle of the names)
 let wordsRight = -1e9, wordsBottom = 1e9;       // the corner of the words on the left, in scene units
 const rects = new Float32Array(12), lifts = [0, 0, 0];
 // Three layouts: the words beside the painting; the same with smaller words, for squarish windows; or the title
@@ -339,17 +349,30 @@ function fit() {
   // (man's label and sin's sit at the world's side, mirrored: measured from there, but never from further out than 0.56)
   const side = Math.min(0.56, actOf().p.rW + actOf().p.lSide);
   labels.self.el.style.maxWidth = room(side);
-  labels.sin.el.style.maxWidth = room(side);
+  // (sin's label reaches left, toward the menu's strip of dabs down the edge of the page: it stops short of them)
+  labels.sin.el.style.maxWidth = `${Math.max(60, Math.min(parseFloat(room(side)), cx - side * unit - 44))}px`;
   // in a short window the words on the left reach down beside the painting: keep clear of them
   if (short) labels.sin.el.style.maxWidth = `${Math.max(60, cx - 0.52 * unit - document.querySelector('.t').getBoundingClientRect().right - 10)}px`;
-  // if the four names cannot sit side by side, only the open act keeps its name
-  const gap = 0.48 * ext * unit;
-  $('marks').classList.remove('tight');
+  // If the four names cannot sit side by side on one line, each may take two, in its own share of the line, with
+  // its last line where a single line would sit. If a word is still too wide for its share, only the open act keeps
+  // its name. (The test is made with every name in bold, as the open one is, so that the choice holds from act to act.)
+  const gap = 0.48 * ext * unit, M = $('marks');
+  M.classList.remove('tight', 'wrap');
+  M.style.setProperty('--gap', `${Math.max(24, gap - 4).toFixed(0)}px`);
+  M.style.setProperty('--wrapW', `${Math.max(24, gap - 6).toFixed(0)}px`);
   // (names need at least 10px of clear space between them, whatever padding their buttons have)
-  const pad = 2 * parseFloat(getComputedStyle(marks[0]).paddingLeft);
-  $('marks').classList.toggle('tight', marks.some((b, i) => i < 3 && (b.offsetWidth + marks[i + 1].offsetWidth) / 2 - pad + 10 > gap));
-  $('marks').style.setProperty('--gap', `${Math.max(24, gap - 4).toFixed(0)}px`);
-  markH = marks[0].offsetHeight / unit;
+  const pad = 2 * parseFloat(getComputedStyle(marks[0]).paddingLeft), h1 = marks[0].offsetHeight;
+  if (marks.some((b, i) => i < 3 && (b.offsetWidth + marks[i + 1].offsetWidth) / 2 - pad + 10 > gap)) {
+    M.classList.add('wrap', 'measure');
+    const cs = getComputedStyle(marks[0]), lh = parseFloat(cs.lineHeight), padV = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+    const ok = marks.every((b) => b.scrollWidth <= b.clientWidth + 0.5 && b.offsetHeight - padV <= 2 * lh + 1);
+    M.classList.remove('measure');
+    if (!ok) M.classList.replace('wrap', 'tight');
+  }
+  let hMax = h1;
+  if (M.classList.contains('wrap')) marks.forEach((b) => { b.style.top = `${cy + 0.795 * unit + h1 / 2}px`; hMax = Math.max(hMax, b.offsetHeight); });
+  markH = hMax / unit;
+  markY = -0.795 + (hMax - h1) / 2 / unit;
   marks.forEach((b, i) => { markW[i] = b.offsetWidth / unit - 2 * parseFloat(getComputedStyle(b).paddingLeft) / unit; });
   // When only the open act keeps its name, a long name on an outer mark can reach past the edge of the page, or on
   // the left into the strip where the menu's dabs sit: it is moved in just far enough to clear them.
@@ -389,7 +412,7 @@ function place(k, x, y, tx, ty) {
 
 function layout(p, G, dt) {
   // the world's name sits low in its shape, but never down among the names of the acts
-  const godY = p.Gy + p.rG * p.lGodK, worldY = Math.max(p.Wy - p.rW * 0.6, -0.795 + markH / 2 + labels.world.h / 2);
+  const godY = p.Gy + p.rG * p.lGodK, worldY = Math.max(p.Wy - p.rW * 0.6, markY + markH / 2 + labels.world.h / 2);
   place('god', 0, godY);
   // when God goes round man, his name keeps its place and a line follows him, dropped while he is behind
   // the world or below man, where it would have to cut across them
@@ -454,7 +477,7 @@ function keepApart(at, godY, worldY, dt) {
   for (let i = 0; i < 4; i++) {
     if (tight && i !== cur.act) continue;
     const x = ext * (-0.72 + 0.48 * i) + markDx[i];
-    fixed.push([x - markW[i] / 2, -0.795 - markH / 2, x + markW[i] / 2, -0.795 + markH / 2]);
+    fixed.push([x - markW[i] / 2, markY - markH / 2, x + markW[i] / 2, markY + markH / 2]);
   }
   if (wordsRight > -1e8) fixed.push([-1e9, wordsBottom, wordsRight, 1e9]);
   const top = cy / unit - gap, bottom = -(innerHeight - cy) / unit + gap;

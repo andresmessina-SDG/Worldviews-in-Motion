@@ -238,6 +238,9 @@ body.swap-all #marks button { opacity: 0; }
 /* too little room for four names: only the open act keeps its name */
 #marks.tight button:not([aria-current='true']) { width: var(--gap, 40px); overflow: hidden; color: transparent; }
 #marks.tight button[aria-current='true'] { z-index: 1; }
+/* too little room for four names on one line: each takes two, its last line where one line would sit */
+#marks.wrap button { white-space: normal; width: var(--wrapW, 60px); line-height: 1.12; transform: translate(-50%, -100%); }
+#marks.measure button { font-weight: 600; }
 button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; border-radius: 6px; }
 
 /* read by screen readers only */
