@@ -8,7 +8,7 @@ const REST = 10.8;      // and far from it
 const LENS = 1.25;      // how much taller the focused tab is than a resting one
 const SPREAD = 1.7;     // how many neighbours the lens reaches
 const HERE = 0.55;      // extra height always given to the worldview now open
-const EDGE = 26;        // a mouse this close to the left edge calls the tabs out
+const EDGE = 64;        // a mouse this close to the left edge calls the tabs out (about a centimetre and a half)
 const TOUCH_EDGE = 44;  // a finger needs a wider strip
 
 const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
