@@ -319,3 +319,13 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 .short #moves button { font-size: .8rem; padding: 4px 11px 5px; }
 .short .l { font-size: .78rem; }
 .short #marks button { font-size: .84rem; }
+
+/* the question a move answers, set large where the words were while the shapes travel (placed by main.js) */
+#ask {
+  position: fixed; margin: 0; display: flex; align-items: center;
+  font-style: italic; font-weight: 600; font-size: clamp(1.9rem, 5.4vmin, 3.4rem); line-height: 1.1; text-wrap: balance;
+  color: var(--ink); opacity: 0; transition: opacity .7s ease; pointer-events: none;
+}
+#ask.on { opacity: 1; }
+.compact #ask, .short #ask { font-size: clamp(1.4rem, 3.6vmin, 2rem); }
+.narrow #ask { justify-content: center; text-align: center; font-size: 1.5rem; }

@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=68';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=68';
-import { CATALOGUE } from './catalogue.js?v=68';
-import { createMenu } from './menu.js?v=68';
+import { createPainter } from './paint.js?v=69';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=69';
+import { CATALOGUE } from './catalogue.js?v=69';
+import { createMenu } from './menu.js?v=69';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -49,11 +49,38 @@ const address = () => `#${cur.wv}/${actOf().slug}`;
 if (location.hash && location.hash !== address()) history.replaceState(null, '', address());
 const target = () => ({ ...actOf().p, act: cur.act });
 
-// Every move, between acts or between worldviews, is this blend of every value at once. It walks the keys
-// of the target, so each value must exist on both sides (see the rules at the top of worldviews.js).
+// A move, between acts or between worldviews, blends every value (stageP below sets the order they go in). It walks
+// the keys of the target, so each value must exist on both sides (see the rules at the top of worldviews.js).
 const lerp = (a, b, k) => (typeof a === 'number' ? a + (b - a) * k : a.map((v, i) => v + (b[i] - v) * k));
 const blendP = (a, b, k) => { const o = {}; for (const n in b) o[n] = lerp(a[n], b[n], k); return o; };
 const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+
+// A move is staged. The strokes that join and mark things (the connectors named below) do not blend with the rest:
+// those the new page lacks are withdrawn first, back toward where they start; then the shapes and colours travel;
+// then the new page's connectors are drawn in, from their start to their finish. So no worldview's bridge or
+// ladder is ever left standing in another's world. Between two acts of one worldview the three beats overlap;
+// between worldviews they follow one another. A connector both pages have stays, and changes with the shapes.
+// drawn[n] is how far connector n is drawn (missing: wholly); its value keeps the strength it has when at rest.
+const STAGED = new Set(['ladder', 'bridge', 'ghost', 'empty', 'wheel', 'spokes', 'current', 'push', 'offer', 'bonds', 'wheelYr', 'cast', 'spiral',
+  'rings', 'fence', 'upload', 'steps', 'covenant', 'tablets', 'awaited', 'sent', 'scales', 'extract', 'revolt', 'reason', 'call', 'rise',
+  'divide', 'partake', 'forms', 'rebirth', 'pleroma', 'spheres', 'seeming']);
+let drawn = {}, drawnFrom = {};
+const unit01 = (v) => Math.min(1, Math.max(0, v));
+function stageP(a, b, x, whole) {
+  const e1 = ease(unit01(x / (whole ? 0.2 : 0.5)));
+  const e2 = whole ? ease(unit01((x - 0.16) / 0.58)) : ease(x);
+  const e3 = ease(unit01((x - (whole ? 0.7 : 0.35)) / (whole ? 0.3 : 0.65)));
+  const o = {};
+  for (const n in b) {
+    if (!STAGED.has(n)) { o[n] = lerp(a[n], b[n], e2); continue; }
+    const d0 = drawnFrom[n] ?? 1, was = a[n] > 0.01 && d0 > 0.003, will = b[n] > 0.01;
+    if (will && was) { o[n] = lerp(a[n], b[n], e2); drawn[n] = lerp(d0, 1, e2); }
+    else if (will) { o[n] = b[n]; drawn[n] = e3; }
+    else if (was) { o[n] = a[n]; drawn[n] = d0 * (1 - e1); }
+    else { o[n] = b[n]; drawn[n] = 1; }
+  }
+  return o;
+}
 
 let live = target(), settled = -1;
 // the worldviews whose values are on the page: one at rest; during a move, those it blends between
@@ -61,6 +88,7 @@ let onPage = new Set([cur.wv]);
 let from = live;
 let t0 = -1e9;
 let dur = 1;
+let whole = false;        // is the move under way one between worldviews
 if (params.has('k')) {
   const other = built(params.get('from')) ? params.get('from') : Object.keys(WORLDVIEWS).find((w) => w !== cur.wv);
   const fa = params.has('fromAct') ? Math.min(3, Math.max(0, (Number(params.get('fromAct')) || 1) - 1)) : cur.act;
@@ -139,13 +167,31 @@ const BREAKS = 'De-con-struc-tion For-get-ful-ness Dis-con-nec-tion Super-sti-ti
 const SHY = Object.fromEntries(BREAKS.split(' ').map((w) => [w.replace(/-/g, ''), w.replace(/-/g, '\u00ad')]));
 const breakable = (name) => name.split(' ').map((w) => w.split('-').map((x) => SHY[x] ?? x).join('-')).join(' ');
 
+// When a move answers the question of the page it leaves, the question is set large where the words were, for as
+// long as the shapes travel; the words of the new worldview come only when it has gone.
+const ask = $('ask');
+let askTimers = [];
+function caption(q) {
+  askTimers.forEach(clearTimeout);
+  ask.classList.remove('on');
+  if (!q) return;
+  askTimers = [setTimeout(() => {
+    // (where the words stand: the column at the left, or on a phone the space under the painting)
+    const narrow = pageLayout === 'narrow', a = document.querySelector('.act').getBoundingClientRect(), h = document.querySelector('.head').getBoundingClientRect();
+    const top = narrow ? a.top : h.top, bottom = Math.max(a.bottom, top + 80);
+    ask.style.cssText = `left:${a.left}px; top:${top}px; width:${a.width}px; height:${bottom - top}px`;
+    ask.textContent = q;
+    ask.classList.add('on');
+  }, 520), setTimeout(() => ask.classList.remove('on'), 3300)];
+}
+
 let swapTimer = null;
-function renderText(instant, wholePage) {
+function renderText(instant, wholePage, asked) {
   const wv = WORLDVIEWS[cur.wv];
   const a = actOf();
   marks.forEach((b, i) => b.setAttribute('aria-current', i === cur.act));
   // between worldviews the lettering stays away until the shapes have nearly settled
-  KEYS.forEach((k) => setLabel(k, a.labels[k], instant, wholePage && !reduced ? 2900 : 550));
+  KEYS.forEach((k) => setLabel(k, a.labels[k], instant, wholePage && !reduced ? 4300 : 550));
   const fill = () => {
     document.title = `${wv.name} · Worldviews in Motion`;
     $('name').textContent = wv.name;
@@ -160,9 +206,10 @@ function renderText(instant, wholePage) {
     if (!instant) resize(false);                // new words may take a different amount of room
   };
   clearTimeout(swapTimer);
-  if (instant) return fill();
+  if (instant) { caption(null); return fill(); }
   document.body.classList.add(wholePage ? 'swap-all' : 'swap');
-  swapTimer = setTimeout(fill, 480);
+  caption(asked);
+  swapTimer = setTimeout(fill, asked ? 3900 : 480);
 }
 
 // A move to another worldview chosen on the page (by its question or from the menu) is a new step in the browser's
@@ -175,13 +222,16 @@ function go(wv, act, step = false) {
   // (a move that interrupts another keeps the worldviews of both on the page until it settles)
   onPage = performance.now() - t0 < dur ? new Set([...onPage, wv]) : new Set([cur.wv, wv]);
   from = { ...live };
+  drawnFrom = { ...drawn };
+  const asked = moved && WORLDVIEWS[cur.wv].move.to === wv ? WORLDVIEWS[cur.wv].move.q : null;   // (the question, if this move answers it)
   cur.wv = wv;
   cur.act = act;
   t0 = performance.now();
-  dur = reduced ? 1 : moved ? 4200 : 2600;
+  whole = moved;
+  dur = reduced ? 1 : moved ? 5600 : 2600;
   history[step && moved ? 'pushState' : 'replaceState'](null, '', address());
   if (moved) startGlide(wv);
-  renderText(false, moved);
+  renderText(false, moved, reduced ? null : asked);
   if (moved) { menu.setCurrent(wv); menu.peek(1600); }
 }
 // ---------- the menu of worldviews ----------
@@ -567,7 +617,51 @@ function flatten(el, a) {
 }
 
 let plerR = null;           // the width of the ring of powers round God, in Gnosticism
+// How a connector comes and goes while it is being drawn (see stageP): wiped along the way it runs, as the pen
+// would draw it, by a clip path that grows from its start (clip paths are safe: see the rules above).
+// ['y', a, b]: from height a to height b; ['x', a, b]: across; ['sweep', x, y]: round that point, clockwise from
+// the top; nothing: it fades. Heights reach a little past the connector, so that none of it is left for the end.
+const runs = (n, p, G) => {
+  const down = ['y', G.y - G.r * 0.4, p.Sy - 0.13], up = ['y', p.Sy - 0.02, G.y - G.r + 0.06];
+  switch (n) {
+    case 'bridge': case 'covenant': case 'sent': case 'seeming': case 'ghost': return down;
+    case 'scales': return ['y', G.y - G.r + 0.02, G.y - G.r - 0.34];
+    case 'partake': return ['y', 0.4, p.Wy];
+    case 'rebirth': return ['y', 0.28, -0.22];
+    case 'ladder': case 'reason': case 'spiral': case 'upload': case 'steps': return up;
+    case 'rise': return ['y', p.Wy + p.rW, p.Sy + 0.02];
+    case 'revolt': case 'extract': return ['y', p.Sy, p.Wy + p.rW + 0.05];
+    case 'spheres': return ['y', p.Wy + p.rW * 0.2, p.Wy + p.rW + 0.26];
+    case 'divide': return ['x', -0.47, 0.47];
+    case 'wheel': case 'empty': return ['sweep', 0, p.Gy];
+    case 'pleroma': return ['sweep', G.x, G.y];
+    case 'wheelYr': return ['sweep', 0, p.Wy];
+    case 'cast': case 'fence': return ['sweep', 0, p.Sy];
+    default: return ['fade'];
+  }
+};
+let clipN = 0;
+function reveal(n, inner, p, G, k = drawn[n] ?? 1) {
+  if (k >= 0.999) return inner;
+  if (k <= 0.003) return '';
+  const [kind, a, b] = runs(n, p, G);
+  let cut;
+  if (kind === 'y') {
+    const y = a + (b - a) * k;              // (svg y runs down: the rectangle spans from -a to -y, with a margin behind the start)
+    cut = b < a ? `<rect x="-3" y="${f(-a - 0.04)}" width="6" height="${f(a - y + 0.04)}"/>` : `<rect x="-3" y="${f(-y)}" width="6" height="${f(y - a + 0.04)}"/>`;
+  } else if (kind === 'x') {
+    cut = `<rect x="${f(a - 0.02)}" y="-3" width="${f((b - a) * k + 0.02)}" height="6"/>`;
+  } else if (kind === 'sweep') {
+    let d = `M${f(a)},${f(-b)}`;
+    for (let i = 0; i <= 12; i++) { const t = -Math.PI / 2 + (k * 2 * Math.PI * i) / 12; d += ` L${f(a + 3 * Math.cos(t))},${f(-b + 3 * Math.sin(t))}`; }
+    cut = `<path d="${d}Z"/>`;
+  } else return `<g opacity="${f(k)}">${inner}</g>`;
+  const id = `rv${clipN++}`;
+  return `<defs><clipPath id="${id}">${cut}</clipPath></defs><g clip-path="url(#${id})" opacity="${f(Math.min(1, k * 6))}">${inner}</g>`;
+}
+
 function drawConn(p, c, G) {
+  clipN = 0;
   const bTop = p.Gy - p.rG + p.bOff;
   const top = -bTop, bot = -p.bbot;              // svg y grows downward
   const ACC = rgb(p.acc);
@@ -575,15 +669,18 @@ function drawConn(p, c, G) {
 
   // ----- the ascent: a ladder from man up through the dividing line toward the Forms -----
   if (p.ladder > 0.01) {
+    const g0 = g; g = '';
     const y0 = p.Sy + 0.09, y1 = p.divY + 0.15, HW = 0.024;
     let d = `M${f(-HW)},${f(-y0)} V${f(-y1)} M${f(HW)},${f(-y0)} V${f(-y1)} `;
     for (let y = y0 + 0.03; y < y1 - 0.01; y += 0.046) d += `M${f(-HW)},${f(-y)} H${f(HW)} `;
     // (it fades quickly and lies under anything else, so that the bridge coming down in its place reads cleanly)
     g += `<g opacity="${f(p.ladder * p.ladder)}">${stroke(d, ACC, 0.0045)}</g>`;
+    g = g0 + reveal('ladder', g, p, G);
   }
 
   // ----- the bridge from God to man, with arrowheads running down it -----
   if (p.bridge > 0.01) {
+    const g0 = g; g = '';
     const WD = p.bw, HW = WD / 2, k = WD / 0.044;
     const COL = rgb(lerp(OCHRE, RED, p.crim));
     let arrows = '';
@@ -607,22 +704,28 @@ function drawConn(p, c, G) {
       g += `<path d="M0,${f(top)} V${f(bot)}" fill="none" stroke="${COL}" stroke-width="${f(WD)}" stroke-linecap="round"/>${arrowsIn}`;
     }
     g += '</g>';
+    g = g0 + reveal('bridge', g, p, G);
   }
 
   // ----- where a word from God would have come: an empty, dashed outline -----
   if (p.ghost > 0.01) {
+    const g0 = g; g = '';
     g += `<path d="M-.022,${f(top)} V${f(bot)} M.022,${f(top)} V${f(bot)}" fill="none" stroke="${GREY}" stroke-width=".0042" stroke-linecap="round" stroke-dasharray=".016 .018" opacity="${f(p.ghost)}"/>`;
+    g = g0 + reveal('ghost', g, p, G);
   }
 
   // ----- where God would stand: an empty place, marked out and left blank -----
   if (p.empty > 0.01) {
+    const g0 = g; g = '';
     g += `<circle cx="0" cy="${f(-p.Gy)}" r="${f(p.rG)}" fill="none" stroke="${GREY}" stroke-width=".0042" stroke-linecap="round" stroke-dasharray=".016 .018" stroke-dashoffset="${f(c.t * 0.004)}" opacity="${f(p.empty)}"/>`;
+    g = g0 + reveal('empty', g, p, G);
   }
 
   // ----- the wheel of rebirth: a ring around everything, turning without end.
   //       With spokes it becomes the wheel of the teaching, turning about the self at its hub. -----
   const wr = Math.max(p.wheel, p.spokes);
   if (wr > 0.01) {
+    const g0 = g; g = '';
     const R = p.rG + 0.1, wy = -p.Gy;
     let heads = '', spokes = '';
     for (let i = 0; i < 4; i++) {
@@ -638,28 +741,34 @@ function drawConn(p, c, G) {
       spokes = `<g opacity="${f(p.spokes / wr)}">${stroke(d, ACC, 0.0055)}<circle cx="0" cy="${f(wy)}" r=".125" fill="none" stroke="${PAP}" stroke-width=".0175" opacity=".92"/><circle cx="0" cy="${f(wy)}" r=".125" fill="none" stroke="${ACC}" stroke-width=".0055"/></g>`;
     }
     g += `<g opacity="${f(wr)}"><circle cx="0" cy="${f(wy)}" r="${f(R)}" fill="none" stroke="${PAP}" stroke-width=".0195" opacity=".92"/><circle cx="0" cy="${f(wy)}" r="${f(R)}" fill="none" stroke="${ACC}" stroke-width=".0075"/>${spokes}<g opacity="${f(p.wheel / wr)}">${heads}</g></g>`;
+    g = g0 + reveal('wheel', g, p, G, Math.max(drawn.wheel ?? 1, drawn.spokes ?? 1));
   }
 
   // ----- the current: the line where yin meets yang, turning with them, and the stream that carries man round.
   //       Man either pushes against it, straining, or goes along with it. -----
   if (p.current > 0.01) {
+    const g0 = g; g = '';
     const R = p.rW, wy = -p.Wy, deg = (c.t * 0.06 * 180) / Math.PI;
     const s = `M0,${f(-R)}${arcC(0, -R / 2, R / 2, -Math.PI / 2, Math.PI / 2)}${arcC(0, R / 2, R / 2, -Math.PI / 2, -1.5 * Math.PI)}`;
     const r0 = Math.abs(p.Sy - p.Wy);
     g += `<g opacity="${f(p.current)}"><g transform="translate(0 ${f(wy)}) rotate(${f(deg)})">${stroke(s, ACC, 0.006)}</g>`;
     g += `<circle cx="0" cy="${f(wy)}" r="${f(r0)}" fill="none" stroke="${ACC}" stroke-width=".0065" stroke-linecap="round" stroke-dasharray=".014 .026" stroke-dashoffset="${f(-c.t * 0.012)}" opacity=".85"/></g>`;
+    g = g0 + reveal('current', g, p, G);
   }
   if (p.push > 0.01) {
+    const g0 = g; g = '';
     // at man's place on the stream the current runs right, so he pushes leftward; as he gives up, the strain goes out of it
     const strain = 1 - p.along, jit = 0.012 * strain * Math.sin(c.t * 7.3) * Math.sin(c.t * 2.1);
     const dir = -1, x0 = dir * 0.085, x1 = dir * (0.085 + (0.1 + 0.02 * Math.sin(c.t * 1.3)) * Math.min(1, p.push * 1.5));
     const y = -p.Sy + jit;
     const head = `M${f(x1)},${f(y)} L${f(x1 - dir * 0.03)},${f(y - 0.02)} L${f(x1 - dir * 0.03)},${f(y + 0.02)}Z`;
     g += `<g opacity="${f(p.push)}">${stroke(`M${f(x0)},${f(y)} L${f(x1 - dir * 0.02)},${f(y)}`, ACC, 0.007)}${shape(head, ACC)}</g>`;
+    g = g0 + reveal('push', g, p, G);
   }
 
   // ----- offerings: short lines from man out to the spirits that troubled him, with gifts travelling along them -----
   if (p.offer > 0.01 && p.spirits > 0.01) {
+    const g0 = g; g = '';
     let d = '';
     for (let i = 0; i < 5; i++) {
       const x = spirits[i * 4], y = spirits[i * 4 + 1], dx = x, dy = y - p.Sy, L = Math.hypot(dx, dy) || 1;
@@ -667,12 +776,14 @@ function drawConn(p, c, G) {
       d += `M${f(dx / L * 0.075)},${f(-(p.Sy + dy / L * 0.075))} L${f(x - dx / L * 0.03)},${f(-(y - dy / L * 0.03))} `;
     }
     g += `<g opacity="${f(p.offer)}">${stroke(d, ACC, 0.0045)}<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".0045" stroke-linecap="round" stroke-dasharray=".006 .022" stroke-dashoffset="${f(-c.t * 0.02)}"/></g>`;
+    g = g0 + reveal('offer', g, p, G);
   }
 
   // ----- the five bonds: ruler, father and elder brother above man, a friend beside him, a wife below.
   //       Loosened, the people drift out of place and the lines break; at death they close into a line of
   //       generations, with offerings rising from the living to the dead. -----
   if (p.bonds > 0.01) {
+    const g0 = g; g = '';
     const BOND = [[0, 0.21], [-0.15, 0.14], [0.15, 0.14], [-0.2, 0.02], [0, -0.18]];
     const LINE = [[0, 0.33], [0, 0.19], [0.06, 0.12], [-0.06, 0.12], [0, -0.17]];
     const LOP = [0.3, 0.6, 0, 0, 1];
@@ -698,12 +809,14 @@ function drawConn(p, c, G) {
       dots += `<circle cx="${f(x)}" cy="${f(y)}" r=".028" fill="${PAP}" stroke="${ACC}" stroke-width=".0055" opacity="${f(op)}"/>`;
     });
     g += lines + rite + dots;
+    g = g0 + reveal('bonds', g, p, G);
   }
 
   // ----- the wheel of the year: a ring round the world with its eight festivals, the solstices and equinoxes as small
   //       circles and the days between as ticks, and a mark going round as the year turns (once about every 50 s,
   //       with the colours of the land in the painting) -----
   if (p.wheelYr > 0.01) {
+    const g0 = g; g = '';
     const R = p.rW + 0.075, wy = -p.Wy;
     let ticks = '', quarters = '';
     for (let i = 0; i < 8; i++) {
@@ -714,9 +827,11 @@ function drawConn(p, c, G) {
     const ya = ((c.t * 0.02) % 1) * 2 * Math.PI - Math.PI / 2;
     g += `<g opacity="${f(p.wheelYr)}"><circle cx="0" cy="${f(wy)}" r="${f(R)}" fill="none" stroke="${PAP}" stroke-width=".0165" opacity=".92"/><circle cx="0" cy="${f(wy)}" r="${f(R)}" fill="none" stroke="${ACC}" stroke-width=".0045"/>`;
     g += `${stroke(ticks, ACC, 0.0045)}${quarters}<circle cx="${f(R * Math.cos(ya))}" cy="${f(wy + R * Math.sin(ya))}" r=".011" fill="${ACC}" stroke="${PAP}" stroke-width=".004"/></g>`;
+    g = g0 + reveal('wheelYr', g, p, G);
   }
   // ----- the circle cast round man for the rite, with the four quarters marked -----
   if (p.cast > 0.01) {
+    const g0 = g; g = '';
     const r = 0.125, sy = -p.Sy;
     let marks = '';
     for (let i = 0; i < 4; i++) {
@@ -725,10 +840,12 @@ function drawConn(p, c, G) {
     }
     g += `<g opacity="${f(p.cast)}"><circle cx="0" cy="${f(sy)}" r="${r}" fill="none" stroke="${PAP}" stroke-width=".0145" opacity=".92"/><circle cx="0" cy="${f(sy)}" r="${r}" fill="none" stroke="${ACC}" stroke-width=".0045"/>`;
     g += `<circle cx="0" cy="${f(sy)}" r="${r}" fill="none" stroke="${PAP}" stroke-width=".0036" stroke-linecap="round" stroke-dasharray=".001 .05" stroke-dashoffset="${f(-c.t * 0.02)}"/>${marks}</g>`;
+    g = g0 + reveal('cast', g, p, G);
   }
 
   // ----- a beam of consciousness rising from man to the Universe; widened, a spiral of lives winding up toward it -----
   if (p.spiral > 0.01) {
+    const g0 = g; g = '';
     const y0 = p.Sy + 0.09, y1 = p.Gy - p.rG * 0.45;
     if (y1 > y0) {
       let d = '';
@@ -738,10 +855,12 @@ function drawConn(p, c, G) {
       }
       g += `<g opacity="${f(p.spiral)}">${stroke(d, ACC, 0.0042)}<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".0036" stroke-linecap="round" stroke-dasharray=".001 .03" stroke-dashoffset="${f(-c.t * 0.025)}"/></g>`;
     }
+    g = g0 + reveal('spiral', g, p, G);
   }
 
   // ----- rings round man: closing in as he looks inward, or going out from him as he expresses himself -----
   if (p.rings > 0.01) {
+    const g0 = g; g = '';
     const k = (p.ringDir + 1) / 2;
     let d = '';
     for (let i = 0; i < 3; i++) {
@@ -749,9 +868,11 @@ function drawConn(p, c, G) {
       d += `<g opacity="${f(op)}"><circle cx="0" cy="${f(-p.Sy)}" r="${f(r)}" fill="none" stroke="${PAP}" stroke-width=".0125" opacity=".92"/><circle cx="0" cy="${f(-p.Sy)}" r="${f(r)}" fill="none" stroke="${ACC}" stroke-width=".004"/></g>`;
     }
     g += `<g opacity="${f(p.rings)}">${d}</g>`;
+    g = g0 + reveal('rings', g, p, G);
   }
   // ----- other people's rules: a ring of short bars round man, hemming him in; thrown off, they burst outward -----
   if (p.fence > 0.01) {
+    const g0 = g; g = '';
     let d = '';
     for (let i = 0; i < 14; i++) {
       const h = Math.sin(i * 12.9898) * 43758.5453, rnd = h - Math.floor(h);
@@ -763,10 +884,12 @@ function drawConn(p, c, G) {
     // (two rails join the posts into a fence; when it bursts they are gone)
     const rails = p.burst < 0.99 ? `<g opacity="${f(1 - p.burst)}">${[0.135, 0.165].map((r) => `<circle cx="0" cy="${f(-p.Sy)}" r="${r}" fill="none" stroke="${PAP}" stroke-width=".0125" opacity=".92"/><circle cx="0" cy="${f(-p.Sy)}" r="${r}" fill="none" stroke="${DARK}" stroke-width=".0036"/>`).join('')}</g>` : '';
     g += `<g opacity="${f(p.fence * (1 - 0.5 * p.burst))}">${rails}${stroke(d, DARK, 0.0062)}</g>`;
+    g = g0 + reveal('fence', g, p, G);
   }
 
   // ----- uploading: bits going up from man to a chip set in the place left empty above -----
   if (p.upload > 0.01) {
+    const g0 = g; g = '';
     const cy = p.Gy - p.rG * 0.42, S = 0.052, y0 = p.Sy + 0.09, y1 = cy - S - 0.012;
     let pins = '';
     for (let i = -1.5; i <= 1.5; i++) {
@@ -782,10 +905,12 @@ function drawConn(p, c, G) {
     }
     g += `${stroke(pins, ACC, 0.004)}<path d="${chip}" fill="${PAP}" fill-opacity=".9" stroke="${PAP}" stroke-width=".016" stroke-linejoin="round" opacity=".92"/><path d="${chip}" fill="none" stroke="${ACC}" stroke-width=".0045"/>`;
     g += `<rect x="${f(-S * 0.45)}" y="${f(-(cy + S * 0.45))}" width="${f(S * 0.9)}" height="${f(S * 0.9)}" fill="none" stroke="${ACC}" stroke-width=".0025" opacity=".7"/></g>`;
+    g = g0 + reveal('upload', g, p, G);
   }
 
   // ----- progress: a stair from the world up to where man has climbed, with a mark going up it -----
   if (p.steps > 0.01) {
+    const g0 = g; g = '';
     const y0 = p.Wy + p.rW + 0.012, y1 = p.Sy - 0.09, n = 5;
     if (y1 > y0 + 0.04) {
       const x0 = -0.2, x1 = -0.02, dy = (y1 - y0) / n, dx = (x1 - x0) / n;
@@ -793,11 +918,13 @@ function drawConn(p, c, G) {
       for (let i = 1; i <= n; i++) d += `V${f(-(y0 + i * dy))} H${f(x0 + i * dx)} `;
       g += `<g opacity="${f(p.steps)}">${stroke(d, ACC, 0.0045)}<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".0036" stroke-linecap="round" stroke-dasharray=".001 .04" stroke-dashoffset="${f(-c.t * 0.02)}"/></g>`;
     }
+    g = g0 + reveal('steps', g, p, G);
   }
 
   // ----- the covenant: two lines between God and man, his and his people's. Broken, his stays whole while theirs
   //       breaks into pieces. The tablets of the law hang on it, or an empty place where the Messiah is awaited. -----
   if (p.covenant > 0.01) {
+    const g0 = g; g = '';
     const y0 = G.y - G.r - 0.015, y1 = p.Sy + 0.095;
     if (y0 > y1) {
       // (from God wherever he is: during a move from a worldview where he goes round man, he is not yet overhead)
@@ -806,9 +933,11 @@ function drawConn(p, c, G) {
       g += `<g opacity="${f(p.covenant)}">${stroke(L, ACC, 0.0045)}<path d="${L}" fill="none" stroke="${PAP}" stroke-width=".0036" stroke-linecap="round" stroke-dasharray=".001 .03" stroke-dashoffset="${f(-c.t * 0.015)}"/>`;
       g += `<path d="${R}" fill="none" stroke="${PAP}" stroke-width=".0165" stroke-linecap="round" opacity=".92"${dash}/><path d="${R}" fill="none" stroke="${ACC}" stroke-width=".0045" stroke-linecap="round"${dash}/></g>`;
     }
+    g = g0 + reveal('covenant', g, p, G);
   }
   const mid = (G.y - G.r + p.Wy + p.rW) / 2;
   if (p.tablets > 0.01) {
+    const g0 = g; g = '';
     let d = '', lines = '';
     for (const x of [-0.038, 0.038]) {
       const w = 0.066, h = 0.115, bot = -(mid - h / 2), top = -(mid + h / 2);
@@ -817,14 +946,18 @@ function drawConn(p, c, G) {
     }
     g += `<g opacity="${f(p.tablets)}"><path d="${d}" fill="${PAP}" stroke="${PAP}" stroke-width=".016" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="${PAP}" stroke="${ACC}" stroke-width=".0045" stroke-linejoin="round"/>`;
     g += `<path d="${lines}" fill="none" stroke="${ACC}" stroke-width=".0026" stroke-linecap="round" opacity=".8"/></g>`;
+    g = g0 + reveal('tablets', g, p, G);
   }
   if (p.awaited > 0.01) {
+    const g0 = g; g = '';
     g += `<g opacity="${f(p.awaited)}"><circle cx="0" cy="${f(-mid)}" r=".05" fill="${PAP}" fill-opacity=".85" stroke="${PAP}" stroke-width=".014" opacity=".92"/>`;
     g += `<circle cx="0" cy="${f(-mid)}" r=".05" fill="none" stroke="${ACC}" stroke-width=".0045" stroke-linecap="round" stroke-dasharray=".012 .014" stroke-dashoffset="${f(c.t * 0.004)}"/></g>`;
+    g = g0 + reveal('awaited', g, p, G);
   }
 
   // ----- the Quran sent down: a ruled line from God to man, with its pages coming down it. God himself stays above. -----
   if (p.sent > 0.01) {
+    const g0 = g; g = '';
     const y0 = G.y - G.r - 0.02, y1 = p.Sy + 0.095;
     if (y0 > y1) {
       const d = `M${f(G.x)},${f(-y0)} L0,${f(-y1)}`;
@@ -832,10 +965,12 @@ function drawConn(p, c, G) {
       g += `<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".026" stroke-dasharray=".026 .05" stroke-dashoffset="${f(-c.t * 0.02 - 0.002)}" opacity=".92"/>`;
       g += `<path d="${d}" fill="none" stroke="${ACC}" stroke-width=".016" stroke-dasharray=".022 .054" stroke-dashoffset="${f(-c.t * 0.02)}"/></g>`;
     }
+    g = g0 + reveal('sent', g, p, G);
   }
 
   // ----- the scales of judgement: hung below God, tipping one way and then the other, never coming to rest -----
   if (p.scales > 0.01) {
+    const g0 = g; g = '';
     const py = G.y - G.r - 0.1, L = 0.2, a = 0.16 * Math.sin(c.t * 0.35) + 0.05 * Math.sin(c.t * 0.9);
     const ex = L * Math.cos(a), ey = L * Math.sin(a);
     let d = `M0,${f(-(G.y - G.r - 0.015))} V${f(-py)} M${f(-ex)},${f(-(py + ey))} L${f(ex)},${f(-(py - ey))} `;
@@ -844,10 +979,12 @@ function drawConn(p, c, G) {
       d += `M${f(x)},${f(-y)} L${f(x - 0.05)},${f(-by)} M${f(x)},${f(-y)} L${f(x + 0.05)},${f(-by)} M${f(x + 0.05)},${f(-by)}${arcC(x, -by, 0.05, 0, Math.PI)} `;
     }
     g += `<g opacity="${f(p.scales)}">${stroke(d, ACC, 0.0045)}<circle cx="0" cy="${f(-py)}" r=".011" fill="${ACC}" stroke="${PAP}" stroke-width=".004"/></g>`;
+    g = g0 + reveal('scales', g, p, G);
   }
 
   // ----- what the workers make, drawn up in three streams to the few at the top of the pyramid -----
   if (p.extract > 0.01) {
+    const g0 = g; g = '';
     const yT = p.Wy + p.rW * 0.6;
     let d = '', heads = '';
     for (const s of [-1, 0, 1]) {
@@ -857,26 +994,32 @@ function drawConn(p, c, G) {
       heads += `<path transform="translate(${f(xe)},${f(-yT)}) rotate(${f(deg)})" d="M.012,0 L-.016,-.014 L-.016,.014Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/>`;
     }
     g += `<g opacity="${f(p.extract)}">${stroke(d, ACC, 0.0045)}<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".0045" stroke-linecap="round" stroke-dasharray=".004 .026" stroke-dashoffset="${f(-c.t * 0.03)}"/>${heads}</g>`;
+    g = g0 + reveal('extract', g, p, G);
   }
 
   // ----- revolution: a heavy arrow from the workers up to the top, which they take -----
   if (p.revolt > 0.01) {
+    const g0 = g; g = '';
     const y0 = p.Sy + 0.085, y1 = Math.max(y0 + 0.06, p.Wy + p.rW * lerp(0.8, 0.05, p.level));   // (lower as the pyramid is levelled)
     g += `<g opacity="${f(p.revolt)}">${stroke(`M0,${f(-y0)} V${f(-(y1 - 0.035))}`, ACC, 0.014)}
       <path d="M0,${f(-y0)} V${f(-(y1 - 0.04))}" fill="none" stroke="${PAP}" stroke-width=".005" stroke-linecap="round" stroke-dasharray=".012 .05" stroke-dashoffset="${f(c.t * 0.05)}"/>
       ${shape(`M0,${f(-y1)} L-.034,${f(-(y1 - 0.05))} L.034,${f(-(y1 - 0.05))}Z`, ACC)}</g>`;
+    g = g0 + reveal('revolt', g, p, G);
   }
 
   // ----- reason: a thin line climbing from man, with marks moving upward -----
   if (p.reason > 0.01) {
+    const g0 = g; g = '';
     const y0 = -(p.Wy + p.rW + 0.115), y1 = top + 0.035;
     g += `<g opacity="${f(p.reason)}">${stroke(`M0,${f(y0)} V${f(y1)}`, ACC, 0.0075)}
       <path d="M0,${f(y0)} V${f(y1 + 0.02)}" fill="none" stroke="${PAP}" stroke-width=".0038" stroke-linecap="round" stroke-dasharray=".016 .07" stroke-dashoffset="${f(c.t * 0.045)}"/>
       <path d="M0,${f(y1 - 0.04)} L-.021,${f(y1 + 0.004)} L.021,${f(y1 + 0.004)}Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/></g>`;
+    g = g0 + reveal('reason', g, p, G);
   }
 
   // ----- a call for help: arcs going out from man toward God, wherever he has got to -----
   if (p.call > 0.01) {
+    const g0 = g; g = '';
     const dx = G.x, dy = G.y - p.Sy, dist = Math.hypot(dx, dy) || 1;
     const span = Math.max(0.02, dist - G.r - 0.125), deg = (Math.atan2(dx, dy) * 180) / Math.PI;
     let arcs = '';
@@ -887,6 +1030,7 @@ function drawConn(p, c, G) {
       arcs += `<g opacity="${f(op)}">${stroke(d, ACC, 0.0055)}</g>`;
     }
     g += `<g opacity="${f(p.call)}" transform="rotate(${f(deg)} 0 ${f(-p.Sy)})">${arcs}</g>`;
+    g = g0 + reveal('call', g, p, G);
   }
 
   // ----- God's orbit round man: a true ellipse, turned to the orbit's tilt and cut in two in its own frame.
@@ -921,25 +1065,30 @@ function drawConn(p, c, G) {
 
   // ----- the way up to heaven: a dotted trail from the world to man, who has left it -----
   if (p.rise > 0.01) {
+    const g0 = g; g = '';
     const y0 = p.Wy + p.rW + 0.02, y1 = p.Sy - 0.095;
     if (y1 > y0) {
       const d = `M0,${f(-y0)} V${f(-y1)}`;
       g += `<g opacity="${f(p.rise)}"><path d="${d}" fill="none" stroke="${PAP}" stroke-width=".0145" stroke-linecap="round" stroke-dasharray=".001 .024" stroke-dashoffset="${f(-c.t * 0.02)}" opacity=".92"/><path d="${d}" fill="none" stroke="${ACC}" stroke-width=".0065" stroke-linecap="round" stroke-dasharray=".001 .024" stroke-dashoffset="${f(-c.t * 0.02)}"/></g>`;
     }
+    g = g0 + reveal('rise', g, p, G);
   }
 
   // ----- the line between the seen and the known: ruled, and fading out at its ends -----
   if (p.divide > 0.01) {
+    const g0 = g; g = '';
     let segs = '';
     for (let i = 0; i < 24; i++) {
       const x0 = -0.44 + (0.88 * i) / 24, x1 = x0 + 0.88 / 24 - 0.006, m = 1 - Math.pow(Math.abs((x0 + x1) / 2) / 0.44, 3);
       segs += `<path d="M${f(x0)},${f(-p.divY)} H${f(x1)}" opacity="${f(m)}"/>`;
     }
     g += `<g opacity="${f(p.divide * 0.55)}" stroke="${DARK}" stroke-width=".0026" stroke-linecap="round">${segs}</g>`;
+    g = g0 + reveal('divide', g, p, G);
   }
 
   // ----- participation: each copy below hangs from its Form above by a dotted thread, with being coming down it -----
   if (p.partake > 0.01) {
+    const g0 = g; g = '';
     let d = '';
     FORMS.forEach(([fx, fy], i) => {
       const [cx0, cy0] = COPIES[i], x1 = cx0, y1 = p.Wy + cy0 + 0.05;
@@ -947,10 +1096,12 @@ function drawConn(p, c, G) {
     });
     g += `<g opacity="${f(p.partake)}"><path d="${d}" fill="none" stroke="${ACC}" stroke-width=".0014" opacity=".45"/>`;
     g += `<path d="${d}" fill="none" stroke="${ACC}" stroke-width=".0058" stroke-linecap="round" stroke-dasharray=".001 .02" stroke-dashoffset="${f(-c.t * 0.012)}" opacity=".9"/></g>`;
+    g = g0 + reveal('partake', g, p, G);
   }
 
   // ----- the Forms: perfect figures in ruled ink, and the one thing on the page that never moves -----
   if (p.forms > 0.01) {
+    const g0 = g; g = '';
     let d = '';
     FORMS.forEach(([fx, fy, n]) => {
       if (!n) { d += `M${f(fx + FSZ)},${f(-fy)}${arcC(fx, -fy, FSZ, 0, Math.PI)}${arcC(fx, -fy, FSZ, Math.PI, 2 * Math.PI)}Z `; return; }
@@ -962,20 +1113,24 @@ function drawConn(p, c, G) {
       d += 'Z ';
     });
     g += `<g opacity="${f(p.forms)}"><path d="${d}" fill="${PAP}" fill-opacity=".55" stroke="${PAP}" stroke-width=".0145" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="none" stroke="${DARK}" stroke-width=".0038" stroke-linejoin="round"/></g>`;
+    g = g0 + reveal('forms', g, p, G);
   }
 
   // ----- rebirth: souls not yet pure carried back down into the world, round and round -----
   if (p.rebirth > 0.01) {
+    const g0 = g; g = '';
     const P = [[0.37, 0.22], [0.58, 0.12], [0.52, -0.12], [0.32, -0.15]];
     const d = `M${f(P[0][0])},${f(-P[0][1])} C${f(P[1][0])},${f(-P[1][1])} ${f(P[2][0])},${f(-P[2][1])} ${f(P[3][0] + 0.012)},${f(-(P[3][1] + 0.004))}`;
     const ang = (Math.atan2(-(P[3][1] - P[2][1]), P[3][0] - P[2][0]) * 180) / Math.PI;
     g += `<g opacity="${f(p.rebirth)}">${stroke(d, ACC, 0.0045)}<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".0045" stroke-linecap="round" stroke-dasharray=".001 .03" stroke-dashoffset="${f(-c.t * 0.03)}"/>`;
     g += `<path transform="translate(${f(P[3][0])},${f(-P[3][1])}) rotate(${f(ang)})" d="M.012,0 L-.018,-.017 L-.018,.017Z" fill="${ACC}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/></g>`;
+    g = g0 + reveal('rebirth', g, p, G);
   }
 
   // ----- Gnosticism: the Fullness, a ring of powers in pairs round the unknown Father. One pair has lost a partner:
   //       Wisdom, who fell. Her place is left empty, and a dotted trail runs down from it to the maker she brought forth. -----
   if (p.pleroma > 0.01) {
+    const g0 = g; g = '';
     // (wide enough that the pairs level with God's name stay clear of it, whatever size the lettering has here;
     // when the name changes, the ring eases to its new width rather than jumping)
     const Ry = G.r + 0.1, want = Math.max(Ry, (labels.god.w / 2 + 0.035) / Math.cos(Math.PI / 8));
@@ -1000,12 +1155,14 @@ function drawConn(p, c, G) {
       const d = `M${f(x0)},${f(y0)} C${f(x0 + 0.16)},${f(y0 + 0.02)} ${f(x1 + 0.2)},${f(y1 - 0.04)} ${f(x1)},${f(y1)}`;
       g += `<g opacity="${f(p.sophia * Math.min(1, p.demi * 2) * p.pleroma)}"><path d="${d}" fill="none" stroke="${PAP}" stroke-width=".0135" stroke-linecap="round" stroke-dasharray=".001 .018" stroke-dashoffset="${f(-c.t * 0.015)}" opacity=".92"/><path d="${d}" fill="none" stroke="${ACC}" stroke-width=".0065" stroke-linecap="round" stroke-dasharray=".001 .018" stroke-dashoffset="${f(-c.t * 0.015)}"/></g>`;
     }
+    g = g0 + reveal('pleroma', g, p, G);
   }
 
   // ----- Gnosticism: the seven heavens of the maker's rulers, arched over the world, each with its ruler going round.
   //       On guard, the rulers gather at the top, where the way up lies; the gates there open for the Revealer coming
   //       down and for the spark going home, and the rulers stand aside. -----
   if (p.spheres > 0.01) {
+    const g0 = g; g = '';
     const top = 1.5 * Math.PI, span = Math.PI / 2 - 0.42, N = 10;
     let segs = '', rulers = '';
     for (let i = 0; i < 7; i++) {
@@ -1027,11 +1184,13 @@ function drawConn(p, c, G) {
     }
     g += `<g opacity="${f(p.spheres)}"><g opacity=".7" fill="none" stroke="${DARK}" stroke-width=".0026" stroke-linecap="round">${segs}</g>`;
     g += `<g fill="${DARK}" stroke="${PAP}" stroke-width=".004">${rulers}</g></g>`;
+    g = g0 + reveal('spheres', g, p, G);
   }
 
   // ----- Gnosticism: the Revealer, coming down from the Fullness past the maker and through the gates. He is an
   //       outline only, dashed and never painted: he only seemed to have a body. -----
   if (p.seeming > 0.01) {
+    const g0 = g; g = '';
     const yR = p.Wy + p.rW + 0.12, rR = 0.04, y0 = G.y - G.r - 0.115;   // (from just below the ring of powers)
     const d = `M${f(G.x)},${f(-y0)} C${f(G.x + 0.32)},${f(-(y0 - 0.12))} ${f(0.3)},${f(-(yR + 0.22))} 0,${f(-(yR + rR + 0.015))}`;
     const d2 = `M0,${f(-(yR - rR - 0.015))} V${f(-(p.Sy + 0.085))}`;
@@ -1039,6 +1198,7 @@ function drawConn(p, c, G) {
     g += `<g opacity="${f(p.seeming)}">${dots(d)}${dots(d2)}`;
     g += `<circle cx="0" cy="${f(-yR)}" r="${f(rR)}" fill="${PAP}" fill-opacity=".45" stroke="${PAP}" stroke-width=".0125" opacity=".92"/>`;
     g += `<circle cx="0" cy="${f(-yR)}" r="${f(rR)}" fill="none" stroke="${ACC}" stroke-width=".0045" stroke-dasharray=".011 .009" stroke-dashoffset="${f(c.t * 0.01)}"/></g>`;
+    g = g0 + reveal('seeming', g, p, G);
   }
 
   // ----- the line of history -----
@@ -1230,8 +1390,8 @@ function frame(now) {
 
   // (once a move is over the values stand still, so they are taken once rather than blended afresh each frame)
   if (!params.has('k')) {
-    if (now - t0 < dur) { live = blendP(from, target(), ease((now - t0) / dur)); settled = -1; }
-    else if (settled !== t0) { live = target(); settled = t0; onPage = new Set([cur.wv]); readyNext = true; }
+    if (now - t0 < dur) { live = stageP(from, target(), (now - t0) / dur, whole); settled = -1; }
+    else if (settled !== t0) { live = target(); drawn = {}; settled = t0; onPage = new Set([cur.wv]); readyNext = true; }
   }
   const p = live;
   const t = frozen !== null ? frozen : reduced ? 0 : now / 1000;
