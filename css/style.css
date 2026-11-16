@@ -4,6 +4,7 @@
   --paper: #f6f1e7;
   --title: 'Cormorant Garamond', Georgia, serif;          /* titles and running text */
   --soft: 'Fraunces', 'Cormorant Garamond', Georgia, serif; /* lettering inside the painting */
+  --caps: 'Cormorant SC', 'Cormorant Garamond', Georgia, serif; /* true small capitals: the names of the acts */
 }
 
 html, body {
@@ -13,6 +14,7 @@ html, body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--title);
+  font-variant-numeric: oldstyle-nums;      /* figures that sit in the line like lower-case letters (Cormorant's own) */
   -webkit-font-smoothing: antialiased;
   touch-action: pinch-zoom;       /* nothing scrolls, so a sliding finger belongs to the page */
 }
@@ -30,12 +32,17 @@ svg#lines circle { fill: var(--ink); fill-opacity: 0; transition: fill-opacity .
 
 /* ---------- title and the words for each act ---------- */
 .t { position: fixed; left: 8vw; top: 9vh; width: min(25vw, 21rem); }
-.k { margin: 0; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; font-size: .8rem; }
+.k { margin: 0; font-family: var(--caps); font-weight: 700; letter-spacing: .16em; text-transform: lowercase; font-size: 1rem; line-height: 1.1; }
 h1 { margin: 2px 0 0; font-size: clamp(2rem, 5.5vmin, 3.6rem); font-weight: 600; line-height: 1; }
 .tag { margin: 8px 0 0; font-style: italic; font-weight: 600; font-size: clamp(1rem, 2.3vmin, 1.4rem); line-height: 1.15; }
 .act { margin-top: 3.2vh; padding-top: 2vh; border-top: 1.5px solid rgba(43, 33, 29, .35); transition: opacity .45s ease; }
 .act h2 { margin: 0; font-size: clamp(1.3rem, 3.2vmin, 2rem); font-weight: 600; color: var(--red); line-height: 1; }
-.act p { margin: 6px 0 0; font-size: clamp(1.05rem, 2.4vmin, 1.4rem); font-weight: 500; line-height: 1.22; }
+.act p { margin: 6px 0 0; font-size: clamp(1.05rem, 2.4vmin, 1.4rem); font-weight: 500; line-height: 1.22; text-wrap: pretty; }
+/* beside the painting, each act's words open with a drop cap in the accent, two lines deep, as a chapter would
+   (where the words are centred below the painting, a drop cap would pull them off centre: there is none) */
+@supports (initial-letter: 2) or (-webkit-initial-letter: 2) {
+  body:not(.narrow) .act p::first-letter { -webkit-initial-letter: 2; initial-letter: 2; color: var(--red); font-weight: 600; margin-inline-end: .07em; }
+}
 .head { transition: opacity .45s ease; }
 .swap .act, .swap-all .act, .swap-all .head { opacity: 0; }
 
@@ -210,6 +217,8 @@ h1 { margin: 2px 0 0; font-size: clamp(2rem, 5.5vmin, 3.6rem); font-weight: 600;
   will-change: transform;
 }
 .l small { display: block; font-size: .68em; opacity: .85; margin-top: 2px; }
+.l .hang-l { margin-left: -.44em; }
+.l .hang-r { margin-right: -.44em; }
 .l.center { text-align: center; }
 .l.right { text-align: right; }
 
@@ -221,17 +230,17 @@ h1 { margin: 2px 0 0; font-size: clamp(2rem, 5.5vmin, 3.6rem); font-weight: 600;
   background: none;
   padding: 6px 8px;
   cursor: pointer;
-  font-family: var(--soft);
-  font-variation-settings: 'SOFT' 100, 'WONK' 0;
-  font-size: clamp(.78rem, 2vmin, 1.15rem);
-  font-weight: 400;
+  font-family: var(--caps);
+  font-size: clamp(.92rem, 2.35vmin, 1.35rem);
+  font-weight: 600;
+  letter-spacing: .04em;
   color: var(--ink);
-  opacity: .7;
+  opacity: .72;
   white-space: nowrap;
   transition: opacity .3s, color .3s;
 }
 #marks button:hover { opacity: 1; }
-#marks button[aria-current='true'] { opacity: 1; color: var(--red); font-weight: 600; }
+#marks button[aria-current='true'] { opacity: 1; color: var(--red); font-weight: 700; }
 #marks button { transition: opacity .3s, color .6s; }
 /* between worldviews the names of the acts fade out and back with the other words (see renderText) */
 body.swap-all #marks button { opacity: 0; }
@@ -240,7 +249,7 @@ body.swap-all #marks button { opacity: 0; }
 #marks.tight button[aria-current='true'] { z-index: 1; }
 /* too little room for four names on one line: each takes two, its last line where one line would sit */
 #marks.wrap button { white-space: normal; width: var(--wrapW, 60px); line-height: 1.12; transform: translate(-50%, -100%); }
-#marks.measure button { font-weight: 600; }
+#marks.measure button { font-weight: 700; }
 button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; border-radius: 6px; }
 
 /* read by screen readers only */
@@ -252,7 +261,7 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 .narrow .t { left: 0; right: 0; top: 0; width: auto; }
 .narrow .head { padding: max(7.5vw, 26px) 9vw 0; text-align: center; }
 .narrow h1 { font-size: clamp(1.8rem, 8.5vw, 2.8rem); }
-.narrow .k { font-size: .68rem; }
+.narrow .k { font-size: .8rem; line-height: 1.02; }   /* (its line no taller than before the small capitals, so the painting keeps its size) */
 .narrow .tag { display: none; }
 .narrow .act {
   position: fixed;
@@ -270,11 +279,14 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 .narrow #moves { margin-top: 10px; }
 .narrow #moves button { font-size: .92rem; padding: 5px 14px 6px; }
 .narrow .l { font-size: .82rem; }
-.narrow #marks button { font-size: .72rem; padding: 6px 2px; }
+/* (on a phone the four names share a narrow line: small capitals need more width than lower case to read as well,
+   so there the names keep the painting's lettering) */
+.narrow #marks button { font-family: var(--soft); font-variation-settings: 'SOFT' 100, 'WONK' 0; font-size: .72rem; font-weight: 400; letter-spacing: 0; padding: 6px 2px; }
+.narrow #marks button[aria-current='true'], .narrow #marks.measure button { font-weight: 600; }
 
 /* ---------- squarish windows: the words beside the painting, smaller, so that they end above the names of the acts ---------- */
 .compact .t { left: 5vw; top: 6vh; width: 25vw; }
-.compact .k { font-size: .66rem; }
+.compact .k { font-size: .82rem; }
 .compact h1 { font-size: clamp(1.5rem, 4.6vmin, 2.6rem); }
 .compact .tag { display: none; }
 .compact .act { margin-top: 1.6vh; padding-top: 1.4vh; }
@@ -287,7 +299,7 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 /* the words take the whole height here, and the painting is centred in the room to their right (see resize() in main.js) */
 .short .t { left: 4vw; top: 5vh; width: 30vw; }
 .short h1 { font-size: 1.4rem; }
-.short .k { font-size: .62rem; }
+.short .k { font-size: .78rem; }
 .short .tag { display: none; }
 .short .act { margin-top: 9px; padding-top: 8px; }
 .short .act h2 { font-size: 1.1rem; }
@@ -295,4 +307,4 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 .short #moves { margin-top: 8px; }
 .short #moves button { font-size: .8rem; padding: 4px 11px 5px; }
 .short .l { font-size: .78rem; }
-.short #marks button { font-size: .72rem; }
+.short #marks button { font-size: .84rem; }

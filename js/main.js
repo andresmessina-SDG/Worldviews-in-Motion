@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=64';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=64';
-import { CATALOGUE } from './catalogue.js?v=64';
-import { createMenu } from './menu.js?v=64';
+import { createPainter } from './paint.js?v=65';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=65';
+import { CATALOGUE } from './catalogue.js?v=65';
+import { createMenu } from './menu.js?v=65';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -90,9 +90,13 @@ function fadeLeader(L, a) {
   L.path.style.strokeOpacity = (0.9 * a).toFixed(3);
   L.dot.style.fillOpacity = a.toFixed(3);
 }
+// A quotation mark that opens a line set flush left hangs out into the margin, so that the letters, not the mark,
+// keep the line; and one that closes a line set flush right hangs out on that side.
+const hang = (s, align) => (align === 'left' ? s.replace(/^([“‘])/, '<span class="hang-l">$1</span>')
+  : align === 'right' ? s.replace(/([”’])$/, '<span class="hang-r">$1</span>') : s);
 function setLabel(k, content, instant, wait = 550) {
   const L = labels[k];
-  const html = content ? `${content[0]}<small>${content[1]}</small>` : '';
+  const html = content ? `${hang(content[0], ALIGN[k])}<small>${hang(content[1], ALIGN[k])}</small>` : '';
   if (L.html === html) return;
   L.html = html;
   clearTimeout(L.timer);
