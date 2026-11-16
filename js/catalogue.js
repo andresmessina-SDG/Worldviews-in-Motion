@@ -5,13 +5,10 @@
 
 export const CATALOGUE = [
   { id: 'christian', name: 'Christian Theism', family: 'theistic', c: ['#e9b548', '#3c9aa0'] },
-  { id: 'deism', name: 'Deism', family: 'theistic', c: ['#e6d39a', '#5f86a8'] },
-  { id: 'mtd', name: 'Moralistic Therapeutic Deism', family: 'theistic', c: ['#f6e08a', '#f3c0cb'] },
   { id: 'judaism', name: 'Judaism', family: 'theistic', c: ['#e8e2d0', '#2f5fa8'] },
   { id: 'islam', name: 'Islam', family: 'theistic', c: ['#d9b44a', '#1f7a5a'] },
-
-  { id: 'platonism', name: 'Platonism', family: 'classical', c: ['#e8dcc0', '#8a7fc0'] },
-  { id: 'gnosticism', name: 'Gnosticism', family: 'classical', c: ['#dcd8ec', '#8a5a2a'] },
+  { id: 'deism', name: 'Deism', family: 'theistic', c: ['#e6d39a', '#5f86a8'] },
+  { id: 'mtd', name: 'Moralistic Therapeutic Deism', family: 'theistic', c: ['#f6e08a', '#f3c0cb'] },
 
   { id: 'naturalism', name: 'Naturalism', family: 'secular', c: ['#b9c3b0', '#7f97a8'] },
   { id: 'humanism', name: 'Secular Humanism', family: 'secular', c: ['#f0c070', '#6aa6c8'] },
@@ -30,4 +27,7 @@ export const CATALOGUE = [
   { id: 'taoism', name: 'Taoism', family: 'eastern', c: ['#9fc5b8', '#2f2f2f'] },
   { id: 'confucianism', name: 'Confucianism', family: 'eastern', c: ['#d8c8a0', '#a03a2a'] },
   { id: 'animism', name: 'Animism', family: 'eastern', c: ['#a06a3a', '#4a7a3a'] },
+
+  { id: 'platonism', name: 'Platonism', family: 'classical', c: ['#e8dcc0', '#8a7fc0'] },
+  { id: 'gnosticism', name: 'Gnosticism', family: 'classical', c: ['#dcd8ec', '#8a5a2a'] },
 ];

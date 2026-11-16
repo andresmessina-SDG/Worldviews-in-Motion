@@ -333,7 +333,7 @@ export const WORLDVIEWS = {
   christian: {
     name: 'Christian Theism',
     tagline: 'God made the world, and he came down to save it.',
-    move: { to: 'deism', q: 'What if God never spoke?' },
+    move: { to: 'judaism', q: 'What if the Messiah has not yet come?' },
     acts: build(christianBase, [
       {
         slug: 'creation',
@@ -448,7 +448,7 @@ export const WORLDVIEWS = {
   mtd: {
     name: 'Moralistic Therapeutic Deism',
     tagline: 'Be nice, be happy, and call on God when you need him.',
-    move: { to: 'judaism', q: 'What if God must be obeyed, not just called on?' },
+    move: { to: 'naturalism', q: 'What if no one is there to call on?' },
     acts: build(mtdBase, [
       {
         slug: 'a-kindly-god',
@@ -561,7 +561,7 @@ export const WORLDVIEWS = {
   islam: {
     name: 'Islam',
     tagline: 'There is no god but God, and man must submit to him.',
-    move: { to: 'naturalism', q: 'What if no one is up there at all?' },
+    move: { to: 'deism', q: 'What if God never spoke at all?' },
     acts: build(islamBase, [
       {
         slug: 'creation',
@@ -842,7 +842,7 @@ export const WORLDVIEWS = {
   postmodernism: {
     name: 'Postmodernism',
     tagline: 'No truth, only stories, and every story serves power.',
-    move: { to: 'marxism', q: 'What if one story does explain it all: the war of classes?' },
+    move: { to: 'marxism', q: 'What if one story is true after all: class war?' },
     acts: build(postmodernBase, [
       {
         slug: 'only-stories',
@@ -900,7 +900,7 @@ export const WORLDVIEWS = {
   marxism: {
     name: 'Marxism',
     tagline: 'History is a war of classes, and revolution will end it.',
-    move: { to: 'individualism', q: 'What if the self, not society, is what needs freeing?' },
+    move: { to: 'individualism', q: 'What if it is the self that needs freeing?' },
     acts: build(marxistBase, [
       {
         slug: 'matter-in-motion',
@@ -1066,7 +1066,7 @@ export const WORLDVIEWS = {
   'new-age': {
     name: 'New Age',
     tagline: 'All is one, all is divine, and so are you.',
-    move: { to: 'neo-paganism', q: 'What if the gods are many, and the earth itself is sacred?' },
+    move: { to: 'neo-paganism', q: 'What if the gods are many?' },
     acts: build(newAgeBase, [
       {
         slug: 'all-is-one',
@@ -1341,7 +1341,7 @@ export const WORLDVIEWS = {
   confucianism: {
     name: 'Confucianism',
     tagline: 'Do your duty in your place, and there will be order.',
-    move: { to: 'animism', q: 'What if the world itself is full of spirits?' },
+    move: { to: 'animism', q: 'What if the ancestors are not the only spirits?' },
     acts: build(confucianBase, [
       {
         slug: 'order',
@@ -1452,7 +1452,7 @@ export const WORLDVIEWS = {
   platonism: {
     name: 'Platonism',
     tagline: 'The real world lies above this one, and the soul must climb back to it.',
-    move: { to: 'gnosticism', q: 'What if the maker is our jailer?' },
+    move: { to: 'gnosticism', q: 'What if the craftsman is blind?' },
     acts: build(platonistBase, [
       {
         slug: 'two-worlds',
