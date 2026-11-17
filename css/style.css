@@ -349,3 +349,9 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
    or unmade when a fade starts. b: nothing fades at all; words and names change at once. */
 .fix-a .t, .fix-a .head, .fix-a .act, .fix-a #marks button, .fix-a svg#conn, .fix-a svg#lines { will-change: opacity; }
 .fix-b .head, .fix-b .act, .fix-b .l, .fix-b #marks button, .fix-b #ask, .fix-b svg#lines path, .fix-b svg#lines circle { transition: none !important; }
+/* c to f: the page stripped down a piece at a time, to find which piece sets the flicker off */
+.fix-c svg#conn { display: none; }
+.fix-d svg#lines { display: none; }
+.fix-e .l { will-change: auto; }
+.fix-e .head, .fix-e .act, .fix-e .l, .fix-e #marks button, .fix-e #ask { transition: none !important; }
+.fix-f #menu { display: none; }
