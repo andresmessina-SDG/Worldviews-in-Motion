@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=75';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=75';
-import { CATALOGUE } from './catalogue.js?v=75';
-import { createMenu } from './menu.js?v=75';
+import { createPainter } from './paint.js?v=76';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=76';
+import { CATALOGUE } from './catalogue.js?v=76';
+import { createMenu } from './menu.js?v=76';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -18,11 +18,6 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const canvas = $('c');
 let painter = null;
-// ?fix=a or ?fix=b: trials of two cures for a flicker some browsers show while an act changes (see the stylesheet)
-// (c to f strip the page down a piece at a time, each with all the ones before it: c, no connectors drawn; d, no
-// lines from labels either; e, labels with no layers of their own and no fades anywhere; f, no menu)
-const FIX = /^[a-f]$/.test(params.get('fix') || '') ? params.get('fix') : '';
-if (FIX) for (const l of FIX < 'c' ? [FIX] : 'cdef'.split('').filter((l) => l <= FIX)) document.body.classList.add(`fix-${l}`);
 // ?nopaint leaves the sheet blank, so tests of the controls run at full speed
 if (!params.has('nopaint')) {
   try { painter = createPainter(canvas); } catch (err) { console.error(err); }
@@ -254,6 +249,8 @@ function renderText(instant, wholePage, asked, slow = 1) {
     drawLoop();
     $('scene').setAttribute('aria-label', `The painting. ${KEYS.filter((k) => a.labels[k]).map((k) => `${a.labels[k][0]}: ${a.labels[k][1]}.`).join(' ')}`);
     document.body.classList.remove('swap', 'swap-all');
+    // the new words come up from a little below, as the old went up and away
+    if (!instant && !reduced) { document.body.classList.add('rise'); void document.body.offsetWidth; document.body.classList.remove('rise'); }
     if (!instant) resize(false);                // new words may take a different amount of room
     placeLoop();
   };
@@ -261,7 +258,7 @@ function renderText(instant, wholePage, asked, slow = 1) {
   if (instant) { caption(null); return fill(); }
   document.body.classList.add(wholePage ? 'swap-all' : 'swap');
   caption(asked, slow);
-  swapTimer = setTimeout(fill, asked ? 3900 * slow : 480);
+  swapTimer = setTimeout(fill, asked ? 3900 * slow : wholePage ? 480 : 700);   // (an act's words change as the dot on the line of history sets off)
 }
 
 // A move to another worldview chosen on the page (by its question or from the menu) is a new step in the browser's
@@ -1518,7 +1515,7 @@ function frame(now) {
       for (const u in U) if (!byName.has(u) && !WORKED.has(u)) console.error(`main.js: ${u} is worked out in frame() but missing from WORKED`);
     }
   }
-  if (FIX < 'c') drawConn(p, { t, arrow, orb, tock: hd.tock }, G);
+  drawConn(p, { t, arrow, orb, tock: hd.tock }, G);
 }
 
 addEventListener('resize', resize);
