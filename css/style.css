@@ -29,6 +29,9 @@ canvas, svg#lines, svg#conn {
 svg#lines, svg#conn { pointer-events: none; }
 svg#lines path { fill: none; stroke: var(--ink); stroke-width: 1.3; stroke-linecap: round; stroke-opacity: 0; transition: stroke-opacity .5s ease; }
 svg#lines circle { fill: var(--ink); fill-opacity: 0; transition: fill-opacity .5s ease; }
+svg#lines path, svg#lines circle { transition: stroke-opacity .5s ease, fill-opacity .5s ease, stroke-width .25s ease, r .25s ease; }
+svg#lines g.hot path { stroke-width: 2.3; }
+svg#lines g.hot circle { r: 3.8px; }
 
 /* ---------- title and the words for each act ---------- */
 .t { position: fixed; left: 8vw; top: 9vh; width: min(25vw, 21rem); }
@@ -36,6 +39,11 @@ svg#lines circle { fill: var(--ink); fill-opacity: 0; transition: fill-opacity .
 h1 { margin: 2px 0 0; font-size: clamp(2rem, 5.5vmin, 3.6rem); font-weight: 600; line-height: 1; }
 .tag { margin: 8px 0 0; font-style: italic; font-weight: 600; font-size: clamp(1rem, 2.3vmin, 1.4rem); line-height: 1.15; }
 .act { margin-top: 3.2vh; padding-top: 2vh; border-top: 1.5px solid rgba(43, 33, 29, .35); transition: opacity .45s ease; }
+/* an act's words leave upward and the next come up from below (main.js sets .swap, then .rise for one frame) */
+#actName, #actText { transition: opacity .5s ease, transform .6s cubic-bezier(.2, .7, .2, 1); }
+#actText { transition-delay: .07s; }
+.swap #actName, .swap #actText { opacity: 0; transform: translateY(-8px); }
+.rise #actName, .rise #actText { opacity: 0; transform: translateY(9px); transition: none; }
 .act h2 { margin: 0; font-size: clamp(1.3rem, 3.2vmin, 2rem); font-weight: 600; color: var(--red); line-height: 1; }
 .act p { margin: 6px 0 0; font-size: clamp(1.05rem, 2.4vmin, 1.4rem); font-weight: 500; line-height: 1.22; text-wrap: pretty; }
 /* Beside the painting, each act's words open with a drop cap in the accent, two lines deep, as a chapter would.
@@ -55,7 +63,7 @@ body:not(.narrow) .act p::first-letter {
 body.short .act p::first-letter { font-size: 2.888em; margin-top: -.095em; margin-bottom: -.105em; }   /* 1.18 / .625 + 1 */
 
 .head { transition: opacity .45s ease; }
-.swap .act, .swap-all .act, .swap-all .head { opacity: 0; }
+.swap-all .act, .swap-all .head { opacity: 0; }
 
 /* the question that leads to another worldview */
 #moves { margin-top: 2.4vh; position: relative; }

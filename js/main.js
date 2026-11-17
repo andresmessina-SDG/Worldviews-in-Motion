@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=70';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=70';
-import { CATALOGUE } from './catalogue.js?v=70';
-import { createMenu } from './menu.js?v=70';
+import { createPainter } from './paint.js?v=71';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=71';
+import { CATALOGUE } from './catalogue.js?v=71';
+import { createMenu } from './menu.js?v=71';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -98,7 +98,11 @@ if (params.has('k')) {
 }
 
 // ---------- lettering ----------
-addEventListener('click', () => { if (pageLayout !== 'narrow') return; let any = false; for (const o of KEYS) any = labels[o].el.classList.toggle('open', false) || any; measure(); repaint = true; });
+// hot: the place a label names ([x, y, radius, strength]); the painting lifts the paint there a little and the
+// label's line is drawn heavier, while the pointer is on the label.
+let hotKey = null, hotWas = null;
+const hot = new Float32Array(4), named = {};
+addEventListener('click', () => { if (pageLayout !== 'narrow') return; hotKey = null; let any = false; for (const o of KEYS) any = labels[o].el.classList.toggle('open', false) || any; measure(); repaint = true; });
 const KEYS = ['god', 'world', 'bridge', 'self', 'sin'];
 const READ = ['god', 'world', 'self', 'bridge', 'sin'];     // the order they are read in
 const ALIGN = { god: 'center', world: 'center', bridge: 'left', self: 'left', sin: 'right' };
@@ -113,10 +117,13 @@ for (const k of KEYS) {
     if (pageLayout !== 'narrow') return;
     e.stopPropagation();
     for (const o of KEYS) if (o !== k) labels[o].el.classList.remove('open');
-    el.classList.toggle('open');
+    hotKey = el.classList.toggle('open') ? k : null;
     measure();
     repaint = true;
   });
+  // The pointer on a label (or, on a phone, the label opened) lights the thing it names: see hot below.
+  el.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse' && pageLayout !== 'narrow') hotKey = k; });
+  el.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && pageLayout !== 'narrow' && hotKey === k) hotKey = null; });
   const g = document.createElementNS(NS, 'g');
   const path = document.createElementNS(NS, 'path');
   const dot = document.createElementNS(NS, 'circle');
@@ -143,6 +150,7 @@ function setLabel(k, content, instant, wait = 550) {
   const apply = () => {
     L.el.innerHTML = html;
     L.el.classList.remove('open');
+    if (hotKey === k && (!content || pageLayout === 'narrow')) hotKey = null;
     L.on = !!content;
     L.show = L.on ? 1 : 0;
     if (instant) L.lift = L.show;
@@ -240,6 +248,8 @@ function renderText(instant, wholePage, asked, slow = 1) {
     drawLoop();
     $('scene').setAttribute('aria-label', `The painting. ${KEYS.filter((k) => a.labels[k]).map((k) => `${a.labels[k][0]}: ${a.labels[k][1]}.`).join(' ')}`);
     document.body.classList.remove('swap', 'swap-all');
+    // the new words come up from a little below, as the old went up and away
+    if (!instant && !reduced) { document.body.classList.add('rise'); void document.body.offsetWidth; document.body.classList.remove('rise'); }
     if (!instant) resize(false);                // new words may take a different amount of room
     placeLoop();
   };
@@ -247,7 +257,7 @@ function renderText(instant, wholePage, asked, slow = 1) {
   if (instant) { caption(null); return fill(); }
   document.body.classList.add(wholePage ? 'swap-all' : 'swap');
   caption(asked, slow);
-  swapTimer = setTimeout(fill, asked ? 3900 * slow : 480);
+  swapTimer = setTimeout(fill, asked ? 3900 * slow : wholePage ? 480 : 700);   // (an act's words change as the dot on the line of history sets off)
 }
 
 // A move to another worldview chosen on the page (by its question or from the menu) is a new step in the browser's
@@ -547,6 +557,16 @@ function layout(p, G, dt) {
   at.sin = [sinX, sinY, lerp(lerp(-0.02 - p.stainR * 0.8, -0.115, p.stainUp), -p.stainR * 0.8, p.stainOn), lerp(lerp(p.Sy - 0.06, 0.03, p.stainUp), onY, p.stainOn)];
   keepApart(at, godY, worldY, dt);
   for (const k of MOVABLE) place(k, at[k][0], at[k][1] + slide[k][0], at[k][2], at[k][3]);
+  // what each label names, for the light under the pointer
+  named.god = [G.x, G.y, G.r + 0.03]; named.world = [0, p.Wy, p.rW + 0.03]; named.self = [0, p.Sy, 0.11];
+  named.bridge = [at.bridge[2], at.bridge[3], 0.1]; named.sin = [at.sin[2], at.sin[3], Math.max(0.08, p.stainR + 0.05)];
+  const want = hotKey && labels[hotKey].on ? 1 : 0;
+  if (want && (hot[3] < 0.02 || hotWas === hotKey)) { hot.set(named[hotKey]); hotWas = hotKey; }
+  // (from one label straight to another: the light goes out before it comes on in the new place)
+  const aim = want && hotWas === hotKey ? 1 : 0;
+  hot[3] += (aim - hot[3]) * Math.min(1, dt * 9);
+  if (hot[3] < 0.002) hot[3] = 0;
+  for (const k of KEYS) labels[k].g.classList.toggle('hot', k === hotKey);
   // The paper under a name is lifted only while the name shows, and fades with it,
   // so no pale patch is left behind while the shapes move and the new names wait to appear.
   ['god', 'world', 'bridge'].forEach((k, i) => { const v = labels[k].lift; lifts[i] = v * v * (3 - 2 * v); });
@@ -1396,7 +1416,7 @@ const U = {};             // the shader's uniforms, refilled each painting
 // The values that never change in some worldviews, as #defines for a version of the shader that leaves out what
 // cannot show there (see version() in paint.js). Only values passed by name are fixed in this way: never those
 // worked out in frame(), which change even where the value of the same name does not (uTick, uSoul).
-const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA', 'uWords', 'uHome']);
+const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA', 'uWords', 'uHome', 'uHot']);
 const fixedMemo = new Map();
 let readyNext = false, workedChecked = false;
 function fixedIn(ids) {
@@ -1482,6 +1502,7 @@ function frame(now) {
     U['uLab[0]'] = rects;
     U.uLabA = lifts;
     U.uWords = wordsBox;
+    U.uHot = hot;
     U.uHome = Math.exp(-(((now - homeAt) / 1100) ** 2));
     painter.draw(U, fixedIn(onPage), !reduced && frozen === null && !params.has('k') && now - t0 < dur);
     // once a worldview has settled, its question's move is made ready in the background

@@ -70,6 +70,7 @@ uniform vec3 uHands;            // second, minute and hour hands, radians clockw
 uniform vec4 uLab[3];           // where lettering sits inside a shape, and its half size
 uniform vec3 uLabA;             // how much each of those three names shows
 uniform vec4 uWords;            // where the page's words stand (centre and half size): the paper is lifted a little under them
+uniform vec4 uHot;              // the thing whose label the pointer is on: where, how wide, how strongly lit
 uniform float uHome;            // the light that floods the page on coming home to where the questions began
 uniform sampler2D uBakeA, uBakeB;  // the noise that stands still (see BAKE), when uBaked is 1
 uniform float uBaked;
@@ -677,6 +678,8 @@ void main(){
     lift = max(lift, a * smoothstep(.05, -.02, length(max(b, 0.)) + min(max(b.x, b.y), 0.) - .03 + wF.x * .01));
   }
   A *= 1. - .72 * lift;
+  // under the pointer's label: the paint over the thing it names lifted a little, soft-edged
+  if (uHot.w > .001) A *= 1. - .3 * uHot.w * smoothstep(1.3, .55, length(q + wM * .02 - uHot.xy) / uHot.z);
   // the words of the page: the wash under them thinned with a damp brush, soft-edged, so they read on any colour
   {
     vec2 wb = abs(q + wM * .03 - uWords.xy) - uWords.zw;
