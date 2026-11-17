@@ -735,6 +735,7 @@ void main(){
   }
   gl_FragColor = vec4(min(1., w * uKeep + d * uGain), 0., 0., 1.);
 }`;
+const WET_ASKED = /[?&]wet\b/.test(location.search);
 const WET_DIV = 8;      // the small copy is this many times smaller across
 const WET_DRY = 0.75;   // seconds for wet paint to lose about two thirds of its water
 const WET_GAIN = 6;     // how wet a change of colour leaves the paper (a change of a sixth soaks it)
@@ -800,6 +801,9 @@ export function createPainter(canvas) {
     for (const tex of wetTex) gl.deleteTexture(tex);
     for (const fb of wetFb) gl.deleteFramebuffer(fb);
     wetTex = []; wetFb = []; hasPrev = false; wetUntil = -1; src = 2;
+    // Switched off unless the address asks for it (?wet): drawing these small copies every frame of a move is
+    // suspected of making some browsers lay strips of the page down in the wrong place while it runs.
+    if (!WET_ASKED) { canWet = false; return; }
     wetW = Math.max(1, Math.ceil(canvas.width / WET_DIV)); wetH = Math.max(1, Math.ceil(canvas.height / WET_DIV));
     gl.activeTexture(gl.TEXTURE5);
     canWet = true;

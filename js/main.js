@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=72';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=72';
-import { CATALOGUE } from './catalogue.js?v=72';
-import { createMenu } from './menu.js?v=72';
+import { createPainter } from './paint.js?v=73';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=73';
+import { CATALOGUE } from './catalogue.js?v=73';
+import { createMenu } from './menu.js?v=73';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
