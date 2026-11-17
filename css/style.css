@@ -343,3 +343,9 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 #ask.on { opacity: 1; }
 .compact #ask, .short #ask { font-size: clamp(1.4rem, 3.6vmin, 2rem); }
 .narrow #ask { justify-content: center; text-align: center; font-size: 1.5rem; }
+
+/* Trials (?fix=a, ?fix=b) of two cures for a flicker some browsers show while an act changes, when strips of the
+   page are laid down in the wrong place. a: everything that fades keeps a layer of its own always, so none is made
+   or unmade when a fade starts. b: nothing fades at all; words and names change at once. */
+.fix-a .t, .fix-a .head, .fix-a .act, .fix-a #marks button, .fix-a svg#conn, .fix-a svg#lines { will-change: opacity; }
+.fix-b .head, .fix-b .act, .fix-b .l, .fix-b #marks button, .fix-b #ask, .fix-b svg#lines path, .fix-b svg#lines circle { transition: none !important; }

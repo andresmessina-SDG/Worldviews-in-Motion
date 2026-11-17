@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=73';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=73';
-import { CATALOGUE } from './catalogue.js?v=73';
-import { createMenu } from './menu.js?v=73';
+import { createPainter } from './paint.js?v=74';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=74';
+import { CATALOGUE } from './catalogue.js?v=74';
+import { createMenu } from './menu.js?v=74';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -18,6 +18,8 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const canvas = $('c');
 let painter = null;
+// ?fix=a or ?fix=b: trials of two cures for a flicker some browsers show while an act changes (see the stylesheet)
+if (/^[ab]$/.test(params.get('fix') || '')) document.body.classList.add(`fix-${params.get('fix')}`);
 // ?nopaint leaves the sheet blank, so tests of the controls run at full speed
 if (!params.has('nopaint')) {
   try { painter = createPainter(canvas); } catch (err) { console.error(err); }
