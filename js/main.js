@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=71';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=71';
-import { CATALOGUE } from './catalogue.js?v=71';
-import { createMenu } from './menu.js?v=71';
+import { createPainter } from './paint.js?v=72';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=72';
+import { CATALOGUE } from './catalogue.js?v=72';
+import { createMenu } from './menu.js?v=72';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -196,7 +196,8 @@ function drawLoop() {
 }
 function placeLoop() {
   const s = loopEl.offsetWidth / 2;
-  loopEl.style.transform = `translate(${moveBtn.offsetLeft + moveBtn.offsetWidth - s - 1}px, ${moveBtn.offsetTop + moveBtn.offsetHeight / 2 - s}px)`;
+  loopEl.style.left = `${moveBtn.offsetLeft + moveBtn.offsetWidth - s - 1}px`;
+  loopEl.style.top = `${moveBtn.offsetTop + moveBtn.offsetHeight / 2 - s}px`;
 }
 moveBtn.onclick = () => { auto = false; go(moveTo, cur.act, true); };
 
@@ -248,8 +249,6 @@ function renderText(instant, wholePage, asked, slow = 1) {
     drawLoop();
     $('scene').setAttribute('aria-label', `The painting. ${KEYS.filter((k) => a.labels[k]).map((k) => `${a.labels[k][0]}: ${a.labels[k][1]}.`).join(' ')}`);
     document.body.classList.remove('swap', 'swap-all');
-    // the new words come up from a little below, as the old went up and away
-    if (!instant && !reduced) { document.body.classList.add('rise'); void document.body.offsetWidth; document.body.classList.remove('rise'); }
     if (!instant) resize(false);                // new words may take a different amount of room
     placeLoop();
   };
@@ -257,7 +256,7 @@ function renderText(instant, wholePage, asked, slow = 1) {
   if (instant) { caption(null); return fill(); }
   document.body.classList.add(wholePage ? 'swap-all' : 'swap');
   caption(asked, slow);
-  swapTimer = setTimeout(fill, asked ? 3900 * slow : wholePage ? 480 : 700);   // (an act's words change as the dot on the line of history sets off)
+  swapTimer = setTimeout(fill, asked ? 3900 * slow : 480);
 }
 
 // A move to another worldview chosen on the page (by its question or from the menu) is a new step in the browser's
