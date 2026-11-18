@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=77';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=77';
-import { CATALOGUE } from './catalogue.js?v=77';
-import { createMenu } from './menu.js?v=77';
+import { createPainter } from './paint.js?v=79';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=79';
+import { CATALOGUE } from './catalogue.js?v=79';
+import { createMenu } from './menu.js?v=79';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -29,7 +29,7 @@ let T = {
 let BREAKS_ES = '';
 if (LANG === 'es') {
   try {
-    const es = await import('./es.js?v=77');
+    const es = await import('./es.js?v=79');
     es.apply(WORLDVIEWS, CATALOGUE);
     T = es.UI;
     BREAKS_ES = es.BREAKS;
@@ -53,7 +53,9 @@ if (LANG === 'es') {
     a.href = u.pathname + u.search;
     a.lang = l;
     a.hreflang = l;
-    a.textContent = l === 'en' ? 'English' : 'Español';
+    a.textContent = l.toUpperCase();
+    a.title = l === 'en' ? 'English' : 'Español';
+    a.setAttribute('aria-label', a.title);
     if (l === LANG) a.setAttribute('aria-current', 'true');
     a.addEventListener('click', (e) => {
       e.preventDefault();
@@ -1573,8 +1575,29 @@ function frame(now) {
   drawConn(p, { t, arrow, orb, tock: hd.tock }, G);
 }
 
+// The language switch stands on the line of the site's name: at the right of the column of words, or of the page.
+// On a phone the name is centred, and the switch takes the middle of the room between it and the paper's edge;
+// should that room be too narrow, it shows only the other language.
+function placeLang() {
+  const sw = $('lang'), k = document.querySelector('.k'), rg = document.createRange();
+  rg.selectNodeContents(k);
+  const kr = rg.getBoundingClientRect(), W = innerWidth;
+  sw.classList.remove('one');
+  const edge = pageLayout === 'narrow' ? Math.max(16, 0.045 * W) : W * (pageLayout === 'wide' ? 0.08 : pageLayout === 'compact' ? 0.05 : 0.04);
+  let w = sw.offsetWidth;
+  if (pageLayout === 'narrow' && W - edge - kr.right < w + 12) { sw.classList.add('one'); w = sw.offsetWidth; }
+  const x = pageLayout === 'narrow' ? Math.max(kr.right + 8, (kr.right + W - edge - w) / 2) : W - edge - w;
+  sw.style.left = `${Math.round(x)}px`;
+  let y = (kr.top + kr.bottom) / 2 - sw.offsetHeight / 2;
+  // (on a phone a long title can reach under it: it keeps above the title's line)
+  if (pageLayout === 'narrow') { rg.selectNodeContents($('name')); y = Math.min(y, rg.getBoundingClientRect().top + 3 - sw.offsetHeight); }
+  sw.style.top = `${Math.round(y)}px`;
+  sw.classList.add('placed');
+}
 addEventListener('resize', resize);
+addEventListener('resize', placeLang);
 renderText(true);
 resize();
-document.fonts.ready.then(resize);
+placeLang();
+document.fonts.ready.then(() => { resize(); placeLang(); });
 requestAnimationFrame(frame);
