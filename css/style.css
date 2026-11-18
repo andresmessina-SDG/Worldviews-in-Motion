@@ -367,6 +367,7 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 .leaving #lang { opacity: .4; transition: opacity .4s ease; }
 .compact #lang { top: calc(6vh - 6px); right: 5vw; font-size: .8rem; }
 .short #lang { top: calc(5vh - 6px); right: 4vw; font-size: .74rem; }
-.narrow #lang { top: max(1.5vw, 6px); right: max(6vw, 20px); font-size: .7rem; }
+.narrow #lang { top: max(1vw, 4px); right: max(6vw, 20px); font-size: .7rem; }
+.narrow #lang a { padding: 3px 2px; }
 /* the Spanish name is longer: it keeps one line, a little closer set */
 .k:lang(es) { white-space: nowrap; letter-spacing: .12em; }
