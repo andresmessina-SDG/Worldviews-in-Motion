@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=79';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=79';
-import { CATALOGUE } from './catalogue.js?v=79';
-import { createMenu } from './menu.js?v=79';
+import { createPainter } from './paint.js?v=83';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=83';
+import { CATALOGUE } from './catalogue.js?v=83';
+import { createMenu } from './menu.js?v=83';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -16,58 +16,78 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const num = (name, lo, hi, fallback) => { const v = Number(params.get(name)); return Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : fallback; };
 // ---------- language ----------
 // English unless Spanish is asked for: in the address (?lang=es), by the reader's earlier choice, or by the browser's
-// own language. Spanish lays its words over the English (js/es.js) before anything is drawn.
+// own language. Spanish lays its words over the English (js/es.js); the English is kept, to go back to.
 const LANGS = ['en', 'es'];
 const savedLang = (() => { try { return localStorage.getItem('lang'); } catch (e) { return null; } })();
 const askedLang = (params.get('lang') || '').toLowerCase();
-const LANG = LANGS.includes(askedLang) ? askedLang : LANGS.includes(savedLang) ? savedLang
+let lang = LANGS.includes(askedLang) ? askedLang : LANGS.includes(savedLang) ? savedLang
   : /^es\b/i.test(navigator.language || '') ? 'es' : 'en';
-let T = {
+const UI_EN = {
   site: 'Worldviews in Motion', menu: 'Worldviews', acts: 'The four acts', painting: 'The painting.',
-  pencil: 'not yet painted', language: 'Language',
+  pencil: 'not yet painted', language: 'Language', nogl: $('nogl').textContent,
+  description: document.querySelector('meta[name="description"]').content,
 };
-let BREAKS_ES = '';
-if (LANG === 'es') {
-  try {
-    const es = await import('./es.js?v=79');
-    es.apply(WORLDVIEWS, CATALOGUE);
-    T = es.UI;
-    BREAKS_ES = es.BREAKS;
-    document.documentElement.lang = 'es';
-    document.querySelector('.k').textContent = T.site;
-    document.querySelector('meta[name="description"]').content = T.description;
-    $('menu').setAttribute('aria-label', T.menu);
-    $('marks').setAttribute('aria-label', T.acts);
-    $('nogl').textContent = T.nogl;
-  } catch (err) { console.error(err); }
-}
-// The switch: the other language, lettered in small capitals at the top right. A choice is remembered, and the page
-// is loaded again in that language at the same worldview and act (the words fade first, as for any move).
-{
-  const sw = $('lang');
-  sw.setAttribute('aria-label', T.language);
-  for (const l of LANGS) {
-    const a = document.createElement('a');
-    const u = new URL(location.href);
-    u.searchParams.set('lang', l);
-    a.href = u.pathname + u.search;
-    a.lang = l;
-    a.hreflang = l;
-    a.textContent = l.toUpperCase();
-    a.title = l === 'en' ? 'English' : 'Español';
-    a.setAttribute('aria-label', a.title);
-    if (l === LANG) a.setAttribute('aria-current', 'true');
-    a.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (l === LANG) return;
-      try { localStorage.setItem('lang', l); } catch (err) { /* not kept: the address still carries it */ }
-      const to = new URL(location.href);
-      to.searchParams.set('lang', l);
-      document.body.classList.add('swap-all', 'leaving');
-      setTimeout(() => location.replace(to.href), reduced ? 0 : 450);
-    });
-    sw.appendChild(a);
+const TEXT_EN = {
+  names: CATALOGUE.map((c) => c.name),
+  wv: Object.fromEntries(Object.entries(WORLDVIEWS).map(([id, w]) => [id, {
+    name: w.name, tagline: w.tagline, move: w.move, acts: w.acts.map((x) => ({ name: x.name, text: x.text, labels: x.labels })),
+  }])),
+};
+let T = UI_EN, BREAKS_ES = '', esModule = null;
+const loadEs = async () => (esModule ||= await import('./es.js?v=83'));
+function applyLang(l) {
+  if (l === 'es') {
+    esModule.apply(WORLDVIEWS, CATALOGUE);
+    T = esModule.UI;
+    BREAKS_ES = esModule.BREAKS;
+  } else {
+    CATALOGUE.forEach((c, i) => { c.name = TEXT_EN.names[i]; });
+    for (const [id, e] of Object.entries(TEXT_EN.wv)) {
+      const w = WORLDVIEWS[id];
+      Object.assign(w, { name: e.name, tagline: e.tagline, move: e.move });
+      w.acts.forEach((x, i) => Object.assign(x, e.acts[i]));
+    }
+    T = UI_EN;
   }
+  lang = l;
+  document.documentElement.lang = l;
+  document.querySelector('.k').textContent = T.site;
+  document.querySelector('meta[name="description"]').content = T.description;
+  $('menu').setAttribute('aria-label', T.menu);
+  $('marks').setAttribute('aria-label', T.acts);
+  $('lang').setAttribute('aria-label', T.language);
+  $('nogl').textContent = T.nogl;
+}
+if (lang === 'es') {
+  try { await loadEs(); applyLang('es'); } catch (err) { console.error(err); lang = 'en'; }
+}
+// The switch: a pill with a half for each language, the open one inked in. The ink slides across to the other
+// half, and the page changes its language where it stands (see changeLang below), without being loaded again.
+const langLinks = LANGS.map((l) => {
+  const a = document.createElement('a');
+  a.lang = l;
+  a.hreflang = l;
+  a.textContent = l.toUpperCase();
+  a.title = l === 'en' ? 'English' : 'Español';
+  a.setAttribute('aria-label', a.title);
+  a.addEventListener('click', (e) => { e.preventDefault(); changeLang(l); });
+  $('lang').appendChild(a);
+  return a;
+});
+const langInk = document.createElement('span');
+langInk.className = 'ink';
+langInk.setAttribute('aria-hidden', 'true');
+$('lang').prepend(langInk);
+function markLang() {
+  langLinks.forEach((a) => {
+    const u = new URL(location.href);
+    u.searchParams.set('lang', a.lang);
+    a.href = u.pathname + u.search + u.hash;
+    if (a.lang === lang) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+  });
+  const on = langLinks.find((a) => a.lang === lang);
+  langInk.style.left = `${on.offsetLeft}px`;
+  langInk.style.width = `${on.offsetWidth}px`;
 }
 
 const frozen = params.has('t') ? num('t', 0, 1e5, 5) : null;
@@ -166,7 +186,7 @@ const NS = 'http://www.w3.org/2000/svg';
 const labels = {};
 for (const k of KEYS) {
   const el = document.createElement('div');
-  el.className = `l ${ALIGN[k]}`;
+  el.className = `l ${ALIGN[k]} ${k}`;
   $('labels').appendChild(el);
   // On a phone only a label's first line shows; a tap opens its second, and closes any other that was open.
   el.addEventListener('click', (e) => {
@@ -263,8 +283,9 @@ moveBtn.onclick = () => { auto = false; go(moveTo, cur.act, true); };
 const BREAKS = 'De-con-struc-tion For-get-ful-ness Dis-con-nec-tion Super-sti-tion Im-per-ma-nence En-hance-ment Sin-gu-lar-ity '
   + 'Cul-ti-va-tion Re-mem-brance Ap-pease-ment Re-demp-tion Clock-mak-er Sub-mis-sion Ex-tinc-tion Alien-ation Rev-o-lu-tion '
   + 'Re-pres-sion Ful-fil-ment Un-fin-ished For-get-ting Ig-no-rance Un-cer-tain Judge-ment Suf-fer-ing Com-mu-nism Awak-en-ing '
-  + 'As-cen-sion Knowl-edge An-ces-tors Ex-pres-sion ' + BREAKS_ES;
-const SHY = Object.fromEntries(BREAKS.trim().split(' ').map((w) => [w.replace(/-/g, ''), w.replace(/-/g, '\u00ad')]));
+  + 'As-cen-sion Knowl-edge An-ces-tors Ex-pres-sion';
+const shyOf = (breaks) => Object.fromEntries(breaks.trim().split(' ').map((w) => [w.replace(/-/g, ''), w.replace(/-/g, '\u00ad')]));
+let SHY = shyOf(`${BREAKS} ${BREAKS_ES}`);
 const breakable = (name) => name.split(' ').map((w) => w.split('-').map((x) => SHY[x] ?? x).join('-')).join(' ');
 
 // When a move answers the question of the page it leaves, the question is set large where the words were, for as
@@ -418,8 +439,9 @@ function narrowPlace(W, Hh, wv) {
   return { unit: u, cx: W / 2, cy: r.head + (Hh - r.head - r.act) / 2 + 0.02 * u, ext: W / 2 / u - 0.13 };
 }
 const longest = (pick) => Object.values(WORLDVIEWS).flatMap(pick).reduce((a, b) => (b.length > a.length ? b : a), '');
-const LONGEST = [longest((w) => [w.name]), longest((w) => [w.tagline]), longest((w) => w.acts.map((a) => a.name)),
+const findLongest = () => [longest((w) => [w.name]), longest((w) => [w.tagline]), longest((w) => w.acts.map((a) => a.name)),
   longest((w) => w.acts.map((a) => a.text)), longest((w) => [w.move.q])];
+let LONGEST = findLongest();
 // where the words on the left would end with the longest title, tagline, act and question on the site
 function tallestWords() {
   const els = [$('name'), $('tag'), $('actName'), $('actText'), moveBtn], keep = els.map((e) => e.textContent);
@@ -1474,7 +1496,7 @@ const U = {};             // the shader's uniforms, refilled each painting
 // The values that never change in some worldviews, as #defines for a version of the shader that leaves out what
 // cannot show there (see version() in paint.js). Only values passed by name are fixed in this way: never those
 // worked out in frame(), which change even where the value of the same name does not (uTick, uSoul).
-const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA', 'uWords', 'uHome', 'uHot']);
+const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA', 'uWords', 'uHome', 'uHot', 'uWash']);
 const fixedMemo = new Map();
 let readyNext = false, workedChecked = false;
 function fixedIn(ids) {
@@ -1561,6 +1583,7 @@ function frame(now) {
     U.uLabA = lifts;
     U.uWords = wordsBox;
     U.uHot = hot;
+    U.uWash = washOf(now);
     U.uHome = Math.exp(-(((now - homeAt) / 1100) ** 2));
     painter.draw(U, fixedIn(onPage), !reduced && frozen === null && !params.has('k') && now - t0 < dur);
     // once a worldview has settled, its question's move is made ready in the background
@@ -1594,10 +1617,80 @@ function placeLang() {
   sw.style.top = `${Math.round(y)}px`;
   sw.classList.add('placed');
 }
+// ---------- a change of language ----------
+// The painting stays as it is and goes on moving; only the words change. The old ones dissolve into the paper like
+// ink into a wet sheet (lang-out); a stroke of clean water passes across the painting, lifting its colour a little
+// (washOf); and the new words are brushed in from the left, one after another in the order they are read (lang-in).
+const INKED = ['.k', '#name', '#tag', '#actName', '#actText', '#moves button', ...READ.map((k) => `#labels .l.${k}`), '#marks button'];
+let washAt = -1e9, changing = false;
+const wash = [0, 0];          // (a plain pair: the painter takes a Float32Array for a vec4)
+// the stroke of water: where it has got to across the painting, how wide, how strongly it lifts the paint
+// (for stills: ?wash=0.5 holds the stroke halfway across)
+const washHeld = params.has('wash') ? num('wash', 0, 1, 0.5) : null;
+function washOf(now) {
+  const k = washHeld ?? (now - washAt) / 1700;
+  [wash[0], wash[1]] = k <= 0 || k >= 1 ? [0, 0] : [-2.3 + 4.6 * ease(k), Math.sin(Math.PI * k)];
+  return wash;
+}
+const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+async function changeLang(l) {
+  if (l === lang || changing || !LANGS.includes(l)) return;
+  changing = true;
+  try { localStorage.setItem('lang', l); } catch (err) { /* not kept: the address still carries it */ }
+  try {
+    if (l === 'es') await loadEs();
+  } catch (err) {
+    // (Spanish could not be fetched: load the page again in it, as a last resort)
+    const to = new URL(location.href); to.searchParams.set('lang', l); location.replace(to.href); return;
+  }
+  // (a move under way finishes first, so that its words are not cut short)
+  const left = t0 + dur - performance.now();
+  if (left > 0) await pause(left + 60);
+  const calm = reduced || frozen !== null;
+  lang = l;
+  markLang();                                   // the ink slides to the other half
+  const B = document.body.classList;
+  if (!calm) {
+    washAt = performance.now() + 250;
+    INKED.forEach((sel, i) => document.querySelectorAll(sel).forEach((el) => el.style.setProperty('--d', `${(i * 0.045).toFixed(3)}s`)));
+    // (a label's line is drawn once its words are on the paper)
+    READ.forEach((k) => labels[k].g.style.setProperty('--d', `${((INKED.indexOf(`#labels .l.${k}`) + 4) * 0.045).toFixed(3)}s`));
+    B.add('lang-out');
+    await pause(500);
+  }
+  applyLang(l);
+  SHY = shyOf(`${BREAKS} ${BREAKS_ES}`);
+  LONGEST = findLongest();
+  const u = new URL(location.href);
+  u.searchParams.set('lang', l);
+  history.replaceState(history.state, '', u.pathname + u.search + u.hash);
+  // The new words may need other room. The layout is chosen again for them; on a phone the painting glides to its
+  // new size rather than jumping.
+  const was = { unit, cx, cy, ext }, layoutWas = pageLayout;
+  resize(true);
+  if (!calm && layoutWas === 'narrow' && pageLayout === 'narrow') {
+    glide = { from: was, to: { unit, cx, cy, ext }, t0: performance.now() };
+    ({ unit, cx, cy, ext } = was);
+    fit();
+  }
+  menu.rename();
+  renderText(true);
+  placeLang();
+  markLang();
+  if (!calm) {
+    B.remove('lang-out');
+    B.add('lang-in');
+    await pause(1500 + INKED.length * 45);
+    B.remove('lang-in');
+  }
+  changing = false;
+}
 addEventListener('resize', resize);
 addEventListener('resize', placeLang);
+addEventListener('resize', markLang);
 renderText(true);
 resize();
 placeLang();
-document.fonts.ready.then(() => { resize(); placeLang(); });
+markLang();
+document.fonts.ready.then(() => { resize(); placeLang(); markLang(); });
 requestAnimationFrame(frame);

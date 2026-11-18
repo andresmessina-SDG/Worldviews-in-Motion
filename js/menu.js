@@ -231,6 +231,8 @@ export function createMenu(root, items, { isBuilt, onSelect, pencil = 'not yet p
   requestAnimationFrame(frame);
 
   return {
+    // the names lettered again, after a change of language
+    rename() { tabs.forEach((t, i) => { t.name.textContent = items[i].name; }); measure(); },
     setCurrent(id) { cur = Math.max(0, items.findIndex((x) => x.id === id)); stamp = ''; },
     // slide the tabs a little way out for a moment, so people learn they are there
     peek(ms) { peekUntil = Math.max(peekUntil, performance.now() + ms); },
