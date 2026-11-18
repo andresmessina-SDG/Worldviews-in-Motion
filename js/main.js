@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=76';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=76';
-import { CATALOGUE } from './catalogue.js?v=76';
-import { createMenu } from './menu.js?v=76';
+import { createPainter } from './paint.js?v=77';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=77';
+import { CATALOGUE } from './catalogue.js?v=77';
+import { createMenu } from './menu.js?v=77';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -11,10 +11,64 @@ import { createMenu } from './menu.js?v=76';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // (a number from the address, kept to a range; anything else gives the fallback)
 const num = (name, lo, hi, fallback) => { const v = Number(params.get(name)); return Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : fallback; };
+// ---------- language ----------
+// English unless Spanish is asked for: in the address (?lang=es), by the reader's earlier choice, or by the browser's
+// own language. Spanish lays its words over the English (js/es.js) before anything is drawn.
+const LANGS = ['en', 'es'];
+const savedLang = (() => { try { return localStorage.getItem('lang'); } catch (e) { return null; } })();
+const askedLang = (params.get('lang') || '').toLowerCase();
+const LANG = LANGS.includes(askedLang) ? askedLang : LANGS.includes(savedLang) ? savedLang
+  : /^es\b/i.test(navigator.language || '') ? 'es' : 'en';
+let T = {
+  site: 'Worldviews in Motion', menu: 'Worldviews', acts: 'The four acts', painting: 'The painting.',
+  pencil: 'not yet painted', language: 'Language',
+};
+let BREAKS_ES = '';
+if (LANG === 'es') {
+  try {
+    const es = await import('./es.js?v=77');
+    es.apply(WORLDVIEWS, CATALOGUE);
+    T = es.UI;
+    BREAKS_ES = es.BREAKS;
+    document.documentElement.lang = 'es';
+    document.querySelector('.k').textContent = T.site;
+    document.querySelector('meta[name="description"]').content = T.description;
+    $('menu').setAttribute('aria-label', T.menu);
+    $('marks').setAttribute('aria-label', T.acts);
+    $('nogl').textContent = T.nogl;
+  } catch (err) { console.error(err); }
+}
+// The switch: the other language, lettered in small capitals at the top right. A choice is remembered, and the page
+// is loaded again in that language at the same worldview and act (the words fade first, as for any move).
+{
+  const sw = $('lang');
+  sw.setAttribute('aria-label', T.language);
+  for (const l of LANGS) {
+    const a = document.createElement('a');
+    const u = new URL(location.href);
+    u.searchParams.set('lang', l);
+    a.href = u.pathname + u.search;
+    a.lang = l;
+    a.hreflang = l;
+    a.textContent = l === 'en' ? 'English' : 'Español';
+    if (l === LANG) a.setAttribute('aria-current', 'true');
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (l === LANG) return;
+      try { localStorage.setItem('lang', l); } catch (err) { /* not kept: the address still carries it */ }
+      const to = new URL(location.href);
+      to.searchParams.set('lang', l);
+      document.body.classList.add('swap-all', 'leaving');
+      setTimeout(() => location.replace(to.href), reduced ? 0 : 450);
+    });
+    sw.appendChild(a);
+  }
+}
+
 const frozen = params.has('t') ? num('t', 0, 1e5, 5) : null;
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const canvas = $('c');
 let painter = null;
@@ -207,8 +261,8 @@ moveBtn.onclick = () => { auto = false; go(moveTo, cur.act, true); };
 const BREAKS = 'De-con-struc-tion For-get-ful-ness Dis-con-nec-tion Super-sti-tion Im-per-ma-nence En-hance-ment Sin-gu-lar-ity '
   + 'Cul-ti-va-tion Re-mem-brance Ap-pease-ment Re-demp-tion Clock-mak-er Sub-mis-sion Ex-tinc-tion Alien-ation Rev-o-lu-tion '
   + 'Re-pres-sion Ful-fil-ment Un-fin-ished For-get-ting Ig-no-rance Un-cer-tain Judge-ment Suf-fer-ing Com-mu-nism Awak-en-ing '
-  + 'As-cen-sion Knowl-edge An-ces-tors Ex-pres-sion';
-const SHY = Object.fromEntries(BREAKS.split(' ').map((w) => [w.replace(/-/g, ''), w.replace(/-/g, '\u00ad')]));
+  + 'As-cen-sion Knowl-edge An-ces-tors Ex-pres-sion ' + BREAKS_ES;
+const SHY = Object.fromEntries(BREAKS.trim().split(' ').map((w) => [w.replace(/-/g, ''), w.replace(/-/g, '\u00ad')]));
 const breakable = (name) => name.split(' ').map((w) => w.split('-').map((x) => SHY[x] ?? x).join('-')).join(' ');
 
 // When a move answers the question of the page it leaves, the question is set large where the words were, for as
@@ -238,7 +292,7 @@ function renderText(instant, wholePage, asked, slow = 1) {
   // (they come in the order the eye should read the picture: the Ultimate, the world, man, what joins them, the problem)
   KEYS.forEach((k) => setLabel(k, a.labels[k], instant, (wholePage && !reduced ? 4300 * slow : 550) + (reduced ? 0 : 170 * READ.indexOf(k))));
   const fill = () => {
-    document.title = `${wv.name} · Worldviews in Motion`;
+    document.title = `${wv.name} · ${T.site}`;
     $('name').textContent = wv.name;
     $('tag').textContent = wv.tagline;
     $('actName').textContent = a.name;
@@ -247,7 +301,7 @@ function renderText(instant, wholePage, asked, slow = 1) {
     moveBtn.textContent = wv.move.q;
     moveTo = wv.move.to;
     drawLoop();
-    $('scene').setAttribute('aria-label', `The painting. ${KEYS.filter((k) => a.labels[k]).map((k) => `${a.labels[k][0]}: ${a.labels[k][1]}.`).join(' ')}`);
+    $('scene').setAttribute('aria-label', `${T.painting} ${KEYS.filter((k) => a.labels[k]).map((k) => `${a.labels[k][0]}: ${a.labels[k][1]}.`).join(' ')}`);
     document.body.classList.remove('swap', 'swap-all');
     // the new words come up from a little below, as the old went up and away
     if (!instant && !reduced) { document.body.classList.add('rise'); void document.body.offsetWidth; document.body.classList.remove('rise'); }
@@ -289,6 +343,7 @@ function go(wv, act, step = false) {
 // ---------- the menu of worldviews ----------
 const menu = createMenu($('menu'), CATALOGUE, {
   isBuilt: built,
+  pencil: T.pencil,
   onSelect: (id) => { auto = false; go(id, cur.act, true); },
 });
 menu.setCurrent(cur.wv);

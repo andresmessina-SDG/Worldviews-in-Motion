@@ -14,7 +14,7 @@ const TOUCH_EDGE = 44;  // a finger needs a wider strip
 const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
 const backOut = (x) => 1 + 2.2 * Math.pow(x - 1, 3) + 1.2 * Math.pow(x - 1, 2);   // settle with a slight overshoot
 
-export function createMenu(root, items, { isBuilt, onSelect }) {
+export function createMenu(root, items, { isBuilt, onSelect, pencil = 'not yet painted' }) {
   const N = items.length;
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   root.innerHTML = `<svg width="0" height="0" aria-hidden="true"><filter id="dab-edge" x="-20%" y="-20%" width="140%" height="140%">
@@ -29,7 +29,7 @@ export function createMenu(root, items, { isBuilt, onSelect }) {
     b.className = `tab ${built ? '' : 'pencil'}`;
     b.style.setProperty('--c1', it.c[0]);
     b.style.setProperty('--c2', it.c[1]);
-    b.innerHTML = `<span class="tab-stroke"></span>${built ? '' : '<span class="tab-note">not yet painted</span>'}<span class="tab-name">${it.name}</span><span class="tab-dab"></span>`;
+    b.innerHTML = `<span class="tab-stroke"></span>${built ? '' : `<span class="tab-note">${pencil}</span>`}<span class="tab-name">${it.name}</span><span class="tab-dab"></span>`;
     if (!built) b.setAttribute('aria-disabled', 'true');
     // a finger's choice is made when it lifts; the click the browser adds afterwards may land on a neighbour
     b.addEventListener('click', () => { if (performance.now() - lastTouch < 900) return; choose(i); b.blur(); });

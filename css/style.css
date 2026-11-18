@@ -348,3 +348,25 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 #ask.on { opacity: 1; }
 .compact #ask, .short #ask { font-size: clamp(1.4rem, 3.6vmin, 2rem); }
 .narrow #ask { justify-content: center; text-align: center; font-size: 1.5rem; }
+
+/* ---------- the language switch: top right, in the small capitals of the site's name ---------- */
+#lang {
+  position: fixed; top: calc(9vh - 6px); right: 8vw; z-index: 4;       /* level with the site's name, as far in from the right */
+  font-family: var(--caps); font-weight: 700; letter-spacing: .16em; text-transform: lowercase; font-size: .86rem; line-height: 1;
+  display: flex; align-items: center;
+}
+#lang a { color: var(--ink); opacity: .55; text-decoration: none; padding: 6px 2px; transition: opacity .3s ease, color .3s ease; }
+#lang a + a::before {
+  /* a dab of red between the two */
+  content: ''; display: inline-block; width: .3em; height: .3em; margin: 0 .7em .12em .55em; border-radius: 50%;
+  background: var(--red); opacity: .7; vertical-align: middle;
+}
+#lang a[aria-current] { color: var(--red); opacity: 1; cursor: default; }
+#lang a:not([aria-current]):hover { opacity: 1; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .22em; }
+#lang a:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; border-radius: 4px; }
+.leaving #lang { opacity: .4; transition: opacity .4s ease; }
+.compact #lang { top: calc(6vh - 6px); right: 5vw; font-size: .8rem; }
+.short #lang { top: calc(5vh - 6px); right: 4vw; font-size: .74rem; }
+.narrow #lang { top: max(1.5vw, 6px); right: max(6vw, 20px); font-size: .7rem; }
+/* the Spanish name is longer: it keeps one line, a little closer set */
+.k:lang(es) { white-space: nowrap; letter-spacing: .12em; }

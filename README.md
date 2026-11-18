@@ -13,19 +13,20 @@ It is a static site with no build step. Serve the folder with any web server:
 python3 -m http.server 8000
 ```
 
-Then open http://localhost:8000. Click a mark on the line of history, or use the left and right arrow keys, to move between acts.
+Then open http://localhost:8000. The site is in English and Spanish: the switch at the top right, or `?lang=es` in the address, chooses one, and the choice is remembered. Click a mark on the line of history, or use the left and right arrow keys, to move between acts.
 
 ## Layout
 
 - `index.html`, `css/style.css`: the page, its lettering and its layout
 - `js/worldviews.js`: the worldviews: their words, and the values the painting reads for each act
+- `js/es.js`: the site in Spanish, laid over the English when Spanish is chosen
 - `js/paint.js`: the watercolor shader
 - `js/main.js`: moving between acts and worldviews, lettering, connectors and the clock
 - `studies/`: earlier style studies and prototypes for other worldviews
 
 ## Adding a worldview
 
-Add an entry to `WORLDVIEWS` in `js/worldviews.js`: a base set of values, then what changes in each of its four acts. Any value left out of an act keeps its base value. Give it a `move` naming the worldview it leads to and the question that leads there, and reword the question of the worldview that now leads into it. Its `id` must match its entry in `js/catalogue.js`.
+Add an entry to `WORLDVIEWS` in `js/worldviews.js`: a base set of values, then what changes in each of its four acts. Any value left out of an act keeps its base value. Give it a `move` naming the worldview it leads to and the question that leads there, and reword the question of the worldview that now leads into it. Its `id` must match its entry in `js/catalogue.js`. Give it its Spanish too, in `js/es.js`, with the same labels in each act.
 
 The rules that keep the site working are written as comments where they apply:
 
