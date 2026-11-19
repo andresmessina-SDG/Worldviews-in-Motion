@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=109';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=109';
-import { CATALOGUE } from './catalogue.js?v=109';
-import { createMenu } from './menu.js?v=109';
+import { createPainter } from './paint.js?v=110';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=110';
+import { CATALOGUE } from './catalogue.js?v=110';
+import { createMenu } from './menu.js?v=110';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -34,7 +34,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=109'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=110'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -895,8 +895,11 @@ function inkify(svg, seed) {
 function inkOne(whole, tag, a, seed, k) {
   {
     const A = attrsOf(a);
-    if (!A.stroke || (tag === 'path' && !A.fill) || A['stroke-dasharray']) return whole;
-    if (A.stroke === PAP) return A.opacity === '.92' && (!A.fill || A.fill === 'none') ? '' : whole;
+    // (a broad stroke, such as the beams of the cross, is a bold shape rather than a line: it keeps its plain, even form,
+    // and the paper under it too, whose stroke is a broad one as well)
+    const sw = Number(A['stroke-width'] || 0);
+    if (!A.stroke || (tag === 'path' && !A.fill) || A['stroke-dasharray'] || (A.stroke !== PAP && sw >= 0.012)) return whole;
+    if (A.stroke === PAP) return A.opacity === '.92' && (!A.fill || A.fill === 'none') && sw < 0.024 ? '' : whole;
     // a filled shape with an outline (a node, a pan): the fill as it was, the outline by the pen over it
     let under = '';
     if (A.fill && A.fill !== 'none') {
