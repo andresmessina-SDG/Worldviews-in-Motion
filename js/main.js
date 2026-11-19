@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=83';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=83';
-import { CATALOGUE } from './catalogue.js?v=83';
-import { createMenu } from './menu.js?v=83';
+import { createPainter } from './paint.js?v=85';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=85';
+import { CATALOGUE } from './catalogue.js?v=85';
+import { createMenu } from './menu.js?v=85';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -34,7 +34,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=83'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=85'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -184,6 +184,8 @@ const READ = ['god', 'world', 'self', 'bridge', 'sin'];     // the order they ar
 const ALIGN = { god: 'center', world: 'center', bridge: 'left', self: 'left', sin: 'right' };
 const NS = 'http://www.w3.org/2000/svg';
 const labels = {};
+// has this reader opened a label on a phone? until then, each new label's bud calls attention to itself (see .call)
+let budsKnown = (() => { try { return localStorage.getItem('budsKnown') === '1'; } catch (e) { return false; } })();
 for (const k of KEYS) {
   const el = document.createElement('div');
   el.className = `l ${ALIGN[k]} ${k}`;
@@ -194,6 +196,7 @@ for (const k of KEYS) {
     e.stopPropagation();
     for (const o of KEYS) if (o !== k) labels[o].el.classList.remove('open');
     hotKey = el.classList.toggle('open') ? k : null;
+    if (hotKey && !budsKnown) { budsKnown = true; try { localStorage.setItem('budsKnown', '1'); } catch (err) { /* only for this visit */ } }
     measure();
     repaint = true;
   });
@@ -219,13 +222,16 @@ const hang = (s, align) => (align === 'left' ? s.replace(/^([“‘])/, '<span c
   : align === 'right' ? s.replace(/([”’])$/, '<span class="hang-r">$1</span>') : s);
 function setLabel(k, content, instant, wait = 550) {
   const L = labels[k];
-  const html = content ? `<span class="ti">${hang(content[0], ALIGN[k])}</span><small>${hang(content[1], ALIGN[k])}</small>` : '';
+  // (the title's last word is held to the bud that follows it on a phone, so the bud never takes a line of its own)
+  const title = content ? hang(content[0], ALIGN[k]).replace(/(\S+)$/, '<span class="tl">$1</span>') : '';
+  const html = content ? `<span class="ti">${title}</span><small>${hang(content[1], ALIGN[k])}</small>` : '';
   if (L.html === html) return;
   L.html = html;
   clearTimeout(L.timer);
   const apply = () => {
     L.el.innerHTML = html;
-    L.el.classList.remove('open');
+    L.el.classList.remove('open', 'call');
+    if (content && !budsKnown && !reduced && pageLayout === 'narrow') { void L.el.offsetWidth; L.el.classList.add('call'); }
     if (hotKey === k && (!content || pageLayout === 'narrow')) hotKey = null;
     L.on = !!content;
     L.show = L.on ? 1 : 0;

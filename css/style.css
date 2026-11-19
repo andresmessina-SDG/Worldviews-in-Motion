@@ -303,8 +303,29 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 .narrow .l { cursor: pointer; }
 .narrow .l small { display: none; font-size: .86em; opacity: .9; }
 .narrow .l.open small { display: block; }
-.narrow .l .ti::after { content: '\00a0+'; font-style: normal; font-size: .8em; opacity: .5; }
-.narrow .l.open .ti::after { content: '\00a0\2212'; }
+/* On a phone a label's second line waits behind a small bud of ink after its name: a ring, like the dots on the line
+   of history, with a cross in the act's colour. Opened, the bud fills with that colour and the cross becomes a dash.
+   Until the reader has opened one, each new label's bud swells twice as it arrives, to say it can be opened. */
+.l .tl { white-space: nowrap; }
+.narrow .l .tl::after {
+  content: ''; display: inline-block; width: .84em; height: .84em; margin-left: .26em; vertical-align: -.06em;
+  border: 1.1px solid rgba(43, 33, 29, .8); border-radius: 50%; box-sizing: border-box;
+  background:
+    linear-gradient(var(--red), var(--red)) center / 52% 1.4px no-repeat,
+    linear-gradient(var(--red), var(--red)) center / 1.4px 52% no-repeat,
+    rgba(248, 242, 228, .9);
+  transition: background-color .3s ease, transform .3s ease;
+}
+.narrow .l.open .tl::after {
+  border-color: var(--red);
+  background: linear-gradient(var(--paper), var(--paper)) center / 52% 1.4px no-repeat, var(--red);
+}
+.narrow .l:active .tl::after { transform: scale(.88); }
+@keyframes bud-call {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(43, 33, 29, 0); }
+  45% { transform: scale(1.28); box-shadow: 0 0 0 .22em rgba(43, 33, 29, .12); }
+}
+.narrow .l.call:not(.open) .tl::after { animation: bud-call 1.3s cubic-bezier(.35, 0, .3, 1) .5s 2; }
 .narrow .l { font-size: .82rem; }
 /* (on a phone the four names share a narrow line: small capitals need more width than lower case to read as well,
    so there the names keep the painting's lettering) */
