@@ -85,10 +85,16 @@ const settledOk = (s) => s.textOp.every((o) => o > 0.99) && !/lang-(in|out)|swap
     await p.goto(URL0 + '#islam/creation'); await p.waitForTimeout(1500); await p.click('#lang a[lang=es]'); await p.waitForTimeout(3000); const s = await state(p);
     check('storage blocked: still switches', allIn(s, 'es') && settledOk(s), JSON.stringify(s)); check('no errors (storage)', !errs.length, errs.join(' | ')); }
   // 7. Spanish file fails to load
-  { const ctx = await b.newContext({ viewport: { width: 1280, height: 800 } }); await ctx.route(/es\.js/, (r) => r.abort());
+  { const ctx = await b.newContext({ viewport: { width: 1280, height: 800 } }); await ctx.route(/\/es\.js/, (r) => r.abort());
     const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message));
     await p.goto(URL0 + '&lang=es#islam/creation'); await p.waitForTimeout(2000); const s = await state(p);
     check('Spanish unreachable at load: English page, working', allIn(s, 'en') && s.name === 'Islam' && s.cur === 'en', JSON.stringify(s)); check('no uncaught errors (es missing)', !errs.length, errs.join(' | ')); }
+  // 7b. the notes fail to load: the page works as before, with no cards
+  { const ctx = await b.newContext({ viewport: { width: 1280, height: 800 } }); await ctx.route(/notes\.js/, (r) => r.abort());
+    const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message));
+    await p.goto(URL0 + '#christian/redemption'); await p.waitForTimeout(2000); const s = await state(p);
+    const cards = await p.evaluate(() => document.querySelectorAll('#labels .has-note').length);
+    check('notes unreachable: the page works, with no cards', allIn(s, 'en') && s.name === 'Christian Theism' && cards === 0, JSON.stringify(s)); check('no uncaught errors (notes missing)', !errs.length, errs.join(' | ')); }
   // 8. reduced motion
   { const p = await mk(1280, 800, { reducedMotion: 'reduce' }); await p.goto(URL0 + '#taoism/the-way'); await p.waitForTimeout(1500);
     await p.click('#lang a[lang=es]'); await p.waitForTimeout(300); const s = await state(p);
@@ -97,8 +103,8 @@ const settledOk = (s) => s.textOp.every((o) => o > 0.99) && !/lang-(in|out)|swap
   { const p = await mk(); await p.goto(URL0 + '#nihilism/an-accident'); await p.waitForTimeout(1500);
     await p.focus('#lang a[lang=es]'); await p.keyboard.press('Enter'); await p.waitForTimeout(3000); const s = await state(p);
     check('Enter on the switch works', allIn(s, 'es') && settledOk(s), JSON.stringify(s)); }
-  // 10. buds on a phone
-  { const p = await mk(390, 844, { hasTouch: true }); await p.goto(URL0 + '#christian/redemption'); await p.waitForTimeout(2000);
+  // 10. buds on a phone (on labels with no note, which open their second line in place: those with notes are tests/notes.js's)
+  { const p = await mk(390, 844, { hasTouch: true }); await p.goto(URL0 + '#deism/clockmaker'); await p.mouse.move(387, 841); await p.waitForTimeout(3200);
     const calls = await p.evaluate(() => document.querySelectorAll('#labels .l.call').length);
     const bud = await p.evaluate(() => { const t = document.querySelector('#labels .l.bridge .tl'); const cs = getComputedStyle(t, '::after'); return [cs.width, cs.borderRadius, cs.animationName]; });
     check('buds call before any is opened', calls >= 4 && bud[2] === 'bud-call', `${calls} ${bud}`);
@@ -116,10 +122,14 @@ const settledOk = (s) => s.textOp.every((o) => o > 0.99) && !/lang-(in|out)|swap
     const s = await state(p); const open = await p.evaluate(() => document.querySelectorAll('#labels .l.open').length);
     check('language change with a label open: settled, closed', allIn(s, 'es') && settledOk(s) && open === 0, `${open} ${JSON.stringify(s)}`);
     check('no errors (buds)', !p.errs.length, p.errs.join(' | ')); }
-  // 11. desktop: no buds
-  { const p = await mk(1280, 800); await p.goto(URL0 + '#christian/redemption'); await p.waitForTimeout(1500);
-    const w = await p.evaluate(() => getComputedStyle(document.querySelector('#labels .l.god .tl'), '::after').content);
-    check('no bud on a wide screen', w === 'none' || w === 'normal', w); }
+  // 11. a wide screen: a bud only where a label has a note
+  { const p = await mk(1280, 800); await p.goto(URL0 + '#deism/clockmaker'); await p.waitForTimeout(1500);
+    const bud = (k) => p.evaluate((k) => getComputedStyle(document.querySelector(`#labels .l.${k} .tl`), '::after').content, k);
+    const w = await bud('god');
+    check('no bud on a wide screen where there is no note', w === 'none' || w === 'normal', w);
+    await p.goto(URL0 + '#christian/redemption'); await p.waitForTimeout(7500);   // (a move: the labels come as it settles)
+    const w2 = await bud('god');
+    check('a bud on a wide screen where there is a note', w2 !== 'none' && w2 !== 'normal', w2); }
   console.log(results.every(Boolean) ? 'ALL PASS' : `${results.filter((x) => !x).length} FAILED`);
   await b.close();
   process.exitCode = results.every(Boolean) ? 0 : 1;

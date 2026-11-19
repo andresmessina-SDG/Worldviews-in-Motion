@@ -1,10 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=114';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=114';
-import { CATALOGUE } from './catalogue.js?v=114';
-import { createMenu } from './menu.js?v=114';
-import { noteFor } from './notes.js?v=114';
+import { createPainter } from './paint.js?v=115';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=115';
+import { CATALOGUE } from './catalogue.js?v=115';
+import { createMenu } from './menu.js?v=115';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -15,6 +14,11 @@ const params = new URLSearchParams(location.search);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // (a number from the address, kept to a range; anything else gives the fallback)
 const num = (name, lo, hi, fallback) => { const v = Number(params.get(name)); return Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : fallback; };
+// The notes on the cards are a help, not a part the page needs: if they cannot be fetched, the page works as before,
+// with no cards (see the note card below).
+let noteFor = () => null;
+try { ({ noteFor } = await import('./notes.js?v=115')); } catch (err) { console.error(err); }
+
 // ---------- language ----------
 // English unless Spanish is asked for: in the address (?lang=es), by the reader's earlier choice, or by the browser's
 // own language. Spanish lays its words over the English (js/es.js); the English is kept, to go back to.
@@ -35,7 +39,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=114'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=115'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
