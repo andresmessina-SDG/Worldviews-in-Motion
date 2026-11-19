@@ -34,7 +34,8 @@ export function createMenu(root, items, { isBuilt, onSelect, pencil = 'not yet p
     // a finger's choice is made when it lifts; the click the browser adds afterwards may land on a neighbour
     b.addEventListener('click', () => { if (performance.now() - lastTouch < 900) return; choose(i); b.blur(); });
     // only a keyboard's focus should hold the menu open, not the focus a click leaves behind
-    b.addEventListener('focus', () => { if (b.matches(':focus-visible')) keyFocus = i; });
+    // (and from that moment every tab can be reached by the keyboard, before the next frame draws them out)
+    b.addEventListener('focus', () => { if (b.matches(':focus-visible')) { keyFocus = i; for (const t of tabs) t.el.tabIndex = 0; } });
     b.addEventListener('blur', () => { if (keyFocus === i) keyFocus = -1; });
     root.appendChild(b);
     return { el: b, name: b.querySelector('.tab-name'), dab: b.lastChild, built, gapBefore: i > 0 && items[i - 1].family !== it.family, w: 0 };
@@ -212,7 +213,8 @@ export function createMenu(root, items, { isBuilt, onSelect, pencil = 'not yet p
       t.el.style.setProperty('--ds', `${ds.toFixed(1)}px`);
       t.el.classList.toggle('hot', i === shown);
       t.el.classList.toggle('cur', isCur);
-      t.el.tabIndex = isCur || (openT > 0.5 && depth > 0.6) ? 0 : -1;
+      // (a keyboard in the menu can reach every tab at once, without waiting for them to slide out)
+      t.el.tabIndex = isCur || keyFocus >= 0 || (openT > 0.5 && depth > 0.6) ? 0 : -1;
       // a tab takes clicks only while it is out, and only across the part that can be seen
       const reach = 44 + out * (t.w * k + 20);
       t.el.style.width = `${reach.toFixed(0)}px`;
