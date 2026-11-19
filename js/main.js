@@ -1,9 +1,10 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=110';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=110';
-import { CATALOGUE } from './catalogue.js?v=110';
-import { createMenu } from './menu.js?v=110';
+import { createPainter } from './paint.js?v=114';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=114';
+import { CATALOGUE } from './catalogue.js?v=114';
+import { createMenu } from './menu.js?v=114';
+import { noteFor } from './notes.js?v=114';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -34,7 +35,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=110'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=114'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -178,7 +179,7 @@ if (params.has('k')) {
 // label's line is drawn heavier, while the pointer is on the label.
 let hotKey = null, hotWas = null;
 const hot = new Float32Array(4), named = {};
-addEventListener('click', () => { if (pageLayout !== 'narrow') return; hotKey = null; let any = false; for (const o of KEYS) any = labels[o].el.classList.toggle('open', false) || any; measure(); repaint = true; });
+addEventListener('click', (e) => { if (card.key && !card.el.contains(e.target)) closeCard(true); if (pageLayout !== 'narrow') return; hotKey = null; let any = false; for (const o of KEYS) any = labels[o].el.classList.toggle('open', false) || any; measure(); repaint = true; });
 const KEYS = ['god', 'world', 'bridge', 'self', 'sin'];
 const READ = ['god', 'world', 'self', 'bridge', 'sin'];     // the order they are read in
 const ALIGN = { god: 'center', world: 'center', bridge: 'left', self: 'left', sin: 'right' };
@@ -192,6 +193,8 @@ for (const k of KEYS) {
   $('labels').appendChild(el);
   // On a phone only a label's first line shows; a tap opens its second, and closes any other that was open.
   el.addEventListener('click', (e) => {
+    // (a label with a note opens its card, on any screen; see the note card below)
+    if (labels[k].note) { e.stopPropagation(); openCard(k); return; }
     if (pageLayout !== 'narrow') return;
     e.stopPropagation();
     for (const o of KEYS) if (o !== k) labels[o].el.classList.remove('open');
@@ -206,14 +209,15 @@ for (const k of KEYS) {
   });
   // The pointer on a label (or, on a phone, the label opened) lights the thing it names: see hot below.
   el.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse' && pageLayout !== 'narrow') hotKey = k; });
-  el.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && pageLayout !== 'narrow' && hotKey === k) hotKey = null; });
+  el.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && pageLayout !== 'narrow' && hotKey === k && card.key !== k) hotKey = null; });
+  el.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && labels[k].note) { e.preventDefault(); openCard(k); } });
   const g = document.createElementNS(NS, 'g');
   const path = document.createElementNS(NS, 'path');
   const dot = document.createElementNS(NS, 'circle');
   dot.setAttribute('r', 2.6);
   g.append(path, dot);
   if (ALIGN[k] !== 'center' || k === 'god') $('lines').appendChild(g);
-  labels[k] = { el, g, path, dot, on: false, timer: null, w: 0, h: 0, show: 0, lift: 0 };
+  labels[k] = { el, g, path, dot, on: false, timer: null, w: 0, h: 0, show: 0, lift: 0, note: null };
 }
 // (the line and its dot fade themselves, rather than their group, for the reason given at flatten() below)
 function fadeLeader(L, a) {
@@ -229,11 +233,19 @@ function setLabel(k, content, instant, wait = 550) {
   // (the title's last word is held to the bud that follows it on a phone, so the bud never takes a line of its own)
   const title = content ? hang(content[0], ALIGN[k]).replace(/(\S+)$/, '<span class="tl">$1</span>') : '';
   const html = content ? `<span class="ti">${title}</span><small>${hang(content[1], ALIGN[k])}</small>` : '';
-  if (L.html === html) return;
+  const note = content ? noteFor(lang, cur.wv, cur.act, k) : null;
+  if (L.html === html && L.note === note) return;
   L.html = html;
   clearTimeout(L.timer);
   const apply = () => {
     L.el.innerHTML = html;
+    L.note = note;
+    L.content = content;
+    if (card.key === k) closeCard(true);
+    // (a label with a note can be opened: by the pointer, a finger, or the keyboard)
+    L.el.classList.toggle('has-note', !!note);
+    if (note) { L.el.tabIndex = 0; L.el.setAttribute('role', 'button'); L.el.setAttribute('aria-label', `${content[0]}: ${content[1]}`); L.el.removeAttribute('aria-hidden'); }
+    else { L.el.removeAttribute('tabindex'); L.el.removeAttribute('role'); L.el.removeAttribute('aria-label'); L.el.setAttribute('aria-hidden', 'true'); }
     L.el.classList.remove('open', 'call');
     if (content && !budsKnown && !reduced && pageLayout === 'narrow') { void L.el.offsetWidth; L.el.classList.add('call'); }
     if (hotKey === k && (!content || pageLayout === 'narrow')) hotKey = null;
@@ -355,6 +367,7 @@ function go(wv, act, step = false) {
   act = Math.min(3, Math.max(0, act));
   if (wv === cur.wv && act === cur.act) return;
   const moved = wv !== cur.wv;
+  closeCard(true);
   // (a move that interrupts another keeps the worldviews of both on the page until it settles)
   onPage = performance.now() - t0 < dur ? new Set([...onPage, wv]) : new Set([cur.wv, wv]);
   from = { ...live };
@@ -397,6 +410,7 @@ if (frozen === null) menu.peek(2800);
 
 let auto = frozen === null && !location.hash && !params.has('act') && !reduced;
 addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && card.key) { const k = card.key; closeCard(true); labels[k].el.focus(); return; }
   if (e.key === 'ArrowRight') { auto = false; go(cur.wv, cur.act + 1); }
   if (e.key === 'ArrowLeft') { auto = false; go(cur.wv, cur.act - 1); }
 });
@@ -1864,6 +1878,244 @@ function placeLang() {
   sw.style.top = `${Math.round(y)}px`;
   sw.classList.add('placed');
 }
+// ---------- the note card ----------
+// A label with a note opens a card: one broad stroke of watercolour in the act's colour, brushed across a space beside
+// the label, and the words written on it once the paint has stopped running. The stroke is painted once, when the card
+// opens, onto a canvas of its own: its shape from the hairs of a broad brush, its colour from the act's accent, denser
+// where the brush was loaded, with grain in the paper's hollows and a tide line where its edge dried. It is laid down
+// wet (darker), drying lighter behind the brush. While the card is open a faint light drifts across it now and then.
+// It closes on a click or tap elsewhere, on Escape, and whenever the page changes under it (an act, a worldview, the
+// language, the size of the window).
+const card = { key: null, el: null, raf: 0, timers: [] };
+{
+  const el = document.createElement('div');
+  el.id = 'card';
+  el.setAttribute('role', 'dialog');
+  el.innerHTML = '<canvas aria-hidden="true"></canvas><div class="w k"></div><div class="w sub"></div><p class="w note"></p><div class="w ref"></div>';
+  el.addEventListener('click', (e) => e.stopPropagation());
+  document.body.appendChild(el);
+  const lead = document.createElementNS(NS, 'svg');
+  lead.id = 'card-lead';
+  lead.setAttribute('aria-hidden', 'true');
+  lead.innerHTML = '<path/>';
+  document.body.appendChild(lead);
+  Object.assign(card, { el, cv: el.querySelector('canvas'), lead, leadPath: lead.querySelector('path') });
+}
+const hash1c = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const noiseC = (t) => { const i = Math.floor(t), u = t - i, s = u * u * (3 - 2 * u); return hash1c(i) * (1 - s) + hash1c(i + 1) * s; };
+const noise2C = (x, y) => {
+  const i = Math.floor(x), j = Math.floor(y), u = x - i, v = y - j, su = u * u * (3 - 2 * u), sv = v * v * (3 - 2 * v);
+  const a = hash1c(i + j * 57), b = hash1c(i + 1 + j * 57), c = hash1c(i + (j + 1) * 57), d = hash1c(i + 1 + (j + 1) * 57);
+  return a + (b - a) * su + (c - a) * sv + (a - b - c + d) * su * sv;
+};
+// the stroke, painted once: its colour onto one canvas and its dried edge onto another (W, H in css pixels)
+function paintStroke(W, H, rgbc, dpr) {
+  const mk = () => { const k = document.createElement('canvas'); k.width = Math.round(W * dpr); k.height = Math.round(H * dpr); const x = k.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); return [k, x]; };
+  const x0 = 20, x1 = W - 8, cy = H / 2 + 2, half = H / 2 - 20;
+  const spine = (x) => cy - 0.03 * H * Math.sin(((x - x0) / (x1 - x0)) * Math.PI * 0.9) + 0.02 * H * ((x - x0) / (x1 - x0));
+  const widthAt = (u) => half * (u < 0.05 ? 0.82 + 0.18 * Math.sin((u / 0.05) * Math.PI / 2) : u > 0.84 ? 1 - 0.2 * ((u - 0.84) / 0.16) : 1) * (1 + 0.025 * Math.sin(u * 11));
+  // the shape: the hairs of a broad brush, set down in a curve, its outer hairs ragged, running dry at the end
+  const [mask, m] = mk();
+  const N = Math.round(H / 2.1);
+  m.lineCap = 'round'; m.strokeStyle = '#000';
+  for (let k = 0; k < N; k++) {
+    const v = (k / (N - 1)) * 2 - 1, edge = Math.abs(v);
+    const dry = 0.84 + 0.16 * hash1c(k * 3.1) - (edge > 0.8 ? 0.1 * hash1c(k) : 0);
+    const xs = x0 + 18 * v * v + 6 * hash1c(k * 5.3);
+    m.lineWidth = 3.4 + 1.6 * hash1c(k);
+    let on = false;
+    for (let x = Math.round(xs); x <= x1; x += 2) {
+      const u = (x - x0) / (x1 - x0);
+      if (u > dry + 0.1 * noiseC(k * 0.7 + x * 0.012)) break;
+      const gap = (edge > 0.9 && noiseC(k * 2.7 + x * 0.045) < (edge - 0.9) * 4) || (u > 0.8 && noiseC(k * 1.9 + x * 0.07) < (u - 0.8) * 2.2);
+      const y = spine(x) + v * widthAt(u) + (noiseC(k * 0.37 + x * 0.011) - 0.5) * 2.4;
+      if (gap) { if (on) m.stroke(); on = false; continue; }
+      if (!on) { m.beginPath(); m.moveTo(x, y); on = true; } else m.lineTo(x, y);
+    }
+    if (on) m.stroke();
+  }
+  // its colour and its dried edge
+  const [blur, b] = mk(); b.setTransform(1, 0, 0, 1, 0, 0); b.filter = `blur(${2.5 * dpr}px)`; b.drawImage(mask, 0, 0);
+  const cw = mask.width, ch = mask.height;
+  const md = m.getImageData(0, 0, cw, ch).data, bd = b.getImageData(0, 0, cw, ch).data;
+  const [paint, p] = mk(), [tide, t] = mk();
+  const img = p.createImageData(cw, ch), td = t.createImageData(cw, ch);
+  for (let j = 0; j < ch; j++) {
+    for (let i = 0; i < cw; i++) {
+      const o = (j * cw + i) * 4, a = md[o + 3] / 255;
+      if (a < 0.01) continue;
+      const x = i / dpr, y = j / dpr, u = (x - x0) / (x1 - x0);
+      const load = 1.06 - 0.16 * Math.max(0, u);
+      const low = 0.92 + 0.16 * noise2C(x * 0.025, y * 0.03);
+      const grain = 1 - 0.14 * Math.pow(noise2C(x * 0.9, y * 0.9), 3) - (noise2C(x * 2.3 + 7, y * 2.3) > 0.78 ? 0.1 : 0);
+      const k = load * low * grain;
+      img.data[o] = rgbc[0] * k; img.data[o + 1] = rgbc[1] * k; img.data[o + 2] = rgbc[2] * k; img.data[o + 3] = 255 * Math.min(1, a * 1.15) * 0.97;
+      const e = Math.max(0, a - bd[o + 3] / 255);
+      td.data[o] = rgbc[0] * 0.45; td.data[o + 1] = rgbc[1] * 0.45; td.data[o + 2] = rgbc[2] * 0.45;
+      td.data[o + 3] = 255 * Math.min(1, e * 2.4) * 0.8 * (u > 0.78 ? Math.max(0.25, 1 - (u - 0.78) * 5) : 1);
+    }
+  }
+  p.putImageData(img, 0, 0); t.putImageData(td, 0, 0);
+  return { paint, tide, x0, x1, cy, half };
+}
+// the act's colour, made a little more vivid for a whole stroke of it, and the tones the words take on it
+function cardColours(acc) {
+  const [r, g, b] = acc, mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2;
+  const sat = (v) => Math.round(Math.max(0, Math.min(255, l + (v - l) * 1.25)));
+  const c = [sat(r), sat(g), sat(b)];
+  const dk = c.map((v) => Math.round(v * 0.35));
+  return { c, shadow: `rgba(${dk.join(',')},.6)`, glow: `rgba(${dk.join(',')},.35)` };
+}
+// where the card goes: beside the label on whichever side has room, clear of the other labels, the language switch and
+// the words of the page; the place with the least in its way wins, and the nearer to the label the better
+function placeCard(k, w, h, pad) {
+  const W = innerWidth, Hh = innerHeight, R = labels[k].el.getBoundingClientRect(), m = 12;
+  const box = (x, y) => ({ l: x - pad, t: y - pad, r: x + w + pad, b: y + h + pad });
+  // (what it should keep clear of, and how much each counts: never the language switch; hardly ever the words of the page;
+  // its own label and the names of the acts; least of all the other labels, which step back while it is open)
+  const hit = (a, q) => Math.max(0, Math.min(a.r, q.right) - Math.max(a.l, q.left)) * Math.max(0, Math.min(a.b, q.bottom) - Math.max(a.t, q.top));
+  const words = (q) => { const rg = document.createRange(); rg.selectNodeContents(document.querySelector(q)); return rg.getBoundingClientRect(); };
+  const keep = [[$('lang').getBoundingClientRect(), 1e6], [words('.head'), 40], [words('.act'), 40], [R, 8],
+    ...[...$('marks').children].map((b) => [b.getBoundingClientRect(), 4]),
+    ...KEYS.filter((o) => o !== k && labels[o].on).map((o) => [labels[o].el.getBoundingClientRect(), 1])];
+  const over = (a) => keep.reduce((s, [q, wgt]) => s + wgt * hit(a, q), 0);
+  const clampX = (x) => Math.min(W - m - w - pad * 0.4, Math.max(m + pad * 0.4 + (pageLayout === 'narrow' ? 0 : 40), x));
+  const clampY = (y) => Math.min(Hh - m - h - pad * 0.3, Math.max(m + pad * 0.3, y));
+  const cx = (R.left + R.right) / 2, cyl = (R.top + R.bottom) / 2;
+  const tries = [
+    [R.right + 28, cyl - h * 0.35], [R.right + 28, cyl - h * 0.75], [R.right + 28, cyl - h * 0.05],
+    [R.left - 28 - w, cyl - h * 0.35], [R.left - 28 - w, cyl - h * 0.75],
+    [cx - w / 2, R.bottom + 22], [cx - w / 2, R.top - 22 - h], [R.left, R.bottom + 22], [R.right - w, R.top - 22 - h],
+  ];
+  let best = null;
+  for (const [tx, ty] of tries) {
+    const x = clampX(tx), y = clampY(ty), score = over(box(x, y)) + 0.5 * Math.hypot(x + w / 2 - cx, y + h / 2 - cyl);
+    if (!best || score < best.score) best = { x, y, score };
+  }
+  return best;
+}
+function closeCard(animated) {
+  if (!card.key) return;
+  const k = card.key;
+  card.key = null;
+  card.timers.forEach(clearTimeout); card.timers = [];
+  if (labels[k]) { labels[k].el.classList.remove('open'); labels[k].el.setAttribute('aria-expanded', 'false'); }
+  if (hotKey === k) hotKey = null;
+  document.body.classList.remove('card-open', 'card-over-words');
+  const el = card.el;
+  if (!animated || reduced) { cancelAnimationFrame(card.raf); el.className = ''; card.lead.classList.remove('on'); return; }
+  // (the words go first, then the paint lifts away)
+  el.classList.remove('words'); el.classList.add('closing'); card.lead.classList.remove('on');
+  card.closeAt = performance.now();
+  card.timers.push(setTimeout(() => { if (!card.key) { cancelAnimationFrame(card.raf); el.className = ''; } }, 760));
+}
+function openCard(k) {
+  const L = labels[k];
+  // (only a label that is fully there: not one fading out as the page changes, nor one not yet arrived)
+  if (!L.note || !L.on || L.el.style.opacity === '0') return;
+  if (card.key === k) { closeCard(true); return; }
+  closeCard(false);
+  // (everything on the card comes from the label itself, so the two always agree)
+  const a = actOf(), content = L.content, [text, ref] = L.note;
+  const el = card.el, narrow = pageLayout === 'narrow';
+  el.querySelector('.k').textContent = content[0];
+  el.querySelector('.sub').textContent = content[1];
+  el.querySelector('.note').textContent = text;
+  el.querySelector('.ref').textContent = ref || '';
+  el.setAttribute('aria-label', content[0]);
+  const col = cardColours(a.p.acc);
+  el.style.setProperty('--card-shadow', col.shadow);
+  el.style.setProperty('--card-glow', col.glow);
+  // its size: a column of comfortable measure, narrower on a phone
+  const w = Math.min(narrow ? innerWidth - 2 * 12 - 2 * 30 : 290, 290);
+  el.style.width = `${w}px`;
+  el.className = 'measure';
+  const h = el.offsetHeight, padX = narrow ? 30 : 40, padY = 26;
+  // (placed by the whole of the stroke as it will be painted, which reaches beyond the words on every side)
+  const at = placeCard(k, w + 2 * padX, h + 2 * padY, 6);
+  el.style.left = `${at.x + padX}px`;
+  el.style.top = `${at.y + padY}px`;
+  { const a2 = { l: at.x, t: at.y, r: at.x + w + 2 * padX, b: at.y + h + 2 * padY };
+    const under = (q) => { const rg = document.createRange(); rg.selectNodeContents(document.querySelector(q)); const r = rg.getBoundingClientRect(); return r.right > a2.l && r.left < a2.r && r.bottom > a2.t && r.top < a2.b; };
+    document.body.classList.toggle('card-over-words', under('.head') || under('.act')); }
+  // the stroke, painted for this size and colour
+  const dpr = Math.min(2, devicePixelRatio || 1), CW = w + 2 * padX, CH = h + 2 * padY;
+  const cv = card.cv;
+  Object.assign(cv.style, { left: `${-padX}px`, top: `${-padY}px`, width: `${CW}px`, height: `${CH}px` });
+  cv.width = Math.round(CW * dpr); cv.height = Math.round(CH * dpr);
+  const st = paintStroke(CW, CH, col.c, dpr);
+  card.key = k;
+  document.body.classList.add('card-open');
+  L.el.classList.add('open');
+  L.el.setAttribute('aria-expanded', 'true');
+  hotKey = k;
+  if (!budsKnown) { budsKnown = true; for (const o of KEYS) labels[o].el.classList.remove('call'); try { localStorage.setItem('budsKnown', '1'); } catch (err) { /* only for this visit */ } }
+  // the pen line from the label to the card, drawn first
+  const leadTo = () => {
+    const R = L.el.getBoundingClientRect(), C = el.getBoundingClientRect();
+    const lx = Math.max(R.left, Math.min(R.right, C.left + C.width / 2)), ly = Math.max(R.top, Math.min(R.bottom, C.top + C.height / 2));
+    const tx = Math.max(C.left - 6, Math.min(C.right + 6, lx)), ty = Math.max(C.top - 4, Math.min(C.bottom + 4, ly));
+    const sx = lx + Math.sign(tx - lx) * 4, sy = ly + Math.sign(ty - ly) * 4;
+    card.leadPath.setAttribute('d', `M${sx.toFixed(1)},${sy.toFixed(1)} C${((sx + tx) / 2).toFixed(1)},${sy.toFixed(1)} ${tx.toFixed(1)},${((sy + ty) / 2).toFixed(1)} ${tx.toFixed(1)},${ty.toFixed(1)}`);
+  };
+  leadTo();
+  const len = card.leadPath.getTotalLength();
+  card.leadPath.style.strokeDasharray = `${len + 2}`;
+  card.leadPath.style.strokeDashoffset = reduced ? '0' : `${len + 2}`;
+  card.lead.classList.add('on');
+  void card.lead.getBoundingClientRect();
+  card.leadPath.style.strokeDashoffset = '0';
+  el.className = reduced ? 'open words' : 'open';
+  // painting it on: the brush sets down, sweeps across fast and slows as it lifts; the paint dries behind it
+  const g = cv.getContext('2d');
+  const start = performance.now(), T0 = reduced ? -1e4 : 160, T = 880;
+  const headAt = (now) => {
+    const q = (now - start - T0) / T;
+    if (q <= 0) return st.x0 - 30 + 30 * Math.max(0, 1 + q * 4);
+    const e = q >= 1 ? 1 : q < 0.5 ? 4 * q * q * q : 1 - Math.pow(-2 * q + 2, 3) / 2;
+    return st.x0 + (st.x1 - st.x0 + 40) * e;
+  };
+  // (when the head passed a point: for the drying behind it)
+  const passAt = (x) => { let lo = 0, hi = T; for (let i = 0; i < 16; i++) { const mid = (lo + hi) / 2; if (headAt(start + T0 + mid) < x) lo = mid; else hi = mid; } return start + T0 + lo; };
+  const front = (xh, y) => xh + 10 * (noiseC(y * 0.08) - 0.5) + 6 * (noiseC(y * 0.31 + 5) - 0.5) - (y - st.cy) * 0.12;
+  card.closeAt = 0;
+  const frame = (now) => {
+    const done = now - start > T0 + T, xh = headAt(now);
+    g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, cv.width, cv.height); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const lift = card.closeAt ? Math.min(1, Math.max(0, (now - card.closeAt - 160) / 520)) : 0;
+    g.globalAlpha = 1 - lift * lift;
+    g.save(); g.beginPath(); g.moveTo(-10, -10);
+    for (let y = -10; y <= CH + 10; y += 6) g.lineTo(done ? CW + 10 : front(xh, y), y);
+    g.lineTo(-10, CH + 10); g.closePath(); g.clip();
+    g.drawImage(st.paint, 0, 0, CW, CH);
+    if (now - start < T0 + T + 700) {
+      // wet paint: darker just behind the brush, drying over two thirds of a second; the tide line where it has dried
+      let lo = st.x0 - 40, hi = st.x1 + 40;
+      for (let i = 0; i < 14; i++) { const mid = (lo + hi) / 2; if (now - passAt(mid) > 650) lo = mid; else hi = mid; }
+      const xd = lo, xw = Math.min(xh, st.x1 + 40);
+      if (xw > xd + 1) {
+        const gr = g.createLinearGradient(xd, 0, xw, 0);
+        gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.26)');
+        g.globalCompositeOperation = 'source-atop'; g.fillStyle = gr; g.fillRect(xd, 0, xw - xd, CH); g.globalCompositeOperation = 'source-over';
+      }
+      g.save(); g.beginPath(); g.rect(-10, -10, Math.max(0, xd + 30), CH + 20); g.clip(); g.drawImage(st.tide, 0, 0, CW, CH); g.restore();
+    } else g.drawImage(st.tide, 0, 0, CW, CH);
+    // the light that drifts across, very slowly
+    if (done && !reduced) {
+      const ph = ((now - start) / 9000) % 1, sx = -200 + (CW + 400) * ph;
+      const lg = g.createLinearGradient(sx - 160, 0, sx + 160, CH * 0.4);
+      lg.addColorStop(0, 'rgba(255,245,230,0)'); lg.addColorStop(0.5, 'rgba(255,245,230,.07)'); lg.addColorStop(1, 'rgba(255,245,230,0)');
+      g.globalCompositeOperation = 'source-atop'; g.fillStyle = lg; g.fillRect(0, 0, CW, CH); g.globalCompositeOperation = 'source-over';
+    }
+    g.restore(); g.globalAlpha = 1;
+    leadTo();
+    if (lift < 1) card.raf = requestAnimationFrame(frame);
+  };
+  cancelAnimationFrame(card.raf);
+  card.raf = requestAnimationFrame(frame);
+  if (!reduced) card.timers.push(setTimeout(() => { if (card.key === k) el.classList.add('words'); }, T0 + T + 260));
+}
+
 // ---------- a change of language ----------
 // The painting stays as it is and goes on moving; only the words change. The old ones dissolve into the paper like
 // ink into a wet sheet (lang-out); a stroke of clean water passes across the painting, lifting its colour a little
@@ -1897,6 +2149,7 @@ async function changeLang(l) {
     if (left > 0) await pause(left + 60);
     const calm = reduced || frozen !== null;
     lang = l;
+    closeCard(true);
     markLang();                                   // the ink slides to the other half
     const B = document.body.classList;
     if (!calm) {
@@ -1937,6 +2190,7 @@ async function changeLang(l) {
     changing = false;
   }
 }
+addEventListener('resize', () => closeCard(false));
 addEventListener('resize', resize);
 addEventListener('resize', placeLang);
 addEventListener('resize', markLang);

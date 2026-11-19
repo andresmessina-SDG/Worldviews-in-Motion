@@ -32,6 +32,9 @@ the language.
 - `menu.js`: the menu of worldviews down the left edge, by mouse, keyboard and touch.
 - `language.js`: the change of language and the buds on phone labels, at their edges: rapid clicks, a change during
   a move, history, resizing, blocked storage, Spanish failing to load, reduced motion, the keyboard.
+- `notes.js`: the note cards: opening on every label that has a note, at sizes from a 320-pixel phone up, on the
+  screen and clear of the language switch and the page's words; closing on Escape, a click elsewhere, a change of act,
+  a move or a change of language; the keyboard; reduced motion; and labels with no note behaving as before.
 - `shaders.js`: the painting's shader programs, with a software GPU. Every version must compile without errors.
 - `layout.js`: every act of every worldview at 21 window sizes, from a 320-pixel phone to an ultrawide screen. No
   words, label, name of an act or the language switch may lie on another or run off the page. "menu open" lines are

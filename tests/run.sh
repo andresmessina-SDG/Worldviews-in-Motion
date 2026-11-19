@@ -15,14 +15,14 @@ if ! curl -s -o /dev/null "$BASE/"; then
   sleep 1
 fi
 case "${1:-}" in
-  all) TESTS="suite.js menu.js language.js shaders.js layout.js" ;;
-  "") TESTS="suite.js menu.js language.js shaders.js" ;;
+  all) TESTS="suite.js menu.js language.js notes.js shaders.js layout.js" ;;
+  "") TESTS="suite.js menu.js language.js notes.js shaders.js" ;;
   *) TESTS="$1" ;;
 esac
 failed=0
 for t in $TESTS; do
   # (the language and shader tests choose their own language)
-  case "$t" in language.js|shaders.js) langs="en" ;; *) langs="en es" ;; esac
+  case "$t" in language.js|notes.js|shaders.js) langs="en" ;; *) langs="en es" ;; esac
   for l in $langs; do
     echo "== $t ($l)"
     out="$(SITE_LANG="$l" node "tests/$t" 2>&1)" || failed=1

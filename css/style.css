@@ -303,11 +303,12 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 .narrow .l { cursor: pointer; }
 .narrow .l small { display: none; font-size: .86em; opacity: .9; }
 .narrow .l.open small { display: block; }
+.narrow .l.has-note.open small { display: none; }   /* (its card holds the second line) */
 /* On a phone a label's second line waits behind a small bud of ink after its name: a ring, like the dots on the line
    of history, with a cross in the act's colour. Opened, the bud fills with that colour and the cross becomes a dash.
    Until the reader has opened one, each new label's bud swells twice as it arrives, to say it can be opened. */
 .l .tl { white-space: nowrap; }
-.narrow .l .tl::after {
+.narrow .l .tl::after, .l.has-note .tl::after {
   content: ''; display: inline-block; width: .84em; height: .84em; margin-left: .26em; vertical-align: -.06em;
   border: 1.1px solid rgba(43, 33, 29, .8); border-radius: 50%; box-sizing: border-box;
   background:
@@ -316,11 +317,11 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
     rgba(248, 242, 228, .9);
   transition: background-color .3s ease, transform .3s ease;
 }
-.narrow .l.open .tl::after {
+.narrow .l.open .tl::after, .l.has-note.open .tl::after {
   border-color: var(--red);
   background: linear-gradient(var(--paper), var(--paper)) center / 52% 1.4px no-repeat, var(--red);
 }
-.narrow .l:active .tl::after { transform: scale(.88); }
+.narrow .l:active .tl::after, .l.has-note:active .tl::after { transform: scale(.88); }
 @keyframes bud-call {
   0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(43, 33, 29, 0); }
   45% { transform: scale(1.28); box-shadow: 0 0 0 .22em rgba(43, 33, 29, .12); }
@@ -430,3 +431,36 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 @keyframes line-in { from { opacity: 0; } }
 .lang-out svg#lines g { opacity: 0; transition: opacity .3s ease; }
 .lang-in svg#lines g { animation: line-in .5s ease var(--d, 0s) both; }
+
+/* ---------- the note card ----------
+   One broad stroke of watercolour in the act's colour (painted on its canvas by main.js: see the note card there), and
+   the words written on it in pale cream, once the paint has stopped running. The title and the reference are in the
+   small capitals of the site, warm gold; the second line in the italic of the labels; the note in the body serif. */
+.l.has-note { cursor: pointer; }
+.l.has-note:focus-visible { outline: 2px solid var(--red); outline-offset: 4px; border-radius: 6px; }
+#card { position: fixed; z-index: 5; display: none; box-sizing: border-box; padding: 26px 30px 24px 32px; color: #fff7ea; isolation: isolate; }
+#card.open, #card.closing { display: block; }
+#card.measure { display: block; visibility: hidden; left: 0; top: 0; }
+#card canvas { position: absolute; z-index: -1; pointer-events: none; }
+#card .w { position: relative; opacity: 0; filter: blur(2.5px); transform: translateY(5px);
+  transition: opacity .7s ease, filter .8s ease, transform .9s cubic-bezier(.2, .7, .2, 1);
+  text-shadow: 0 1px 1.5px var(--card-shadow, rgba(60, 6, 12, .6)), 0 0 9px var(--card-glow, rgba(80, 8, 16, .35)); }
+#card.words .w { opacity: 1; filter: blur(0); transform: none; }
+#card.words .sub { transition-delay: .1s; } #card.words .note { transition-delay: .22s; } #card.words .ref { transition-delay: .38s; }
+#card.closing .w { opacity: 0; filter: blur(2px); transform: translateY(-3px); transition-duration: .3s; transition-delay: 0s; }
+#card .k { font-family: var(--caps); font-weight: 700; letter-spacing: .14em; text-transform: lowercase; font-size: 1rem; line-height: 1.1; color: #ffe0a0; }
+#card .sub { font-family: var(--soft); font-variation-settings: 'SOFT' 100, 'WONK' 0; font-style: italic; font-size: .95rem; margin: 3px 0 9px; }
+#card .note { font-family: var(--title); font-weight: 500; font-size: 1.1rem; line-height: 1.32; margin: 0; }
+#card .ref { font-family: var(--caps); font-weight: 700; letter-spacing: .1em; font-size: .82rem; color: #ffe0a0; margin-top: 9px; text-align: right; }
+#card .ref:empty { display: none; }
+#card-lead { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; overflow: visible; }
+#card-lead path { fill: none; stroke: var(--ink); stroke-width: 1.4; stroke-linecap: round; opacity: 0; transition: opacity .2s ease; }
+#card-lead.on path { opacity: .9; transition: stroke-dashoffset .25s ease, opacity .1s ease; }
+.narrow #card { padding: 22px 24px 20px 26px; }
+.narrow #card .note { font-size: 1.02rem; }
+@media (prefers-reduced-motion: reduce) { #card .w, #card-lead path { transition: none; } }
+/* while a card is open, the rest of the lettering in the painting steps back, so the card and its label stand forward */
+#labels .l, svg#lines g { transition: opacity .35s ease; }
+.card-open #labels .l:not(.open) { opacity: .14 !important; pointer-events: none; }
+.card-open svg#lines g:not(.hot) { opacity: .14; }
+.card-over-words .t { opacity: .14; transition: opacity .35s ease; }
