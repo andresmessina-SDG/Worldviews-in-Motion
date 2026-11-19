@@ -18,6 +18,9 @@ const state = (p) => p.evaluate(() => {
     cls: c.className, k: c.querySelector('.k').textContent, note: c.querySelector('.note').textContent, lang: document.documentElement.lang,
     onScreen: cv.left >= 0 && cv.top >= 0 && cv.right <= innerWidth && cv.bottom <= innerHeight,
     over: others.reduce((s, b) => s + hit(r, b), 0) + hit(r, sw), dimmed, opacity: +getComputedStyle(c.querySelector('.note')).opacity,
+    // (how much of the card lies over God's round and the world's: sampled)
+    painted: (() => { const G = window.__G, rd = [[G.cx + G.x * G.unit, G.cy - G.y * G.unit, G.r * G.unit], [G.cx, G.cy - G.wy * G.unit, G.rw * G.unit]]; let n = 0, all = 0;
+      for (let x = cv.left; x < cv.right; x += 8) for (let y = cv.top; y < cv.bottom; y += 8) { all++; if (rd.some(([a, b2, rr]) => (x - a) ** 2 + (y - b2) ** 2 < rr * rr)) n++; } return +(n / all).toFixed(3); })(),
   };
 });
 (async () => {
@@ -42,7 +45,8 @@ const state = (p) => p.evaluate(() => {
         if (!(await p.$(`#labels .l.${k}.has-note`))) continue;
         await tapOrClick(p, `#labels .l.${k}`, touch); await p.waitForTimeout(2600);
         const s = await state(p);
-        const good = s.cls.includes('open') && s.note.length > 40 && s.onScreen && s.over < 1 && s.dimmed && s.opacity > 0.95;
+        // (on a wide screen there is open paper beside the painting: the card must not lie over God or the world)
+        const good = s.cls.includes('open') && s.note.length > 40 && s.onScreen && s.over < 1 && s.dimmed && s.opacity > 0.95 && (touch || s.painted < 0.02);
         ok(`${w}x${h} ${act} ${k}: opens on the screen, clear of the switch and the words, the other labels stepping back`, good, JSON.stringify(s));
         await p.keyboard.press('Escape'); await p.waitForTimeout(800);
       }

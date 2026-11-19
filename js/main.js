@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=115';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=115';
-import { CATALOGUE } from './catalogue.js?v=115';
-import { createMenu } from './menu.js?v=115';
+import { createPainter } from './paint.js?v=117';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=117';
+import { CATALOGUE } from './catalogue.js?v=117';
+import { createMenu } from './menu.js?v=117';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -17,7 +17,7 @@ const num = (name, lo, hi, fallback) => { const v = Number(params.get(name)); re
 // The notes on the cards are a help, not a part the page needs: if they cannot be fetched, the page works as before,
 // with no cards (see the note card below).
 let noteFor = () => null;
-try { ({ noteFor } = await import('./notes.js?v=115')); } catch (err) { console.error(err); }
+try { ({ noteFor } = await import('./notes.js?v=117')); } catch (err) { console.error(err); }
 
 // ---------- language ----------
 // English unless Spanish is asked for: in the address (?lang=es), by the reader's earlier choice, or by the browser's
@@ -39,7 +39,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=115'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=117'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -652,7 +652,9 @@ function layout(p, G, dt) {
   // How much each name shows, following its fade (the .5s of .l in the stylesheet).
   for (const k of KEYS) {
     const L = labels[k];
-    L.lift = L.show > L.lift ? Math.min(L.show, L.lift + dt / 0.5) : Math.max(L.show, L.lift - dt / 0.5);
+    // (while a card is open the other labels step back, and the paper lifted under them settles back with them)
+    const want = card.key && card.key !== k ? 0 : L.show;
+    L.lift = want > L.lift ? Math.min(want, L.lift + dt / 0.5) : Math.max(want, L.lift - dt / 0.35);
   }
   // (a target can be set relative to man, and then moves with him)
   const at = { bridge: [p.lBrX, p.lBrY, p.tBrX, p.tBrY + p.tBrS * p.Sy], self: [p.rW + p.lSide, p.Sy + 0.03, 0.105, p.Sy] };
@@ -1809,7 +1811,8 @@ function frame(now) {
   arrow = frozen !== null ? frozen * 0.04 * p.flow : arrow + dt * 0.04 * p.flow * (reduced ? 0 : 1);
   orb = frozen !== null ? Math.PI / 2 + frozen * p.oSpd : orb + dt * p.oSpd * (reduced ? 0 : 1);
   const G = godAt(p, dt);
-  window.__G = { ...G, cx, cy, unit, sy: p.Sy, quality };   // for tests: where God has got to, man, and the resolution
+  window.__G = { ...G, cx, cy, unit, sy: p.Sy, wy: p.Wy, rw: p.rW, quality };   // for tests: where God has got to, man, the world, and the resolution
+  scene = { G, p };
 
   const css = rgb(p.acc);
   if (css !== accent) { accent = css; document.documentElement.style.setProperty('--red', css); }
@@ -1891,6 +1894,7 @@ function placeLang() {
 // It closes on a click or tap elsewhere, on Escape, and whenever the page changes under it (an act, a worldview, the
 // language, the size of the window).
 const card = { key: null, el: null, raf: 0, timers: [] };
+let scene = null;          // where the painted things stand, as last painted (for the card to keep clear of them)
 {
   const el = document.createElement('div');
   el.id = 'card';
@@ -1924,14 +1928,14 @@ function paintStroke(W, H, rgbc, dpr) {
   m.lineCap = 'round'; m.strokeStyle = '#000';
   for (let k = 0; k < N; k++) {
     const v = (k / (N - 1)) * 2 - 1, edge = Math.abs(v);
-    const dry = 0.84 + 0.16 * hash1c(k * 3.1) - (edge > 0.8 ? 0.1 * hash1c(k) : 0);
+    const dry = 0.88 + 0.12 * hash1c(k * 3.1) - (edge > 0.8 ? 0.06 * hash1c(k) : 0);
     const xs = x0 + 18 * v * v + 6 * hash1c(k * 5.3);
     m.lineWidth = 3.4 + 1.6 * hash1c(k);
     let on = false;
     for (let x = Math.round(xs); x <= x1; x += 2) {
       const u = (x - x0) / (x1 - x0);
       if (u > dry + 0.1 * noiseC(k * 0.7 + x * 0.012)) break;
-      const gap = (edge > 0.9 && noiseC(k * 2.7 + x * 0.045) < (edge - 0.9) * 4) || (u > 0.8 && noiseC(k * 1.9 + x * 0.07) < (u - 0.8) * 2.2);
+      const gap = u > 0.86 && noiseC(k * 1.9 + x * 0.05) < (u - 0.86) * 1.6;
       const y = spine(x) + v * widthAt(u) + (noiseC(k * 0.37 + x * 0.011) - 0.5) * 2.4;
       if (gap) { if (on) m.stroke(); on = false; continue; }
       if (!on) { m.beginPath(); m.moveTo(x, y); on = true; } else m.lineTo(x, y);
@@ -1953,7 +1957,8 @@ function paintStroke(W, H, rgbc, dpr) {
       const low = 0.92 + 0.16 * noise2C(x * 0.025, y * 0.03);
       const grain = 1 - 0.14 * Math.pow(noise2C(x * 0.9, y * 0.9), 3) - (noise2C(x * 2.3 + 7, y * 2.3) > 0.78 ? 0.1 : 0);
       const k = load * low * grain;
-      img.data[o] = rgbc[0] * k; img.data[o + 1] = rgbc[1] * k; img.data[o + 2] = rgbc[2] * k; img.data[o + 3] = 255 * Math.min(1, a * 1.15) * 0.97;
+      const thin = u > 0.84 ? 1 - 0.45 * Math.min(1, (u - 0.84) / 0.16) : 1;          // (the paint thinning as the brush runs dry)
+      img.data[o] = rgbc[0] * k; img.data[o + 1] = rgbc[1] * k; img.data[o + 2] = rgbc[2] * k; img.data[o + 3] = 255 * Math.min(1, a * 1.15) * 0.97 * thin;
       const e = Math.max(0, a - bd[o + 3] / 255);
       td.data[o] = rgbc[0] * 0.45; td.data[o + 1] = rgbc[1] * 0.45; td.data[o + 2] = rgbc[2] * 0.45;
       td.data[o + 3] = 255 * Math.min(1, e * 2.4) * 0.8 * (u > 0.78 ? Math.max(0.25, 1 - (u - 0.78) * 5) : 1);
@@ -1966,7 +1971,8 @@ function paintStroke(W, H, rgbc, dpr) {
 function cardColours(acc) {
   const [r, g, b] = acc, mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2;
   const sat = (v) => Math.round(Math.max(0, Math.min(255, l + (v - l) * 1.25)));
-  const c = [sat(r), sat(g), sat(b)];
+  // (a little deeper than the accent itself, so the card never matches the strokes the painting draws in it, such as the cross)
+  const c = [sat(r) * 0.84, sat(g) * 0.84, sat(b) * 0.84].map(Math.round);
   const dk = c.map((v) => Math.round(v * 0.35));
   return { c, shadow: `rgba(${dk.join(',')},.6)`, glow: `rgba(${dk.join(',')},.35)` };
 }
@@ -1975,28 +1981,47 @@ function cardColours(acc) {
 function placeCard(k, w, h, pad) {
   const W = innerWidth, Hh = innerHeight, R = labels[k].el.getBoundingClientRect(), m = 12;
   const box = (x, y) => ({ l: x - pad, t: y - pad, r: x + w + pad, b: y + h + pad });
-  // (what it should keep clear of, and how much each counts: never the language switch; hardly ever the words of the page;
-  // its own label and the names of the acts; least of all the other labels, which step back while it is open)
+  // What it should keep clear of, and how much each counts: never the language switch; hardly ever the words of the page;
+  // then the painting itself (God and his halo, the world, and what joins them), so that the card does not cover what it
+  // explains; its own label and the names of the acts; least of all the other labels, which step back while it is open.
   const hit = (a, q) => Math.max(0, Math.min(a.r, q.right) - Math.max(a.l, q.left)) * Math.max(0, Math.min(a.b, q.bottom) - Math.max(a.t, q.top));
   const words = (q) => { const rg = document.createRange(); rg.selectNodeContents(document.querySelector(q)); return rg.getBoundingClientRect(); };
   const keep = [[$('lang').getBoundingClientRect(), 1e6], [words('.head'), 40], [words('.act'), 40], [R, 8],
     ...[...$('marks').children].map((b) => [b.getBoundingClientRect(), 4]),
     ...KEYS.filter((o) => o !== k && labels[o].on).map((o) => [labels[o].el.getBoundingClientRect(), 1])];
-  const over = (a) => keep.reduce((s, [q, wgt]) => s + wgt * hit(a, q), 0);
+  // (the painted shapes, in pixels: rounds for God and the world, and a band down the middle for what joins them)
+  const rounds = [], bands = [];
+  if (scene) {
+    const { G, p } = scene, X = (x) => cx + x * unit, Y = (y) => cy - y * unit;
+    if (p.godA > 0.05 || p.pleroma > 0.01) rounds.push([X(G.x), Y(G.y), (G.r + 0.17) * unit]);
+    if (p.worldA > 0.05) rounds.push([X(0), Y(p.Wy), (p.rW + 0.04) * unit]);
+    bands.push({ left: X(-0.13), right: X(0.13), top: Y(G.y), bottom: Y(p.Sy) });
+  }
+  const PAINT = pageLayout === 'narrow' ? 6 : 30;    // (on a phone the painting fills the width: there the words come first)
+  const painted = (a) => {
+    let s = 0;
+    const nx = 14, ny = 10, cw = (a.r - a.l) / nx, ch = (a.b - a.t) / ny;
+    for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+      const x = a.l + (i + 0.5) * cw, y = a.t + (j + 0.5) * ch;
+      if (rounds.some(([ox, oy, r]) => (x - ox) ** 2 + (y - oy) ** 2 < r * r) || bands.some((q) => x > q.left && x < q.right && y > q.top && y < q.bottom)) s += cw * ch;
+    }
+    return s;
+  };
+  const over = (a) => keep.reduce((s, [q, wgt]) => s + wgt * hit(a, q), 0) + PAINT * painted(a);
   const clampX = (x) => Math.min(W - m - w - pad * 0.4, Math.max(m + pad * 0.4 + (pageLayout === 'narrow' ? 0 : 40), x));
   const clampY = (y) => Math.min(Hh - m - h - pad * 0.3, Math.max(m + pad * 0.3, y));
-  const cx = (R.left + R.right) / 2, cyl = (R.top + R.bottom) / 2;
-  const tries = [
-    [R.right + 28, cyl - h * 0.35], [R.right + 28, cyl - h * 0.75], [R.right + 28, cyl - h * 0.05],
-    [R.left - 28 - w, cyl - h * 0.35], [R.left - 28 - w, cyl - h * 0.75],
-    [cx - w / 2, R.bottom + 22], [cx - w / 2, R.top - 22 - h], [R.left, R.bottom + 22], [R.right - w, R.top - 22 - h],
-  ];
+  const lx = (R.left + R.right) / 2, ly = (R.top + R.bottom) / 2;
+  // every place across the page is tried; the one with least in its way wins, and the nearer its label the better
   let best = null;
-  for (const [tx, ty] of tries) {
-    const x = clampX(tx), y = clampY(ty), score = over(box(x, y)) + 0.5 * Math.hypot(x + w / 2 - cx, y + h / 2 - cyl);
-    if (!best || score < best.score) best = { x, y, score };
+  for (let tx = m; tx <= W - w - m; tx += 24) {
+    for (let ty = m; ty <= Hh - h - m; ty += 20) {
+      const x = clampX(tx), y = clampY(ty);
+      const near = Math.hypot(Math.max(0, x - R.right, R.left - (x + w)), Math.max(0, y - R.bottom, R.top - (y + h)));
+      const score = over(box(x, y)) + 0.35 * near * near / 10 + 2 * near;
+      if (!best || score < best.score) best = { x, y, score };
+    }
   }
-  return best;
+  return best || { x: clampX(lx), y: clampY(ly) };
 }
 function closeCard(animated) {
   if (!card.key) return;
@@ -2031,7 +2056,7 @@ function openCard(k) {
   el.style.setProperty('--card-shadow', col.shadow);
   el.style.setProperty('--card-glow', col.glow);
   // its size: a column of comfortable measure, narrower on a phone
-  const w = Math.min(narrow ? innerWidth - 2 * 12 - 2 * 30 : 290, 290);
+  const w = Math.min(narrow ? innerWidth - 2 * 12 - 2 * 30 : 262, 262);
   el.style.width = `${w}px`;
   el.className = 'measure';
   const h = el.offsetHeight, padX = narrow ? 30 : 40, padY = 26;
