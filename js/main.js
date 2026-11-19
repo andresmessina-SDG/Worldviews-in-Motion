@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=85';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=85';
-import { CATALOGUE } from './catalogue.js?v=85';
-import { createMenu } from './menu.js?v=85';
+import { createPainter } from './paint.js?v=86';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=86';
+import { CATALOGUE } from './catalogue.js?v=86';
+import { createMenu } from './menu.js?v=86';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -34,7 +34,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=85'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=86'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -196,7 +196,11 @@ for (const k of KEYS) {
     e.stopPropagation();
     for (const o of KEYS) if (o !== k) labels[o].el.classList.remove('open');
     hotKey = el.classList.toggle('open') ? k : null;
-    if (hotKey && !budsKnown) { budsKnown = true; try { localStorage.setItem('budsKnown', '1'); } catch (err) { /* only for this visit */ } }
+    if (hotKey && !budsKnown) {
+      budsKnown = true;
+      for (const o of KEYS) labels[o].el.classList.remove('call');
+      try { localStorage.setItem('budsKnown', '1'); } catch (err) { /* only for this visit */ }
+    }
     measure();
     repaint = true;
   });
@@ -1649,47 +1653,52 @@ async function changeLang(l) {
     // (Spanish could not be fetched: load the page again in it, as a last resort)
     const to = new URL(location.href); to.searchParams.set('lang', l); location.replace(to.href); return;
   }
-  // (a move under way finishes first, so that its words are not cut short)
-  const left = t0 + dur - performance.now();
-  if (left > 0) await pause(left + 60);
-  const calm = reduced || frozen !== null;
-  lang = l;
-  markLang();                                   // the ink slides to the other half
-  const B = document.body.classList;
-  if (!calm) {
-    washAt = performance.now() + 250;
-    INKED.forEach((sel, i) => document.querySelectorAll(sel).forEach((el) => el.style.setProperty('--d', `${(i * 0.045).toFixed(3)}s`)));
-    // (a label's line is drawn once its words are on the paper)
-    READ.forEach((k) => labels[k].g.style.setProperty('--d', `${((INKED.indexOf(`#labels .l.${k}`) + 4) * 0.045).toFixed(3)}s`));
-    B.add('lang-out');
-    await pause(500);
+  // (whatever happens below, the switch is free again afterwards, and no word is left hidden)
+  try {
+    // (a move under way finishes first, so that its words are not cut short)
+    const left = t0 + dur - performance.now();
+    if (left > 0) await pause(left + 60);
+    const calm = reduced || frozen !== null;
+    lang = l;
+    markLang();                                   // the ink slides to the other half
+    const B = document.body.classList;
+    if (!calm) {
+      washAt = performance.now() + 250;
+      INKED.forEach((sel, i) => document.querySelectorAll(sel).forEach((el) => el.style.setProperty('--d', `${(i * 0.045).toFixed(3)}s`)));
+      // (a label's line is drawn once its words are on the paper)
+      READ.forEach((k) => labels[k].g.style.setProperty('--d', `${((INKED.indexOf(`#labels .l.${k}`) + 4) * 0.045).toFixed(3)}s`));
+      B.add('lang-out');
+      await pause(500);
+    }
+    applyLang(l);
+    SHY = shyOf(`${BREAKS} ${BREAKS_ES}`);
+    LONGEST = findLongest();
+    const u = new URL(location.href);
+    u.searchParams.set('lang', l);
+    history.replaceState(history.state, '', u.pathname + u.search + u.hash);
+    // The new words may need other room. The layout is chosen again for them; on a phone the painting glides to its
+    // new size rather than jumping.
+    const was = { unit, cx, cy, ext }, layoutWas = pageLayout;
+    resize(true);
+    if (!calm && layoutWas === 'narrow' && pageLayout === 'narrow') {
+      glide = { from: was, to: { unit, cx, cy, ext }, t0: performance.now() };
+      ({ unit, cx, cy, ext } = was);
+      fit();
+    }
+    menu.rename();
+    renderText(true);
+    placeLang();
+    markLang();
+    if (!calm) {
+      B.remove('lang-out');
+      B.add('lang-in');
+      await pause(1500 + INKED.length * 45);
+      B.remove('lang-in');
+    }
+  } finally {
+    document.body.classList.remove('lang-out', 'lang-in');
+    changing = false;
   }
-  applyLang(l);
-  SHY = shyOf(`${BREAKS} ${BREAKS_ES}`);
-  LONGEST = findLongest();
-  const u = new URL(location.href);
-  u.searchParams.set('lang', l);
-  history.replaceState(history.state, '', u.pathname + u.search + u.hash);
-  // The new words may need other room. The layout is chosen again for them; on a phone the painting glides to its
-  // new size rather than jumping.
-  const was = { unit, cx, cy, ext }, layoutWas = pageLayout;
-  resize(true);
-  if (!calm && layoutWas === 'narrow' && pageLayout === 'narrow') {
-    glide = { from: was, to: { unit, cx, cy, ext }, t0: performance.now() };
-    ({ unit, cx, cy, ext } = was);
-    fit();
-  }
-  menu.rename();
-  renderText(true);
-  placeLang();
-  markLang();
-  if (!calm) {
-    B.remove('lang-out');
-    B.add('lang-in');
-    await pause(1500 + INKED.length * 45);
-    B.remove('lang-in');
-  }
-  changing = false;
 }
 addEventListener('resize', resize);
 addEventListener('resize', placeLang);
@@ -1698,5 +1707,7 @@ renderText(true);
 resize();
 placeLang();
 markLang();
+// (the first labels are lettered before the layout is known: on a phone, their buds call now)
+if (pageLayout === 'narrow' && !budsKnown && !reduced) for (const k of KEYS) if (labels[k].on) labels[k].el.classList.add('call');
 document.fonts.ready.then(() => { resize(); placeLang(); markLang(); });
 requestAnimationFrame(frame);
