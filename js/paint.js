@@ -638,12 +638,13 @@ void main(){
       vec2 r = q - P.xy;
       float wv = noise(r * 140. + float(i) * 3.1) - .5;
       float d = length(r) - P.z + wv * .0012;
-      A *= 1. - .45 * P.w * exp(-pow(max(d, 0.) / .012, 2.));                 // (the light about it)
-      A *= 1. - .7 * smoothstep(.002, -.002, d) * P.w;
+      A *= 1. - .6 * P.w * exp(-pow(max(d, 0.) / .016, 2.));                 // (the light about it)
+      A *= 1. - .8 * smoothstep(.002, -.002, d) * P.w;
       ink *= 1. - smoothstep(.002, -.002, d) * P.w;
-      float heart = smoothstep(P.z, 0., length(r + vec2(.003, -.003)));
-      A += K(mix(vec3(.9, .88, .98), vec3(1., .94, .76), heart)) * smoothstep(.0015, -.0025, d) * .9 * P.w;
-      A += K(vec3(.82, .78, .94)) * exp(-pow((d + .0018) / .0016, 2.)) * .7 * P.w;   // the tide line, at its rim
+      float heart = smoothstep(P.z, 0., length(r + vec2(.0035, -.0035)));
+      A += K(mix(vec3(.86, .83, .97), vec3(1., .9, .6), heart)) * smoothstep(.0015, -.0025, d) * P.w;
+      A += K(vec3(.74, .68, .92)) * exp(-pow((d + .0016) / .0015, 2.)) * .85 * P.w;   // the tide line, at its rim
+      ink += penW(d + .0006, .0011) * .4 * P.w;                                         // and a fine, soft pen round it
     }
   }
 

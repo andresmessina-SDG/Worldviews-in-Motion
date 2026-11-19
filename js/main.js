@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=108';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=108';
-import { CATALOGUE } from './catalogue.js?v=108';
-import { createMenu } from './menu.js?v=108';
+import { createPainter } from './paint.js?v=109';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=109';
+import { CATALOGUE } from './catalogue.js?v=109';
+import { createMenu } from './menu.js?v=109';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -34,7 +34,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=108'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=109'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -1491,13 +1491,12 @@ function drawConn(p, c, G) {
     // (wide enough that the pairs level with God's name stay clear of it, whatever size the lettering has here;
     // when the name changes, the ring eases to its new width rather than jumping)
     const Ry = G.r + 0.1, R = plerR, FALLEN = 1;
-    // (where the painting paints the powers, only their pen outlines are drawn here, with no paper under them)
-    const bare = painter ? ' data-bare="1"' : '';
+    // (where the painting paints the powers, it draws them whole: only the empty place of the one that fell is drawn here)
     let rings = '', lost = '', ringsInk = '', lostInk = '';
     for (const { x, y, r, lost: fell } of aeons) {
       const c0 = `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}"/>`;
-      if (fell) { lost += c0; lostInk = `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="${painter ? 'none' : PAP}" fill-opacity=".6" stroke="${DARK}" stroke-width=".0032"${bare}/>`; }
-      else { rings += c0; ringsInk += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="none" stroke="${DARK}" stroke-width=".0032"${bare}/>`; }
+      if (fell) { lost += c0; lostInk = painter ? '' : `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="${PAP}" fill-opacity=".6" stroke="${DARK}" stroke-width=".0032"/>`; }
+      else { rings += c0; if (!painter) ringsInk += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="none" stroke="${DARK}" stroke-width=".0032"/>`; }
     }
     g += `<g opacity="${f(p.pleroma)}">${painter ? '' : `<g fill="${PAP}" fill-opacity=".6" stroke="${PAP}" stroke-width=".0115" opacity=".92">${rings}</g>`}${ringsInk}`;
     g += `<g opacity="${f(1 - p.sophia)}">${lostInk}</g>`;
