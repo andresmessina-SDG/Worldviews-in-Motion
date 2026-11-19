@@ -61,6 +61,7 @@ uniform float uStrata, uSplit, uChurn;  // the pyramid in two storeys, split at 
 uniform float uStainOn;         // the stain moved off man and onto the top of the pyramid
 uniform float uShards, uDominant, uPlay, uGap, uScript;  // the world as a collage of shards; one story's colour over most; shards shifting; cracks between; handwriting over all
 uniform float uDemi, uDemiY, uDemiR;   // the maker of this world, a lesser god below the true one: how much of him, his height and size
+uniform float uFormsIn, uTabletsIn;   // pictorial things painted, not drawn: the eternal Forms; the tablets of the law (how far each is in)
 uniform float uMoons, uSeasons;  // the Ultimate as a triple moon (waxing, full, waning); the land's colour turning through the year
 uniform float uAura;           // a soft rainbow aura round man, and how far it reaches
 uniform float uCircuit;        // circuit traces spreading out from man, how far
@@ -567,6 +568,60 @@ void main(){
     float c0 = abs(rr - R0 - pitch * a), c1 = abs(rr - R0 - pitch * (a + 1.)) + step(.55, a);
     float coil = min(c0, c1);
     ink += penW(coil, nPW * (c1 < c0 ? 1. - .5 * (a + 1.) / 1.55 : 1. - .5 * a / 1.55)) * step(.3, noise(r * 18. + 3.)) * .85 * uDemi;
+  }
+
+  // ---------- the eternal Forms, above the world: circle, triangle, square and hexagon, painted as the copies are
+  //            but perfect: a clear, pale wash that holds its shape, a little light about it, and an even pen line ----------
+  if (uFormsIn > .001 && abs(q.y - .3) < .12 && abs(q.x) < .42) {
+    for (int i = 0; i < 4; i++) {
+      vec2 c = i == 0 ? vec2(-.32, .27) : i == 1 ? vec2(-.16, .33) : i == 2 ? vec2(.16, .33) : vec2(.32, .27);
+      float n = i == 0 ? 0. : i == 1 ? 3. : i == 2 ? 4. : 6.;
+      if (length(q - c) > .1) continue;
+      vec2 nL, nM, nF; float nPW;
+      field(q - c, nL, nM, nF, nPW);
+      float d = sdPoly(q - c, .044, n);
+      // the light of what is real: the paper lifted round it
+      A *= 1. - .35 * uFormsIn * exp(-pow(max(d, 0.) / .03, 2.));
+      // a pale violet glaze, warmer at its heart, with the faintest tide line: barely touched by the hand
+      float dens = layersAt(d, 11. + float(i), .004, .0025, .55, nM * .4, nF * .4);
+      float heart = smoothstep(.0, -.04, d);
+      A += K(mix(vec3(.88, .86, .97), vec3(.99, .95, .82), heart * .7)) * dens * .9 * uFormsIn;
+      ink += penW(d + .0015, nPW * .75) * .9 * uFormsIn;
+    }
+  }
+
+  // ---------- the two tablets of the law, between God and his people: stone, cut by hand, with the commandments
+  //            carved in rows ----------
+  float tabY = (G.y - rG + Wc.y + rW) * .5;
+  if (uTabletsIn > .001 && abs(q.y - tabY) < .09 && abs(q.x) < .11) {
+    for (int i = 0; i < 2; i++) {
+      vec2 c = vec2(i == 0 ? -.038 : .038, tabY);
+      vec2 nL, nM, nF; float nPW;
+      field(q - c + float(i) * 3.7, nL, nM, nF, nPW);
+      vec2 lp = q - c + nL.yx * .004;
+      // a round-headed slab: a box below, a half circle above
+      float hw = .033, hh = .0575, cy = hh - hw;
+      vec2 bq2 = abs(lp - vec2(0., (cy - hh) * .5)) - vec2(hw, (cy + hh) * .5);
+      float d = min(length(max(bq2, 0.)) + min(max(bq2.x, bq2.y), 0.), length(lp - vec2(0., cy)) - hw);
+      float dens = layersAt(d, 21. + float(i) * 4., .008, .003, .45, nM, nF);
+      float stone = .82 + .3 * fbm(lp * 40. + float(i) * 9.);
+      // the stone: a cool grey wash, darker toward its foot, its grain showing
+      float solid = smoothstep(.004, -.004, d) * uTabletsIn;           // (the stone stands in front of what is behind it,
+      A *= 1. - .85 * solid;                                            //  paint and pen lines alike)
+      ink *= 1. - solid;
+      A += K(vec3(.9, .89, .86)) * dens * stone * uTabletsIn;
+      A += K(vec3(.76, .78, .82)) * dens * smoothstep(.0, -hh * 1.6, lp.y) * .35 * uTabletsIn;
+      ink += penW(d + .002 + nM.x * .004, nPW) * .85 * uTabletsIn;
+      // the commandments: five rows of short cuts of uneven length, each with a lit edge below it
+      float inside = smoothstep(-.006, -.012, d);
+      for (int r = 0; r < 4; r++) {
+        float ry = cy - .004 - float(r) * .016;
+        float cut = noise(vec2(lp.x * 70. + float(r) * 5.3 + float(i) * 17., float(r) * 3.1));
+        float on = smoothstep(.3, .36, cut) * inside;
+        ink += rule(lp.y - ry + .0006 * sin(lp.x * 140.), .0019) * on * .8 * uTabletsIn;
+        A *= 1. - .35 * rule(lp.y - ry + .0028, .0016) * on * uTabletsIn;
+      }
+    }
   }
 
   // ---------- the triple moon: waxing, full and waning, side by side ----------

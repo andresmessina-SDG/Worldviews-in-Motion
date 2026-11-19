@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=96';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=96';
-import { CATALOGUE } from './catalogue.js?v=96';
-import { createMenu } from './menu.js?v=96';
+import { createPainter } from './paint.js?v=100';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=100';
+import { CATALOGUE } from './catalogue.js?v=100';
+import { createMenu } from './menu.js?v=100';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -34,7 +34,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=96'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=100'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -1217,7 +1217,10 @@ function drawConn(p, c, G) {
       // (from God wherever he is: during a move from a worldview where he goes round man, he is not yet overhead)
       // his line: whole, a little heavier, with the slow dots of his faithfulness running down it
       const his = [[G.x - 0.015, -y0], [-0.015, -y1]], theirs = [[G.x + 0.015, -y0], [0.015, -y1]];
+      // (where the painting paints the tablets, the lines pass behind them: they are cut away there)
+      const tm = (G.y - G.r + p.Wy + p.rW) / 2, behind = painter && p.tablets > 0.01;
       const L = `M${f(his[0][0])},${f(his[0][1])} L${f(his[1][0])},${f(his[1][1])}`;
+      if (behind) g += `<defs><clipPath id="cvb"><path clip-rule="evenodd" d="M-3,-3 H3 V3 H-3Z M-.075,${f(-tm - 0.06)} H.075 V${f(-tm + 0.06)} H-.075Z"/></clipPath></defs><g clip-path="url(#cvb)">`;
       g += `<g opacity="${f(p.covenant)}">${ink(his, 0.0058, ACC, 11)}<path d="${L}" fill="none" stroke="${PAP}" stroke-width=".0034" stroke-linecap="round" stroke-dasharray=".001 .03" stroke-dashoffset="${f(-c.t * 0.015)}"/>`;
       // theirs: the same pen, broken into pieces as the people break it
       if (p.broken > 0.02) {
@@ -1227,12 +1230,12 @@ function drawConn(p, c, G) {
           if (b - a > 0.002) g += ink([at(a), at(b)], 0.0048, ACC, 40 + i, { pool: false, taper: 0.5 });
         }
       } else g += ink(theirs, 0.0048, ACC, 23);
-      g += '</g>';
+      g += behind ? '</g></g>' : '</g>';
     }
     g = g0 + reveal('covenant', g, p, G);
   }
   const mid = (G.y - G.r + p.Wy + p.rW) / 2;
-  if (p.tablets > 0.01) {
+  if (p.tablets > 0.01 && !painter) {
     const g0 = g; g = '';
     // two tablets of stone, cut by hand: a cool stone wash, darker where it dries at the rim, an uneven outline,
     // and the commandments as rows of short carved marks
@@ -1413,7 +1416,7 @@ function drawConn(p, c, G) {
   }
 
   // ----- the Forms: perfect figures in ruled ink, and the one thing on the page that never moves -----
-  if (p.forms > 0.01) {
+  if (p.forms > 0.01 && !painter) {
     const g0 = g; g = '';
     let d = '';
     FORMS.forEach(([fx, fy, n]) => {
@@ -1660,7 +1663,7 @@ const U = {};             // the shader's uniforms, refilled each painting
 // The values that never change in some worldviews, as #defines for a version of the shader that leaves out what
 // cannot show there (see version() in paint.js). Only values passed by name are fixed in this way: never those
 // worked out in frame(), which change even where the value of the same name does not (uTick, uSoul).
-const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA', 'uWords', 'uHome', 'uHot', 'uWash']);
+const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA', 'uWords', 'uHome', 'uHot', 'uWash', 'uFormsIn', 'uTabletsIn']);
 const fixedMemo = new Map();
 let readyNext = false, workedChecked = false;
 function fixedIn(ids) {
@@ -1748,6 +1751,9 @@ function frame(now) {
     U.uWords = wordsBox;
     U.uHot = hot;
     U.uWash = washOf(now);
+    // the pictorial things the painting paints (the connectors leave them out while it does): as far as they are drawn in
+    U.uFormsIn = p.forms > 0.01 ? p.forms * (drawn.forms ?? 1) : 0;
+    U.uTabletsIn = p.tablets > 0.01 ? p.tablets * (drawn.tablets ?? 1) : 0;
     U.uHome = Math.exp(-(((now - homeAt) / 1100) ** 2));
     painter.draw(U, fixedIn(onPage), !reduced && frozen === null && !params.has('k') && now - t0 < dur);
     // once a worldview has settled, its question's move is made ready in the background
