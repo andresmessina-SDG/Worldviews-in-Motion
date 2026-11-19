@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=95';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=95';
-import { CATALOGUE } from './catalogue.js?v=95';
-import { createMenu } from './menu.js?v=95';
+import { createPainter } from './paint.js?v=96';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=96';
+import { CATALOGUE } from './catalogue.js?v=96';
+import { createMenu } from './menu.js?v=96';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -34,7 +34,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=95'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=96'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -855,8 +855,14 @@ function inkify(svg, seed) {
 function inkOne(whole, tag, a, seed, k) {
   {
     const A = attrsOf(a);
-    if (!A.stroke || (A.fill && A.fill !== 'none') || (tag === 'path' && !A.fill) || A['stroke-dasharray']) return whole;
-    if (A.stroke === PAP) return A.opacity === '.92' ? '' : whole;
+    if (!A.stroke || (tag === 'path' && !A.fill) || A['stroke-dasharray']) return whole;
+    if (A.stroke === PAP) return A.opacity === '.92' && (!A.fill || A.fill === 'none') ? '' : whole;
+    // a filled shape with an outline (a node, a pan): the fill as it was, the outline by the pen over it
+    let under = '';
+    if (A.fill && A.fill !== 'none') {
+      if (Number(A['stroke-width'] || 0) < 0.002) return whole;
+      under = whole.replace(/\sstroke(-width|-linejoin|-linecap)?="[^"]*"/g, '');
+    }
     const w = Number(A['stroke-width'] || 0.004);
     let parts;
     if (tag === 'path') parts = pathPoints(A.d);
@@ -873,7 +879,7 @@ function inkOne(whole, tag, a, seed, k) {
       const sd = seed + k * 13.7 + j * 5.3, opts = { closed: pt.closed, pool: len > 0.08, wobble: Math.min(0.003, 0.0012 + len * 0.004) };
       out += fine ? `<path d="${penPath(pt.pts, w * 1.15, sd, opts)}" fill="${A.stroke}" fill-rule="evenodd" opacity=".9"/>` : ink(pt.pts, w, A.stroke, sd, opts);
     });
-    return `<g${keep} opacity="${f(op)}">${out}</g>`;
+    return `${under}<g${keep} opacity="${f(op)}">${out}</g>`;
   }
 }
 const seedOf = (name) => { let h = 7; for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) % 9973; return h; };
