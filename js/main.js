@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=90';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=90';
-import { CATALOGUE } from './catalogue.js?v=90';
-import { createMenu } from './menu.js?v=90';
+import { createPainter } from './paint.js?v=92';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=92';
+import { CATALOGUE } from './catalogue.js?v=92';
+import { createMenu } from './menu.js?v=92';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -34,7 +34,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=90'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=92'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -756,6 +756,55 @@ function arcC(cx, cy, r, a0, a1) {
   }
   return d;
 }
+// ----- the pen -----
+// A line drawn by hand rather than by machine: a filled shape, thin where the pen touches down and lifts, full in the
+// middle, its edges wavering a little. The waver is laid along the line's own length from its start, with a seed for
+// each connector, so it travels with the line when the line moves and never changes from frame to frame.
+const hash1 = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const noise1 = (seed, t) => { const i = Math.floor(t), u = t - i, s = u * u * (3 - 2 * u); return hash1(seed + i) * (1 - s) + hash1(seed + i + 1) * s - 0.5; };
+// pts: [[x, y], ...] in svg coordinates; w: the full width; closed: round a shape, with no ends
+function penPath(pts, w, seed, { taper = 0.3, wobble = 0.003, closed = false } = {}) {
+  // walk the line at even steps, so the waver and the pressure follow its length
+  const P = closed ? [...pts, pts[0]] : pts, samples = [];
+  let total = 0;
+  const lens = [];
+  for (let i = 1; i < P.length; i++) { const l = Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]); lens.push(l); total += l; }
+  if (total < 1e-4) return '';
+  const n = Math.max(2, Math.ceil(total / 0.008));
+  let seg = 0, acc = 0;
+  for (let k = 0; k <= n; k++) {
+    const s = (k / n) * total;
+    while (seg < lens.length - 1 && acc + lens[seg] < s) { acc += lens[seg]; seg++; }
+    const u = lens[seg] ? (s - acc) / lens[seg] : 0, a = P[seg], b = P[seg + 1];
+    samples.push([a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, s]);
+  }
+  const L = [], R = [];
+  samples.forEach(([x, y, s], k) => {
+    const a = samples[Math.max(0, k - 1)], b = samples[Math.min(samples.length - 1, k + 1)];
+    let nx = -(b[1] - a[1]), ny = b[0] - a[0];
+    const nl = Math.hypot(nx, ny) || 1; nx /= nl; ny /= nl;
+    const v = s / total, press = closed ? 1 : taper + (1 - taper) * Math.pow(Math.sin(Math.PI * Math.min(1, Math.max(0, v))), 0.35);
+    const half = (w / 2) * press * (1 + 0.3 * noise1(seed + 7, s / 0.025));
+    const off = wobble * noise1(seed, s / 0.06);
+    L.push([x + nx * (off + half), y + ny * (off + half)]);
+    R.push([x + nx * (off - half), y + ny * (off - half)]);
+  });
+  const pt = ([x, y]) => `${f(x)},${f(y)}`;
+  if (closed) return `M${L.map(pt).join(' L')}Z M${R.reverse().map(pt).join(' L')}Z`;
+  return `M${L.map(pt).join(' L')} L${R.reverse().map(pt).join(' L')}Z`;
+}
+// ink from the pen on wet paper: a pale band of lifted paper under it, a faint bleed of the ink into the paper
+// around it, the line itself, and a small pool where the pen came to rest
+function ink(pts, w, col, seed, opts = {}) {
+  const rule = opts.closed ? 'evenodd' : 'nonzero';
+  // (the lifted paper fades out from the line in three soft steps, rather than ending in a hard edge)
+  let out = '';
+  for (const [dw, op] of [[0.026, 0.1], [0.015, 0.2], [0.007, 0.36]]) out += `<path d="${penPath(pts, w + dw, seed + 3, { ...opts, taper: 0.7 })}" fill="${PAP}" fill-rule="${rule}" opacity="${op}"/>`;
+  out += `<path d="${penPath(pts, w * 2.3, seed + 5, { ...opts, wobble: (opts.wobble ?? 0.003) * 1.7 })}" fill="${col}" fill-rule="${rule}" opacity=".13"/>`;
+  out += `<path d="${penPath(pts, w, seed, opts)}" fill="${col}" fill-rule="${rule}" opacity=".9"/>`;
+  if (!opts.closed && opts.pool !== false) { const e = pts[pts.length - 1]; out += `<circle cx="${f(e[0])}" cy="${f(e[1])}" r="${f(w * 0.8)}" fill="${col}" opacity=".8"/>`; }
+  return out;
+}
 const shape = (d, col) => `<path d="${d}" fill="${col}" stroke="${PAP}" stroke-width=".012" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="${col}"/>`;
 
 // Opacity is written on groups above, which is the easy way to fade a connector. But a translucent group makes the
@@ -1087,24 +1136,50 @@ function drawConn(p, c, G) {
     const y0 = G.y - G.r - 0.015, y1 = p.Sy + 0.095;
     if (y0 > y1) {
       // (from God wherever he is: during a move from a worldview where he goes round man, he is not yet overhead)
-      const L = `M${f(G.x - 0.014)},${f(-y0)} L-.014,${f(-y1)}`, R = `M${f(G.x + 0.014)},${f(-y0)} L.014,${f(-y1)}`;
-      const dash = p.broken > 0.02 ? ` stroke-dasharray="${f(0.03 * (1 - p.broken) + 0.01)} ${f(0.026 * p.broken)}"` : '';
-      g += `<g opacity="${f(p.covenant)}">${stroke(L, ACC, 0.0045)}<path d="${L}" fill="none" stroke="${PAP}" stroke-width=".0036" stroke-linecap="round" stroke-dasharray=".001 .03" stroke-dashoffset="${f(-c.t * 0.015)}"/>`;
-      g += `<path d="${R}" fill="none" stroke="${PAP}" stroke-width=".0165" stroke-linecap="round" opacity=".92"${dash}/><path d="${R}" fill="none" stroke="${ACC}" stroke-width=".0045" stroke-linecap="round"${dash}/></g>`;
+      // his line: whole, a little heavier, with the slow dots of his faithfulness running down it
+      const his = [[G.x - 0.015, -y0], [-0.015, -y1]], theirs = [[G.x + 0.015, -y0], [0.015, -y1]];
+      const L = `M${f(his[0][0])},${f(his[0][1])} L${f(his[1][0])},${f(his[1][1])}`;
+      g += `<g opacity="${f(p.covenant)}">${ink(his, 0.0058, ACC, 11)}<path d="${L}" fill="none" stroke="${PAP}" stroke-width=".0034" stroke-linecap="round" stroke-dasharray=".001 .03" stroke-dashoffset="${f(-c.t * 0.015)}"/>`;
+      // theirs: the same pen, broken into pieces as the people break it
+      if (p.broken > 0.02) {
+        const len = y0 - y1, on = 0.03 * (1 - p.broken) + 0.01, period = on + 0.026 * p.broken;
+        for (let s0 = 0, i = 0; s0 < len; s0 += period, i++) {
+          const a = s0, b = Math.min(len, s0 + on), at = (t) => [G.x + 0.015 + (0 - G.x) * (t / len), -y0 + t];
+          if (b - a > 0.002) g += ink([at(a), at(b)], 0.0048, ACC, 40 + i, { pool: false, taper: 0.5 });
+        }
+      } else g += ink(theirs, 0.0048, ACC, 23);
+      g += '</g>';
     }
     g = g0 + reveal('covenant', g, p, G);
   }
   const mid = (G.y - G.r + p.Wy + p.rW) / 2;
   if (p.tablets > 0.01) {
     const g0 = g; g = '';
-    let d = '', lines = '';
-    for (const x of [-0.038, 0.038]) {
-      const w = 0.066, h = 0.115, bot = -(mid - h / 2), top = -(mid + h / 2);
-      d += `M${f(x - w / 2)},${f(bot)} L${f(x - w / 2)},${f(top + w / 2)}${arcC(x, top + w / 2, w / 2, Math.PI, 2 * Math.PI)} L${f(x + w / 2)},${f(bot)}Z `;
-      for (let i = 0; i < 4; i++) { const y = top + 0.045 + i * 0.017; lines += `M${f(x - 0.018)},${f(y)} H${f(x + 0.018)} `; }
-    }
-    g += `<g opacity="${f(p.tablets)}"><path d="${d}" fill="${PAP}" stroke="${PAP}" stroke-width=".016" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="${PAP}" stroke="${ACC}" stroke-width=".0045" stroke-linejoin="round"/>`;
-    g += `<path d="${lines}" fill="none" stroke="${ACC}" stroke-width=".0026" stroke-linecap="round" opacity=".8"/></g>`;
+    // two tablets of stone, cut by hand: a cool stone wash, darker where it dries at the rim, an uneven outline,
+    // and the commandments as rows of short carved marks
+    let body = '', marks = '';
+    [-0.038, 0.038].forEach((x, ti) => {
+      const w = 0.066, h = 0.115, bot = -(mid - h / 2), top = -(mid + h / 2), r = w / 2, pts = [];
+      pts.push([x - r, bot]);
+      for (let i = 0; i <= 10; i++) { const a = Math.PI + (i / 10) * Math.PI; pts.push([x + r * Math.cos(a), top + r + r * Math.sin(a)]); }
+      pts.push([x + r, bot]);
+      const out = pts.map(([px, py], i) => [px + 0.0016 * noise1(70 + ti * 13, i * 0.9), py + 0.0016 * noise1(90 + ti * 13, i * 0.9)]);
+      const d = `M${out.map(([px, py]) => `${f(px)},${f(py)}`).join(' L')}Z`;
+      body += `<path d="${d}" fill="url(#stone)"/><path d="${d}" fill="none" stroke="${ACC}" stroke-width=".006" stroke-linejoin="round" opacity=".22"/>`;
+      body += ink(out, 0.0044, DARK, 120 + ti * 17, { closed: true, wobble: 0.0012 });
+      // five rows, each of two or three words of uneven length
+      for (let row = 0; row < 5; row++) {
+        const y = top + 0.04 + row * 0.0145;
+        let xx = x - 0.021;
+        for (let wd = 0; wd < 3 && xx < x + 0.019; wd++) {
+          const len = 0.007 + 0.011 * hash1(ti * 50 + row * 7 + wd), e = Math.min(x + 0.021, xx + len);
+          if (e - xx > 0.003) marks += ink([[xx, y], [e, y + 0.0006 * noise1(row, wd)]], 0.0021, ACC, 200 + ti * 40 + row * 5 + wd, { pool: false, taper: 0.4, wobble: 0.0006 });
+          xx = e + 0.004;
+        }
+      }
+    });
+    const stone = `<defs><linearGradient id="stone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6f2ea"/><stop offset=".7" stop-color="#e7e4dc"/><stop offset="1" stop-color="#d9d7d2"/></linearGradient></defs>`;
+    g += `<g opacity="${f(p.tablets)}">${stone}${body}${marks}</g>`;
     g = g0 + reveal('tablets', g, p, G);
   }
   if (p.awaited > 0.01) {
