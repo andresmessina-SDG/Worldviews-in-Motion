@@ -1,0 +1,12 @@
+{
+  "name": "worldviews-in-motion-tests",
+  "private": true,
+  "description": "Browser tests for the site: see README.md",
+  "scripts": {
+    "test": "./run.sh",
+    "test:all": "./run.sh all"
+  },
+  "devDependencies": {
+    "playwright": "^1.50.0"
+  }
+}
