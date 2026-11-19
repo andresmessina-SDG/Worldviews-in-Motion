@@ -520,7 +520,7 @@ export const WORLDVIEWS = {
       {
         slug: 'exile',
         name: 'Sin and Exile',
-        text: 'Man is born with a good inclination and an evil one, and is free to choose. Israel broke the covenant and was sent into exile. The temple was destroyed and the sacrifices ended.',
+        text: 'Man is born with the evil inclination; the good one comes later, and he is free to choose. Israel broke the covenant and was exiled, the temple destroyed and the sacrifices ended.',
         p: { broken: 1, stainR: 0.12, stainA: 0.5, dull: 0.4, rip: -0.6 },
         labels: {
           god: ['The LORD', 'Faithful to his covenant'],
@@ -533,12 +533,12 @@ export const WORLDVIEWS = {
       {
         slug: 'torah',
         name: 'Torah',
-        text: 'God gave Israel the Torah at Sinai: 613 commandments. A Jew returns to God by repentance, prayer and charity, which now stand in place of the sacrifices.',
+        text: 'God gave Moses the Torah at Sinai, written and oral, and the Talmud records the oral law. A Jew returns to God by repentance, prayer and charity, which now replace the sacrifices.',
         p: { tablets: 1, stainR: 0.08, stainA: 0.3, dull: 0.15, glow: 0.3, tBrX: 0.075 },
         labels: {
           god: ['The LORD', 'He forgives the penitent'],
           world: ['Creation', 'Hallowed by the commandments'],
-          bridge: ['The Torah', 'A yoke no one has fully borne'],
+          bridge: ['The Torah, written and oral', 'A yoke no one has fully borne'],
           self: ['Israel', 'Returning to God by repentance'],
           sin: ['Sin', 'No sacrifice for it since AD 70'],
         },

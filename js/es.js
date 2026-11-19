@@ -94,17 +94,17 @@ const TEXT = {
         bridge: ['El pacto', 'Con Abraham y sus hijos'],
         self: ['El hombre', 'Hecho a imagen de Dios'],
       }],
-      ['Pecado y exilio', 'El hombre nace con una inclinación buena y otra mala, y es libre de elegir. Israel quebrantó el pacto y fue llevado al exilio. El templo fue destruido y cesaron los sacrificios.', {
+      ['Pecado y exilio', 'El hombre nace con la inclinación mala; la buena llega después, y es libre de elegir. Israel quebrantó el pacto y fue desterrado; el templo cayó y cesaron los sacrificios.', {
         god: ['El SEÑOR', 'Fiel a su pacto'],
         world: ['La creación', 'Buena, pero Israel está en el exilio'],
         bridge: ['El pacto', 'Roto por Israel, guardado por Dios'],
         self: ['El hombre', 'Libre de escoger el bien'],
         sin: ['Pecado', 'La mala inclinación, no una naturaleza caída'],
       }],
-      ['Torá', 'Dios dio a Israel la Torá en el Sinaí: 613 mandamientos. El judío vuelve a Dios por el arrepentimiento, la oración y la caridad, que ahora ocupan el lugar de los sacrificios.', {
+      ['Torá', 'Dios dio a Moisés en el Sinaí la Torá escrita y la oral, y el Talmud recoge la oral. El judío vuelve a Dios por el arrepentimiento, la oración y la caridad, que ahora sustituyen a los sacrificios.', {
         god: ['El SEÑOR', 'Perdona al arrepentido'],
         world: ['La creación', 'Santificada por los mandamientos'],
-        bridge: ['La Torá', 'Un yugo que nadie ha podido llevar'],
+        bridge: ['La Torá, escrita y oral', 'Un yugo que nadie ha podido llevar'],
         self: ['Israel', 'Vuelve a Dios por el arrepentimiento'],
         sin: ['Pecado', 'Sin sacrificio por él desde el año 70 d. C.'],
       }],
