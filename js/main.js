@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=104';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=104';
-import { CATALOGUE } from './catalogue.js?v=104';
-import { createMenu } from './menu.js?v=104';
+import { createPainter } from './paint.js?v=108';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=108';
+import { CATALOGUE } from './catalogue.js?v=108';
+import { createMenu } from './menu.js?v=108';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -34,7 +34,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=104'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=108'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -733,6 +733,23 @@ function bondPlaces(p, t) {
     const ox = drift * Math.sin(t * (0.21 + 0.07 * i) + i * 2.3), oy = drift * Math.cos(t * (0.17 + 0.05 * i) + i * 1.7);
     return [lerp(bx, BLINE[i][0], p.lineage) + ox, sy - (lerp(by, BLINE[i][1], p.lineage) + oy), p.bonds * lerp(1, BLOP[i], p.lineage)];
   });
+}
+// the Fullness: eight pairs of powers round the true God, the ring wide enough to clear his name, easing to a new
+// width when the name changes. One partner (the eighth from the top on the right) is the power that fell.
+// Each is { x, y (svg coordinates), r, lost, b (its angle, clockwise from the right, as svg measures) }.
+let aeons = [];
+function aeonPlaces(p, G, t) {
+  const Ry = G.r + 0.1, want = Math.max(Ry, (labels.god.w / 2 + 0.035) / Math.cos(Math.PI / 8));
+  plerR = plerR === null ? want : lerp(plerR, want, 0.06);
+  const R = plerR, out = [];
+  for (let i = 0; i < 8; i++) {
+    const a = (i + 0.5) * (Math.PI / 4);                          // (svg angles: a pair at each side of the bottom, none level with the name)
+    for (const s of [-1, 1]) {
+      const b = a + (s * 0.068 * Ry) / R;
+      out.push({ x: G.x + R * Math.cos(b), y: -G.y + Ry * Math.sin(b), r: 0.0125 * (1 + 0.12 * Math.sin(t * 0.7 + i * 1.3 + s)), lost: i === 1 && s === 1, b });
+    }
+  }
+  return out;
 }
 // the scales: the beam's pivot height, its tilt, and its half length
 const scalesAt = (p, G, t) => ({ py: G.y - G.r - 0.1, a: 0.16 * Math.sin(t * 0.35) + 0.05 * Math.sin(t * 0.9), L: 0.2 });
@@ -1473,21 +1490,17 @@ function drawConn(p, c, G) {
     const g0 = g; g = '';
     // (wide enough that the pairs level with God's name stay clear of it, whatever size the lettering has here;
     // when the name changes, the ring eases to its new width rather than jumping)
-    const Ry = G.r + 0.1, want = Math.max(Ry, (labels.god.w / 2 + 0.035) / Math.cos(Math.PI / 8));
-    plerR = plerR === null ? want : lerp(plerR, want, 0.06);
-    const R = plerR, FALLEN = 1;
-    let rings = '', lost = '', ringsInk = '';
-    for (let i = 0; i < 8; i++) {
-      const a = (i + 0.5) * (Math.PI / 4);                          // (svg angles: a pair at each side of the bottom, none level with the name)
-      for (const s of [-1, 1]) {
-        const b = a + (s * 0.068 * Ry) / R, x = G.x + R * Math.cos(b), y = -G.y + Ry * Math.sin(b);
-        const r = 0.0125 * (1 + 0.12 * Math.sin(c.t * 0.7 + i * 1.3 + s));
-        const c0 = `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}"/>`;
-        if (i === FALLEN && s === 1) lost += c0; else { rings += c0; ringsInk += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="none" stroke="${DARK}" stroke-width=".0032"/>`; }
-      }
+    const Ry = G.r + 0.1, R = plerR, FALLEN = 1;
+    // (where the painting paints the powers, only their pen outlines are drawn here, with no paper under them)
+    const bare = painter ? ' data-bare="1"' : '';
+    let rings = '', lost = '', ringsInk = '', lostInk = '';
+    for (const { x, y, r, lost: fell } of aeons) {
+      const c0 = `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}"/>`;
+      if (fell) { lost += c0; lostInk = `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="${painter ? 'none' : PAP}" fill-opacity=".6" stroke="${DARK}" stroke-width=".0032"${bare}/>`; }
+      else { rings += c0; ringsInk += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="none" stroke="${DARK}" stroke-width=".0032"${bare}/>`; }
     }
-    g += `<g opacity="${f(p.pleroma)}"><g fill="${PAP}" fill-opacity=".6" stroke="${PAP}" stroke-width=".0115" opacity=".92">${rings}</g>${ringsInk}`;
-    g += `<g opacity="${f(1 - p.sophia)}" fill="${PAP}" fill-opacity=".6" stroke="${DARK}" stroke-width=".0032">${lost}</g>`;
+    g += `<g opacity="${f(p.pleroma)}">${painter ? '' : `<g fill="${PAP}" fill-opacity=".6" stroke="${PAP}" stroke-width=".0115" opacity=".92">${rings}</g>`}${ringsInk}`;
+    g += `<g opacity="${f(1 - p.sophia)}">${lostInk}</g>`;
     g += `<g opacity="${f(p.sophia)}" fill="none" stroke="${DARK}" stroke-width=".0026" stroke-dasharray=".006 .006">${lost}</g></g>`;
     if (p.sophia > 0.01 && p.demi > 0.01) {
       const b = (FALLEN + 0.5) * (Math.PI / 4) + (0.068 * Ry) / R, x0 = G.x + R * Math.cos(b), y0 = -G.y + Ry * Math.sin(b) + 0.02;
@@ -1660,7 +1673,7 @@ const RING = [0.9, 1.75, 2.6, 4.1, 5.2, 0.4, 2.2, 3.4, 5.9];
 const spirits = new Float32Array(36);
 // The pictorial things the painting paints, each as [x, y (scene units, y up), size, how far in]: the Messiah's empty
 // place, the chip, the two pans of the scales, the five people of the bonds, and the Quran's pages coming down.
-const awaitV = new Float32Array(4), chipV = new Float32Array(4), panV = new Float32Array(8), bondV = new Float32Array(20), pageV = new Float32Array(24);
+const awaitV = new Float32Array(4), chipV = new Float32Array(4), panV = new Float32Array(8), bondV = new Float32Array(20), pageV = new Float32Array(40), aeonV = new Float32Array(64);
 let accC = [0.64, 0.15, 0.17];
 const inOf = (n, p) => (p[n] > 0.01 ? p[n] * (drawn[n] ?? 1) : 0);
 function paintedThings(p, G, t) {
@@ -1672,13 +1685,22 @@ function paintedThings(p, G, t) {
   panV.set([-ex, sc.py + ey - 0.11, 0.05, si, ex, sc.py - ey - 0.11, 0.05, si]);
   const bi = inOf('bonds', p) / Math.max(p.bonds, 1e-3);
   bondPlaces(p, t).forEach(([x, y, op], i) => bondV.set([x, -y, 0.028, op * bi], i * 4));
+  // the powers of the Fullness: each comes in as the pen sweeps round to it (see runs: 'sweep' from the top, clockwise)
+  aeonV.fill(0);
+  const k = drawn.pleroma ?? 1;
+  aeons.forEach((a, i) => {
+    const from = (a.b + Math.PI / 2 + 4 * Math.PI) % (2 * Math.PI), here = Math.min(1, Math.max(0, (k * 2 * Math.PI - from) / 0.3));
+    aeonV.set([a.x, -a.y, a.r, p.pleroma * here * (a.lost ? 1 - p.sophia : 1)], i * 4);
+  });
   // the pages: one every .076 along the line, moving down it at .02 a second, as the dashes once did
   pageV.fill(0);
-  const sl = sentLine(p, G), si2 = inOf('sent', p), dx = 0 - sl.x0, dy = sl.y1 - sl.y0, len = Math.hypot(dx, dy);
+  // (enough pages to cover the whole line, however long; and none below the part of it drawn so far)
+  const sl = sentLine(p, G), dx = 0 - sl.x0, dy = sl.y1 - sl.y0, len = Math.hypot(dx, dy);
+  const si2 = p.sent > 0.01 ? p.sent : 0, reach = len * (drawn.sent ?? 1);
   if (si2 > 0 && len > 0.05) {
-    for (let k = 0; k < 6; k++) {
-      const s0 = ((t * 0.02 + k * 0.076) % (6 * 0.076)) + 0.011;
-      if (s0 > len - 0.011) continue;
+    for (let k = 0; k < 10; k++) {
+      const s0 = ((t * 0.02 + k * 0.076) % (10 * 0.076)) + 0.011;
+      if (s0 > Math.min(len, reach) - 0.011) continue;
       const u = s0 / len, fade = Math.min(1, s0 / 0.04, (len - s0) / 0.04);
       pageV.set([sl.x0 + dx * u, sl.y0 + dy * u, Math.atan2(dy, dx), si2 * fade], k * 4);
     }
@@ -1713,7 +1735,7 @@ const U = {};             // the shader's uniforms, refilled each painting
 // The values that never change in some worldviews, as #defines for a version of the shader that leaves out what
 // cannot show there (see version() in paint.js). Only values passed by name are fixed in this way: never those
 // worked out in frame(), which change even where the value of the same name does not (uTick, uSoul).
-const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA', 'uWords', 'uHome', 'uHot', 'uWash', 'uFormsIn', 'uTabletsIn', 'uAwait', 'uChip', 'uPan[0]', 'uBond[0]', 'uPage[0]', 'uAccC']);
+const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA', 'uWords', 'uHome', 'uHot', 'uWash', 'uFormsIn', 'uTabletsIn', 'uAwait', 'uChip', 'uPan[0]', 'uBond[0]', 'uPage[0]', 'uAeon[0]', 'uAccC']);
 const fixedMemo = new Map();
 let readyNext = false, workedChecked = false;
 function fixedIn(ids) {
@@ -1775,6 +1797,7 @@ function frame(now) {
   stepGlide(now);
   layout(p, G, dt);
   if (p.spirits > 0.01) spiritsAt(p, t);
+  aeons = p.pleroma > 0.01 ? aeonPlaces(p, G, t) : [];
   if (painter) {
     // Values named for a uniform (glow for uGlow) go to the shader by themselves; the rest are worked out here,
     // and set after them, so that these win where a name is shared (uSoul, uTick).
@@ -1805,7 +1828,7 @@ function frame(now) {
     U.uFormsIn = p.forms > 0.01 ? p.forms * (drawn.forms ?? 1) : 0;
     U.uTabletsIn = p.tablets > 0.01 ? p.tablets * (drawn.tablets ?? 1) : 0;
     paintedThings(p, G, t);
-    U.uAwait = awaitV; U.uChip = chipV; U['uPan[0]'] = panV; U['uBond[0]'] = bondV; U['uPage[0]'] = pageV; U.uAccC = accC;
+    U.uAwait = awaitV; U.uChip = chipV; U['uPan[0]'] = panV; U['uBond[0]'] = bondV; U['uPage[0]'] = pageV; U['uAeon[0]'] = aeonV; U.uAccC = accC;
     U.uHome = Math.exp(-(((now - homeAt) / 1100) ** 2));
     painter.draw(U, fixedIn(onPage), !reduced && frozen === null && !params.has('k') && now - t0 < dur);
     // once a worldview has settled, its question's move is made ready in the background

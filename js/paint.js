@@ -62,7 +62,8 @@ uniform float uStainOn;         // the stain moved off man and onto the top of t
 uniform float uShards, uDominant, uPlay, uGap, uScript;  // the world as a collage of shards; one story's colour over most; shards shifting; cracks between; handwriting over all
 uniform float uDemi, uDemiY, uDemiR;   // the maker of this world, a lesser god below the true one: how much of him, his height and size
 uniform float uFormsIn, uTabletsIn;
-uniform vec4 uAwait, uChip, uPan[2], uBond[5], uPage[6];   // more of them, each [x, y, size, how far in]: the Messiah's empty place, the chip, the pans, the people of the bonds, the Quran's pages (z: angle)
+uniform float uPleroma, uSent, uScales, uBonds, uUpload, uAwaited, uForms, uTablets;                 // (is the Quran's line on the page at all: the pages are skipped where it never is)
+uniform vec4 uAwait, uChip, uPan[2], uBond[5], uPage[10], uAeon[16];   // more of them, each [x, y, size, how far in]: the Messiah's empty place, the chip, the pans, the people of the bonds, the Quran's pages (z: angle)
 uniform vec3 uAccC;                // the accent colour of the page, for things painted in it   // pictorial things painted, not drawn: the eternal Forms; the tablets of the law (how far each is in)
 uniform float uMoons, uSeasons;  // the Ultimate as a triple moon (waxing, full, waning); the land's colour turning through the year
 uniform float uAura;           // a soft rainbow aura round man, and how far it reaches
@@ -574,7 +575,7 @@ void main(){
 
   // ---------- the eternal Forms, above the world: circle, triangle, square and hexagon, painted as the copies are
   //            but perfect: a clear, pale wash that holds its shape, a little light about it, and an even pen line ----------
-  if (uFormsIn > .001 && abs(q.y - .3) < .12 && abs(q.x) < .42) {
+  if (uForms > .001 && uFormsIn > .001 && abs(q.y - .3) < .12 && abs(q.x) < .42) {
     for (int i = 0; i < 4; i++) {
       vec2 c = i == 0 ? vec2(-.32, .27) : i == 1 ? vec2(-.16, .33) : i == 2 ? vec2(.16, .33) : vec2(.32, .27);
       float n = i == 0 ? 0. : i == 1 ? 3. : i == 2 ? 4. : 6.;
@@ -595,7 +596,7 @@ void main(){
   // ---------- the two tablets of the law, between God and his people: stone, cut by hand, with the commandments
   //            carved in rows ----------
   float tabY = (G.y - rG + Wc.y + rW) * .5;
-  if (uTabletsIn > .001 && abs(q.y - tabY) < .09 && abs(q.x) < .11) {
+  if (uTablets > .001 && uTabletsIn > .001 && abs(q.y - tabY) < .09 && abs(q.x) < .11) {
     for (int i = 0; i < 2; i++) {
       vec2 c = vec2(i == 0 ? -.038 : .038, tabY);
       vec2 nL, nM, nF; float nPW;
@@ -626,9 +627,29 @@ void main(){
     }
   }
 
+  // ---------- the powers of the Fullness round the true God: small pearls of his light, each a pale glaze with a
+  //            lavender tide line and a little light about it ----------
+  if (uPleroma > .001 && abs(length(q - G) - rG - .12) < .14) {
+    for (int i = 0; i < 16; i++) {
+      vec4 P = i == 0 ? uAeon[0] : i == 1 ? uAeon[1] : i == 2 ? uAeon[2] : i == 3 ? uAeon[3] : i == 4 ? uAeon[4] : i == 5 ? uAeon[5]
+        : i == 6 ? uAeon[6] : i == 7 ? uAeon[7] : i == 8 ? uAeon[8] : i == 9 ? uAeon[9] : i == 10 ? uAeon[10] : i == 11 ? uAeon[11]
+        : i == 12 ? uAeon[12] : i == 13 ? uAeon[13] : i == 14 ? uAeon[14] : uAeon[15];
+      if (P.w < .001 || length(q - P.xy) > P.z + .03) continue;
+      vec2 r = q - P.xy;
+      float wv = noise(r * 140. + float(i) * 3.1) - .5;
+      float d = length(r) - P.z + wv * .0012;
+      A *= 1. - .45 * P.w * exp(-pow(max(d, 0.) / .012, 2.));                 // (the light about it)
+      A *= 1. - .7 * smoothstep(.002, -.002, d) * P.w;
+      ink *= 1. - smoothstep(.002, -.002, d) * P.w;
+      float heart = smoothstep(P.z, 0., length(r + vec2(.003, -.003)));
+      A += K(mix(vec3(.9, .88, .98), vec3(1., .94, .76), heart)) * smoothstep(.0015, -.0025, d) * .9 * P.w;
+      A += K(vec3(.82, .78, .94)) * exp(-pow((d + .0018) / .0016, 2.)) * .7 * P.w;   // the tide line, at its rim
+    }
+  }
+
   // ---------- the place where the Messiah is awaited: an empty round, the paper lifted clean inside it, and a faint
   //            gold at its rim, as of something prepared ----------
-  if (uAwait.w > .001 && length(q - uAwait.xy) < uAwait.z + .06) {
+  if (uAwaited > .001 && uAwait.w > .001 && length(q - uAwait.xy) < uAwait.z + .06) {
     vec2 nL, nM, nF; float nPW;
     field(q - uAwait.xy, nL, nM, nF, nPW);
     float d = length(q + nL * .01 - uAwait.xy) - uAwait.z;
@@ -638,7 +659,7 @@ void main(){
   }
 
   // ---------- the chip set where God was: a slate of silicon, its die catching a cold sheen ----------
-  if (uChip.w > .001 && abs(q.x - uChip.x) < uChip.z + .04 && abs(q.y - uChip.y) < uChip.z + .04) {
+  if (uUpload > .001 && uChip.w > .001 && abs(q.x - uChip.x) < uChip.z + .04 && abs(q.y - uChip.y) < uChip.z + .04) {
     vec2 nL, nM, nF; float nPW;
     field(q - uChip.xy, nL, nM, nF, nPW);
     vec2 lp = q - uChip.xy + nL * .004;
@@ -654,7 +675,7 @@ void main(){
   }
 
   // ---------- the pans of the scales: two bowls of brass, swinging as the beam tips ----------
-  for (int i = 0; i < 2; i++) {
+  if (uScales > .001) for (int i = 0; i < 2; i++) {
     vec4 P = i == 0 ? uPan[0] : uPan[1];
     if (P.w < .001 || length(q - P.xy) > P.z + .03) continue;
     vec2 nL, nM, nF; float nPW;
@@ -666,7 +687,7 @@ void main(){
     float d = min(under, mouth);
     float body = smoothstep(.003, -.003, d);
     A *= 1. - .8 * body * P.w;
-    A += K(vec3(.84, .66, .34)) * layersAt(d, 51. + float(i), .005, .003, .7, nM, nF) * (.85 + .3 * fbm(lp * 40. + float(i))) * P.w;
+    A += K(vec3(.84, .66, .34)) * layersAt(d, 51. + float(i), .003, .003, .7, nM, nF) * smoothstep(.006, -.001, d) * (.85 + .3 * fbm(lp * 40. + float(i))) * P.w;
     // inside the mouth: the hollow of the dish, darker toward its back edge
     A += K(vec3(.6, .44, .22)) * smoothstep(.002, -.002, mouth) * (.35 + .5 * smoothstep(-P.z * .26, P.z * .2, lp.y)) * P.w;
     // the lip: a lit edge along the front of the mouth, and the pen round it
@@ -677,7 +698,7 @@ void main(){
   }
 
   // ---------- the people of the five bonds: small rounds of the act's colour, pale, each with its tide line ----------
-  if (abs(q.x) < .32 && abs(q.y - uSy) < .42) {
+  if (uBonds > .001 && abs(q.x) < .32 && abs(q.y - uSy) < .42) {
     for (int i = 0; i < 5; i++) {
       vec4 P = i == 0 ? uBond[0] : i == 1 ? uBond[1] : i == 2 ? uBond[2] : i == 3 ? uBond[3] : uBond[4];
       if (P.w < .001 || length(q - P.xy) > P.z + .03) continue;
@@ -692,8 +713,9 @@ void main(){
 
   // ---------- the Quran's pages, coming down from God one after another: small leaves of parchment, each with its
   //            lines of writing ----------
-  for (int i = 0; i < 6; i++) {
-    vec4 P = i == 0 ? uPage[0] : i == 1 ? uPage[1] : i == 2 ? uPage[2] : i == 3 ? uPage[3] : i == 4 ? uPage[4] : uPage[5];
+  if (uSent > .001) for (int i = 0; i < 10; i++) {
+    vec4 P = i == 0 ? uPage[0] : i == 1 ? uPage[1] : i == 2 ? uPage[2] : i == 3 ? uPage[3] : i == 4 ? uPage[4]
+      : i == 5 ? uPage[5] : i == 6 ? uPage[6] : i == 7 ? uPage[7] : i == 8 ? uPage[8] : uPage[9];
     if (P.w < .001 || length(q - P.xy) > .04) continue;
     vec2 lp = rot(q - P.xy, -P.z - 1.5708);                                // (the page's width across the line, its height along it)
     vec2 pb = abs(lp) - vec2(.019, .013);
