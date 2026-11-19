@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=92';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=92';
-import { CATALOGUE } from './catalogue.js?v=92';
-import { createMenu } from './menu.js?v=92';
+import { createPainter } from './paint.js?v=95';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=95';
+import { CATALOGUE } from './catalogue.js?v=95';
+import { createMenu } from './menu.js?v=95';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -34,7 +34,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=92'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=95'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -805,6 +805,78 @@ function ink(pts, w, col, seed, opts = {}) {
   if (!opts.closed && opts.pool !== false) { const e = pts[pts.length - 1]; out += `<circle cx="${f(e[0])}" cy="${f(e[1])}" r="${f(w * 0.8)}" fill="${col}" opacity=".8"/>`; }
   return out;
 }
+// A path's outline as lists of points, one list for each part it is made of (M, L, H, V, C, Q and Z, all absolute,
+// as the connectors write them); null if it uses anything else.
+function pathPoints(d) {
+  const tok = d.match(/[A-Za-z]|-?\d*\.?\d+(?:e-?\d+)?/g) || [];
+  const parts = [];
+  let cur = null, x = 0, y = 0, i = 0, cmd = '';
+  const num = () => Number(tok[i++]);
+  while (i < tok.length) {
+    if (/[A-Za-z]/.test(tok[i])) cmd = tok[i++];
+    if (cmd === 'M') { x = num(); y = num(); cur = { pts: [[x, y]], closed: false }; parts.push(cur); cmd = 'L'; }
+    else if (!cur) return null;
+    else if (cmd === 'L') { x = num(); y = num(); cur.pts.push([x, y]); }
+    else if (cmd === 'H') { x = num(); cur.pts.push([x, y]); }
+    else if (cmd === 'V') { y = num(); cur.pts.push([x, y]); }
+    else if (cmd === 'C' || cmd === 'Q') {
+      const q = cmd === 'Q', c1 = [num(), num()], c2 = q ? c1 : [num(), num()], e = [num(), num()], s0 = [x, y];
+      for (let k = 1; k <= 8; k++) {
+        const t = k / 8, u = 1 - t;
+        cur.pts.push(q ? [u * u * s0[0] + 2 * u * t * c1[0] + t * t * e[0], u * u * s0[1] + 2 * u * t * c1[1] + t * t * e[1]]
+          : [u * u * u * s0[0] + 3 * u * u * t * c1[0] + 3 * u * t * t * c2[0] + t * t * t * e[0], u * u * u * s0[1] + 3 * u * u * t * c1[1] + 3 * u * t * t * c2[1] + t * t * t * e[1]]);
+      }
+      [x, y] = e;
+    } else if (cmd === 'Z' || cmd === 'z') { cur.closed = true; if (cur.pts.length > 1) { const a = cur.pts[0], b = cur.pts[cur.pts.length - 1]; if (Math.hypot(a[0] - b[0], a[1] - b[1]) < 1e-6) cur.pts.pop(); } [x, y] = cur.pts[0]; cmd = ''; }
+    else return null;
+    if (tok[i] === undefined) break;
+  }
+  return parts;
+}
+const ringPoints = (cx, cy, rx, ry) => { const n = Math.max(24, Math.min(160, Math.ceil(2 * Math.PI * Math.max(rx, ry) / 0.012))); return Array.from({ length: n }, (_, i) => [cx + rx * Math.cos((2 * Math.PI * i) / n), cy + ry * Math.sin((2 * Math.PI * i) / n)]); };
+// Every plain line in a connector's drawing given to the pen (see ink): its outlines and its rules alike. A dashed line
+// stays as it is (its dashes run along it as the clock turns, and a pen line would have to be redrawn as they go), and
+// so do filled shapes. The plain paper strokes laid under lines so that they read on a dark wash are dropped, since
+// each pen line brings its own softer one. seed names the connector, so its lines keep their waver from frame to frame.
+const attrsOf = (a) => { const o = {}; for (const m of a.matchAll(/([\w-]+)="([^"]*)"/g)) o[m[1]] = m[2]; return o; };
+// (a line that has not moved since the last frame is not drawn again: its pen strokes are kept)
+const inked = new Map();
+function inkify(svg, seed) {
+  let n = 0;
+  if (inked.size > 600) inked.clear();
+  return svg.replace(/<(path|circle|ellipse)\b([^>]*?)\/>/g, (whole, tag, a) => {
+    const k = n++, key = `${seed}|${k}|${whole}`;
+    if (inked.has(key)) return inked.get(key);
+    const out = inkOne(whole, tag, a, seed, k);
+    inked.set(key, out);
+    return out;
+  });
+}
+function inkOne(whole, tag, a, seed, k) {
+  {
+    const A = attrsOf(a);
+    if (!A.stroke || (A.fill && A.fill !== 'none') || (tag === 'path' && !A.fill) || A['stroke-dasharray']) return whole;
+    if (A.stroke === PAP) return A.opacity === '.92' ? '' : whole;
+    const w = Number(A['stroke-width'] || 0.004);
+    let parts;
+    if (tag === 'path') parts = pathPoints(A.d);
+    else if (tag === 'circle') parts = [{ pts: ringPoints(+(A.cx || 0), +(A.cy || 0), +A.r, +A.r), closed: true }];
+    else parts = [{ pts: ringPoints(+(A.cx || 0), +(A.cy || 0), +A.rx, +A.ry), closed: true }];
+    if (!parts) return whole;
+    const op = (A.opacity ? +A.opacity : 1) * (A['stroke-opacity'] ? +A['stroke-opacity'] : 1);
+    const keep = ['transform', 'clip-path'].filter((x) => A[x]).map((x) => ` ${x}="${A[x]}"`).join('');
+    const fine = w < 0.003;            // (a hairline: no bleed or paper under it, only the pen)
+    let out = '';
+    parts.forEach((pt, j) => {
+      if (pt.pts.length < 2) return;
+      let len = 0; for (let i = 1; i < pt.pts.length; i++) len += Math.hypot(pt.pts[i][0] - pt.pts[i - 1][0], pt.pts[i][1] - pt.pts[i - 1][1]);
+      const sd = seed + k * 13.7 + j * 5.3, opts = { closed: pt.closed, pool: len > 0.08, wobble: Math.min(0.003, 0.0012 + len * 0.004) };
+      out += fine ? `<path d="${penPath(pt.pts, w * 1.15, sd, opts)}" fill="${A.stroke}" fill-rule="evenodd" opacity=".9"/>` : ink(pt.pts, w, A.stroke, sd, opts);
+    });
+    return `<g${keep} opacity="${f(op)}">${out}</g>`;
+  }
+}
+const seedOf = (name) => { let h = 7; for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) % 9973; return h; };
 const shape = (d, col) => `<path d="${d}" fill="${col}" stroke="${PAP}" stroke-width=".012" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="${col}"/>`;
 
 // Opacity is written on groups above, which is the easy way to fade a connector. But a translucent group makes the
@@ -850,6 +922,7 @@ const runs = (n, p, G) => {
 };
 let clipN = 0;
 function reveal(n, inner, p, G, k = drawn[n] ?? 1) {
+  inner = inkify(inner, seedOf(n));
   if (k >= 0.999) return inner;
   if (k <= 0.003) return '';
   const [kind, a, b] = runs(n, p, G);
@@ -1314,9 +1387,9 @@ function drawConn(p, c, G) {
     let segs = '';
     for (let i = 0; i < 24; i++) {
       const x0 = -0.44 + (0.88 * i) / 24, x1 = x0 + 0.88 / 24 - 0.006, m = 1 - Math.pow(Math.abs((x0 + x1) / 2) / 0.44, 3);
-      segs += `<path d="M${f(x0)},${f(-p.divY)} H${f(x1)}" opacity="${f(m)}"/>`;
+      segs += `<path d="M${f(x0)},${f(-p.divY)} H${f(x1)}" fill="none" stroke="${DARK}" stroke-width=".0026" opacity="${f(m)}"/>`;
     }
-    g += `<g opacity="${f(p.divide * 0.55)}" stroke="${DARK}" stroke-width=".0026" stroke-linecap="round">${segs}</g>`;
+    g += `<g opacity="${f(p.divide * 0.55)}">${segs}</g>`;
     g = g0 + reveal('divide', g, p, G);
   }
 
@@ -1370,17 +1443,17 @@ function drawConn(p, c, G) {
     const Ry = G.r + 0.1, want = Math.max(Ry, (labels.god.w / 2 + 0.035) / Math.cos(Math.PI / 8));
     plerR = plerR === null ? want : lerp(plerR, want, 0.06);
     const R = plerR, FALLEN = 1;
-    let rings = '', lost = '';
+    let rings = '', lost = '', ringsInk = '';
     for (let i = 0; i < 8; i++) {
       const a = (i + 0.5) * (Math.PI / 4);                          // (svg angles: a pair at each side of the bottom, none level with the name)
       for (const s of [-1, 1]) {
         const b = a + (s * 0.068 * Ry) / R, x = G.x + R * Math.cos(b), y = -G.y + Ry * Math.sin(b);
         const r = 0.0125 * (1 + 0.12 * Math.sin(c.t * 0.7 + i * 1.3 + s));
         const c0 = `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}"/>`;
-        if (i === FALLEN && s === 1) lost += c0; else rings += c0;
+        if (i === FALLEN && s === 1) lost += c0; else { rings += c0; ringsInk += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="none" stroke="${DARK}" stroke-width=".0032"/>`; }
       }
     }
-    g += `<g opacity="${f(p.pleroma)}"><g fill="${PAP}" fill-opacity=".6" stroke="${PAP}" stroke-width=".0115" opacity=".92">${rings}</g><g fill="none" stroke="${DARK}" stroke-width=".0032">${rings}</g>`;
+    g += `<g opacity="${f(p.pleroma)}"><g fill="${PAP}" fill-opacity=".6" stroke="${PAP}" stroke-width=".0115" opacity=".92">${rings}</g>${ringsInk}`;
     g += `<g opacity="${f(1 - p.sophia)}" fill="${PAP}" fill-opacity=".6" stroke="${DARK}" stroke-width=".0032">${lost}</g>`;
     g += `<g opacity="${f(p.sophia)}" fill="none" stroke="${DARK}" stroke-width=".0026" stroke-dasharray=".006 .006">${lost}</g></g>`;
     if (p.sophia > 0.01 && p.demi > 0.01) {
@@ -1406,7 +1479,7 @@ function drawConn(p, c, G) {
           const u0 = half + ((span - half) * k) / N, u1 = half + ((span - half) * (k + 1)) / N - 0.004 / r;
           const m = 1 - Math.pow((u0 + u1) / 2 / span, 3);              // (fading out toward the ends)
           const a0 = top + s * u0, a1 = top + s * u1;
-          segs += `<path d="M${f(r * Math.cos(a0))},${f(-p.Wy + r * Math.sin(a0))}${arcC(0, -p.Wy, r, a0, a1)}" opacity="${f(m)}"/>`;
+          segs += `<path d="M${f(r * Math.cos(a0))},${f(-p.Wy + r * Math.sin(a0))}${arcC(0, -p.Wy, r, a0, a1)}" fill="none" stroke="${DARK}" stroke-width=".0026" opacity="${f(m)}"/>`;
         }
       }
       // each ruler goes to and fro along his heaven; on guard he stands at the gate, to one side of it
@@ -1416,7 +1489,7 @@ function drawConn(p, c, G) {
       const a = lerp(roam, post, p.guard);
       rulers += `<circle cx="${f(r * Math.cos(a))}" cy="${f(-p.Wy + r * Math.sin(a))}" r=".0085"/>`;
     }
-    g += `<g opacity="${f(p.spheres)}"><g opacity=".7" fill="none" stroke="${DARK}" stroke-width=".0026" stroke-linecap="round">${segs}</g>`;
+    g += `<g opacity="${f(p.spheres)}"><g opacity=".7">${segs}</g>`;
     g += `<g fill="${DARK}" stroke="${PAP}" stroke-width=".004">${rulers}</g></g>`;
     g = g0 + reveal('spheres', g, p, G);
   }
@@ -1437,9 +1510,9 @@ function drawConn(p, c, G) {
 
   // ----- the line of history -----
   const ty = 0.87, bx = ext * (-0.72 + 0.48 * p.act);
-  g += stroke(`M${f(-ext)},${ty} H${f(ext + 0.04)}`, DARK, 0.0055);
+  g += ink([[-ext, ty], [ext + 0.04, ty]], 0.0055, DARK, 501, { pool: false, wobble: 0.0015 });
   // (inked in as far as the open act: how much of the story has been told)
-  g += `<path d="M${f(-ext)},${ty} H${f(bx)}" fill="none" stroke="${ACC}" stroke-width=".0115" stroke-linecap="round"/>`;
+  if (bx + ext > 0.01) g += ink([[-ext, ty], [bx, ty]], 0.0115, ACC, 509, { pool: false, wobble: 0.0015, taper: 0.55 });
   if (p.tick > 0.01) {
     let ticks = '';
     for (let i = 0; i <= 48; i++) ticks += `M${f(-ext + (2 * ext * i) / 48)},${ty + 0.012} v.014 `;
