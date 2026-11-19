@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=88';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=88';
-import { CATALOGUE } from './catalogue.js?v=88';
-import { createMenu } from './menu.js?v=88';
+import { createPainter } from './paint.js?v=89';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=89';
+import { CATALOGUE } from './catalogue.js?v=89';
+import { createMenu } from './menu.js?v=89';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -34,7 +34,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=88'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=89'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);

@@ -52,10 +52,10 @@ const NONE = 'Nada arriba';
 
 const TEXT = {
   christian: {
-    tagline: 'Dios hizo el mundo, y descendió para salvarlo.',
+    tagline: 'Dios creó el mundo, y descendió para salvarlo.',
     q: '¿Y si el Mesías aún no ha venido?',
     acts: [
-      ['Creación', 'Dios hizo el mundo de la nada y vio que era bueno. Hizo al hombre a su imagen y habló con él.', {
+      ['Creación', 'Dios creó el mundo de la nada y vio que era bueno. Creó al hombre a su imagen y habló con él.', {
         god: TRINE,
         world: ['La creación', 'Distinta de Dios, y buena'],
         bridge: ['Dios habla', 'Su palabra y su pacto'],
@@ -68,18 +68,18 @@ const TEXT = {
         self: ['El hombre', 'Aún imagen de Dios, ya pecador'],
         sin: ['Pecado', 'Rebelión en el corazón'],
       }],
-      ['Redención', 'Dios descendió. El Hijo se hizo hombre, murió por los pecadores y resucitó. Todo el que confía en él es perdonado.', {
+      ['Redención', 'Dios descendió. El Hijo se hizo hombre, murió por los pecadores y resucitó. Todo aquel que cree en él es perdonado.', {
         god: TRINE,
         world: ['La creación', 'Amada, y en restauración'],
         bridge: ['Cristo el Mediador', 'Dios desciende al hombre'],
         self: ['El hombre', 'Salvo por gracia, mediante la fe'],
         sin: ['Pecado', 'Pagado en la cruz'],
       }],
-      ['Nueva creación', 'Cristo volverá, resucitará a los muertos y juzgará al mundo. Dios vivirá con su pueblo en un mundo hecho nuevo.', {
+      ['Nueva creación', 'Cristo volverá, resucitará a los muertos y juzgará al mundo. Dios vivirá con su pueblo en un mundo renovado.', {
         god: TRINE,
         world: ['La nueva creación', 'Sin pecado ni muerte'],
         bridge: ['Cara a cara', 'Verán su rostro'],
-        self: ['El pueblo de Dios', 'Resucitado, y en casa con él'],
+        self: ['El pueblo de Dios', 'Resucitado, y para siempre con él'],
       }],
     ],
   },
@@ -88,7 +88,7 @@ const TEXT = {
     tagline: 'Un solo Dios escogió a un pueblo, y le dio su ley.',
     q: '¿Y si Dios habló otra vez, por un último profeta?',
     acts: [
-      ['Creación', 'El SEÑOR, el único Dios, hizo bueno el mundo e hizo al hombre a su imagen. Escogió a Abraham, y por él a Israel, y se ligó a ellos por un pacto.', {
+      ['Creación', 'El SEÑOR, el único Dios, creó un mundo bueno e hizo al hombre a su imagen. Escogió a Abraham, y por medio de él, a Israel, y se comprometió con ellos por pacto.', {
         god: ['El SEÑOR', '“El SEÑOR uno es”'],
         world: ['La creación', 'Hecha por Dios, y buena'],
         bridge: ['El pacto', 'Con Abraham y sus hijos'],
@@ -104,14 +104,14 @@ const TEXT = {
       ['Torá', 'Dios dio a Israel la Torá en el Sinaí: 613 mandamientos. El judío vuelve a Dios por el arrepentimiento, la oración y la caridad, que ahora ocupan el lugar de los sacrificios.', {
         god: ['El SEÑOR', 'Perdona al arrepentido'],
         world: ['La creación', 'Santificada por los mandamientos'],
-        bridge: ['La Torá', 'Un yugo que nadie ha llevado del todo'],
+        bridge: ['La Torá', 'Un yugo que nadie ha podido llevar'],
         self: ['Israel', 'Vuelve a Dios por el arrepentimiento'],
-        sin: ['Pecado', 'Sin sacrificio por él desde el año 70'],
+        sin: ['Pecado', 'Sin sacrificio por él desde el año 70 d. C.'],
       }],
-      ['El mundo venidero', 'El Mesías, un hombre descendiente de David, vendrá. Reunirá a los exiliados, reconstruirá el templo y traerá la paz. Los muertos resucitarán para el mundo venidero.', {
+      ['El mundo venidero', 'Vendrá el Mesías, un hombre del linaje de David. Reunirá a los exiliados, reconstruirá el templo y traerá la paz. Los muertos resucitarán para el mundo venidero.', {
         god: ['El SEÑOR', 'Rey sobre toda la tierra'],
         world: ['El mundo venidero', 'El templo reconstruido, y la paz'],
-        bridge: ['El Mesías', 'Aún esperado, aunque el templo cayó'],
+        bridge: ['El Mesías', 'Aún esperado, aunque el templo ya cayó'],
         self: ['Israel', 'Reunido en su tierra, y resucitado'],
       }],
     ],
@@ -121,20 +121,20 @@ const TEXT = {
     tagline: 'No hay más dios que Dios, y el hombre debe someterse a él.',
     q: '¿Y si Dios nunca habló?',
     acts: [
-      ['Creación', 'No hay más dios que Dios. Es uno, sin socio y sin hijo. Hizo el mundo con su orden, “¡Sé!”, y puso al hombre en la tierra como su vicario.', {
+      ['Creación', 'No hay más dios que Dios. Es uno, sin asociados y sin hijo. Hizo el mundo con su orden, “¡Sé!”, y puso al hombre en la tierra como su lugarteniente.', {
         god: ['Alá', '“No engendra ni fue engendrado”'],
         world: ['La creación', 'Hecha por su palabra, “¡Sé!”'],
-        self: ['El hombre', 'Vicario de Dios en la tierra'],
+        self: ['El hombre', 'Lugarteniente de Dios en la tierra'],
       }],
-      ['Olvido', 'Adán desobedeció y Dios lo perdonó, así que ningún pecado se hereda. El hombre nace puro, pero débil y olvidadizo. El peor pecado es poner socios junto a Dios.', {
-        god: ['Alá', 'Solo el shirk no perdonará'],
+      ['Olvido', 'Adán desobedeció y Dios lo perdonó, así que ningún pecado se hereda. El hombre nace puro, pero débil y olvidadizo. El peor pecado es asociar otros a Dios.', {
+        god: ['Alá', 'Todo lo perdona, salvo el shirk'],
         world: ['La creación', 'Llena de señales, desatendidas'],
         self: ['El hombre', 'Nace puro, pero débil'],
         sin: ['Olvido', 'Una debilidad, no una naturaleza caída'],
       }],
       ['Sumisión', 'Dios envió profetas, y el último fue Mahoma, con el Corán. Jesús fue un profeta, no el Hijo de Dios, y no fue crucificado. El hombre debe someterse a la ley de Dios y cumplir los cinco pilares.', {
         god: ['Alá', 'Revela su voluntad, no a sí mismo'],
-        world: ['La creación', 'Para ser regida por la ley de Dios'],
+        world: ['La creación', 'Sometida a la ley de Dios'],
         bridge: ['El Corán', 'La palabra hecha libro, no carne'],
         self: ['El musulmán', 'Salvo por someterse, si Dios quiere'],
         sin: ['Olvido', 'Perdonado, sin expiación'],
@@ -181,7 +181,7 @@ const TEXT = {
   },
 
   mtd: {
-    tagline: 'Sé bueno, sé feliz, y llama a Dios cuando lo necesites.',
+    tagline: 'Sé amable, sé feliz, y llama a Dios cuando lo necesites.',
     q: '¿Y si no hay nadie a quien llamar?',
     acts: [
       ['Un Dios bondadoso', 'Existe un Dios que hizo el mundo y vela por él. Quiere que la gente sea buena, amable y justa con los demás.', {
@@ -220,14 +220,14 @@ const TEXT = {
         bridge: ['Un sistema cerrado', 'Todo suceso tiene una causa natural'],
         self: ['El hombre', 'Hecho por el azar y el tiempo'],
       }],
-      ['Sufrimiento', 'El mundo no ha caído. El dolor y la muerte son sin más el modo en que obra la naturaleza. El bien y el mal son ideas humanas.', {
+      ['Sufrimiento', 'El mundo no ha caído. El dolor y la muerte son, sin más, como funciona la naturaleza. El bien y el mal son ideas humanas.', {
         god: [NONE, 'Nadie a quien culpar'],
         world: ['El cosmos', 'Indiferente'],
         bridge: ['Un sistema cerrado', 'Todo suceso tiene una causa natural'],
         self: ['El hombre', 'Sufre y muere'],
         sin: ['Sufrimiento', 'Nadie lo quiso'],
       }],
-      ['Ciencia', 'El hombre solo puede contar consigo mismo. La ciencia explica la naturaleza, y la técnica la pone a trabajar.', {
+      ['Ciencia', 'El hombre solo puede contar consigo mismo. La ciencia explica la naturaleza, y la tecnología la pone a trabajar.', {
         god: [NONE, 'Nadie a quien pedir'],
         world: ['El cosmos', 'Estudiado, medido y usado'],
         bridge: ['Aún cerrado', 'Ninguna ayuda viene de fuera'],
@@ -253,11 +253,11 @@ const TEXT = {
       }],
       ['Superstición', 'Nada falla en el fondo del hombre. El problema está en la ignorancia, la pobreza y el prejuicio, y sobre todo en la religión, que impide pensar por uno mismo.', {
         god: [NONE, 'Un cuento que el hombre deja atrás'],
-        world: ['El cosmos', 'Ni a favor ni en contra nuestra'],
+        world: ['El cosmos', 'Ni a favor ni en contra de nosotros'],
         self: ['El hombre', 'Bueno en el fondo, pero frenado'],
         sin: ['Superstición', 'La culpa está fuera del hombre'],
       }],
-      ['Progreso', 'La razón y la ciencia harán libre al hombre. Con educación, técnica y buenas leyes, la gente puede construir un mundo mejor y elegir sus propios valores.', {
+      ['Progreso', 'La razón y la ciencia harán libre al hombre. Con educación, tecnología y buenas leyes, la gente puede construir un mundo mejor y elegir sus propios valores.', {
         god: [NONE, '“Debemos salvarnos nosotros mismos”'],
         world: ['El cosmos', 'No nos dice ningún “debes”'],
         bridge: ['El progreso', 'Siempre hacia arriba, por su propio esfuerzo'],
@@ -292,7 +292,7 @@ const TEXT = {
         god: [NONE, 'Nadie que salve'],
         world: ['El cosmos', 'No ofrece nada'],
         bridge: ['Sin salida', 'Y ningún lugar adonde ir'],
-        self: ['El hombre', 'Hueco, sin razón para obrar'],
+        self: ['El hombre', 'Vacío, sin razón para actuar'],
       }],
       ['La nada', 'La muerte acaba con toda vida, y el cosmos no lo notará. Da igual que alguien haya vivido.', {
         god: [NONE, 'Nada por delante'],
@@ -385,7 +385,7 @@ const TEXT = {
       }],
       ['Revolución', 'Los obreros se alzarán y derrocarán a los dueños por la fuerza. Su partido gobernará en su nombre, tomará la tierra y las fábricas, y planificará toda la producción desde el centro.', {
         god: [NONE, 'El hombre debe salvarse solo'],
-        world: ['El Estado obrero', 'Planificado sin precios con que planificar'],
+        world: ['El Estado obrero', 'Planificado sin precios con que calcular'],
         bridge: ['La revolución', 'Salvación por la toma del poder'],
         self: ['El hombre nuevo', 'Rehecho por condiciones nuevas'],
         sin: ['Explotación', 'Sigue en el corazón de los nuevos amos'],
@@ -393,7 +393,7 @@ const TEXT = {
       ['Comunismo', 'Al final el Estado se extinguirá. Sin clases ni propiedad, todos compartirán: “de cada cual según su capacidad, a cada cual según sus necesidades.”', {
         god: [NONE, 'Ningún juicio por venir'],
         world: ['La sociedad sin clases', 'El cielo en la tierra, siempre por venir'],
-        self: ['El hombre', 'Gastado en un futuro que no verá'],
+        self: ['El hombre', 'Sacrificado por un futuro que no verá'],
       }],
     ],
   },
@@ -428,7 +428,7 @@ const TEXT = {
   },
 
   transhumanism: {
-    tagline: 'El hombre está inacabado, y la técnica lo terminará.',
+    tagline: 'El hombre está inacabado, y la tecnología lo terminará.',
     q: '¿Y si el hombre se hace divino al despertar, no con máquinas?',
     acts: [
       ['Inacabado', 'El hombre es producto de la evolución, y la evolución no ha terminado. La naturaleza humana es una obra en curso, y ahora podemos tomarla en nuestras manos.', {
@@ -445,7 +445,7 @@ const TEXT = {
       ['Mejora', 'La ciencia nos hará más que humanos: genes editados, cuerpos reparados, mentes unidas a máquinas. Cada uno podrá elegir sus propias mejoras.', {
         god: [NONE, 'El hombre quiere llenar el hueco'],
         world: ['La naturaleza', 'En pleno rediseño'],
-        bridge: ['La técnica', 'Salvación por actualización'],
+        bridge: ['La tecnología', 'Salvación por actualización'],
         self: ['El poshumano', 'Rehecho por su propia mano'],
         sin: ['Muerte', 'Aplazada, no vencida'],
       }],
@@ -507,7 +507,7 @@ const TEXT = {
       }],
       ['Rito y magia', 'Los ritos de luna llena y las fiestas restauran el vínculo. La magia obra por la voluntad y las energías de la naturaleza, sin más límite que la Rede: “Si a nadie dañas, haz lo que quieras.”', {
         god: ['La Diosa', 'Invocada en el rito'],
-        world: ['La tierra', 'Servida en lugar de su Hacedor'],
+        world: ['La tierra', 'Adorada en lugar del Creador'],
         bridge: ['La magia', 'Poder buscado, no gracia recibida'],
         self: ['El pagano', '“No dañar a nadie”, a su medida'],
         sin: ['Desconexión', 'Sanada con ritos, sin nada que perdonar'],
@@ -541,7 +541,7 @@ const TEXT = {
         god: ['Brahman', 'Más allá del bien y del mal'],
         world: ['Maya', 'Vista por lo que es'],
         bridge: ['Samsara', 'Quizá pasen antes muchas vidas'],
-        self: ['Atman', '“Tú eres eso”'],
+        self: ['Atman', '“Tú eres Eso”'],
         sin: ['Avidya', 'Disipándose'],
       }],
       ['Liberación', 'El yo queda libre del renacimiento y ya no está separado, como una gota que vuelve al mar. No queda ninguna persona.', {
@@ -649,25 +649,25 @@ const TEXT = {
     q: '¿Y si la razón sube más allá de los espíritus, hasta el Bien?',
     acts: [
       ['Un mundo vivo', 'Los espíritus habitan en ríos, árboles, animales y en los muertos. Muy por encima de ellos hay un Creador, pero se ha retirado y rara vez se le invoca.', {
-        god: ['El Dios Alto', 'Lejano, y rara vez invocado'],
+        god: ['El Dios Supremo', 'Lejano, y rara vez invocado'],
         world: ['El mundo', 'Lleno de espíritus'],
         self: ['El hombre', 'Una vida entre muchos espíritus'],
       }],
       ['Ofensa', 'La enfermedad y la desgracia llegan cuando se ofende a los espíritus, se rompen tabúes o se echan maldiciones. Se vive con miedo a poderes invisibles.', {
-        god: ['El Dios Alto', 'Demasiado lejos para ayudar'],
+        god: ['El Dios Supremo', 'Demasiado lejos para ayudar'],
         world: ['El mundo', 'Sus espíritus, vueltos contra él'],
         self: ['El hombre', 'Teme lo que no puede ver'],
         sin: ['Ofensa', 'Un tabú roto, un espíritu airado'],
       }],
       ['Apaciguamiento', 'Un adivino averigua qué espíritu está airado. Sacrificios, amuletos y ritos lo apaciguan y restablecen el equilibrio, por un tiempo.', {
-        god: ['El Dios Alto', 'Aún sin ser invocado'],
+        god: ['El Dios Supremo', 'Aún sin ser invocado'],
         world: ['El mundo', 'En equilibrio otra vez, por ahora'],
         bridge: ['El sacrificio', 'Dado para comprar la paz'],
         self: ['El hombre', 'Regatea su seguridad'],
         sin: ['Ofensa', 'Apaciguada, no perdonada'],
       }],
       ['Los antepasados', 'Al morir, la persona se une a los antepasados, que siguen cerca y deben ser alimentados. Cuando nadie recuerda sus nombres, se desvanecen.', {
-        god: ['El Dios Alto', 'Aún lejos'],
+        god: ['El Dios Supremo', 'Aún lejos'],
         world: ['El mundo', 'Sus espíritus permanecen'],
         self: ['El hombre', 'Antepasado, hasta ser olvidado'],
       }],
@@ -717,7 +717,7 @@ const TEXT = {
         bridge: ['El hacedor', 'Un dios menor, y ciego'],
         self: ['El hombre', 'Una chispa de Dios en el barro'],
       }],
-      ['La prisión', 'Chispas del Dios verdadero duermen en cuerpos humanos, retenidas allí por los gobernantes del hacedor. El problema no es el pecado sino la materia, y olvidar quién eres de verdad.', {
+      ['La prisión', 'Chispas del Dios verdadero duermen en cuerpos humanos, retenidas allí por las potestades del hacedor. El problema no es el pecado sino la materia, y olvidar quién eres de verdad.', {
         god: ['El Dios verdadero', 'Más allá de todo conocimiento'],
         world: ['La prisión', 'Regida por sus poderes'],
         bridge: ['El hacedor', 'Carcelero, no Padre'],
@@ -731,7 +731,7 @@ const TEXT = {
         self: ['Los pocos despiertos', 'Salvos por saber, no por gracia'],
         sin: ['Materia', 'Escapada, nunca perdonada'],
       }],
-      ['El retorno', 'Al morir, la chispa despierta sube más allá de los gobernantes de los cielos, les dice las palabras secretas y vuelve a casa. El cuerpo queda para pudrirse, y al final toda la materia es destruida.', {
+      ['El retorno', 'Al morir, la chispa despierta sube más allá de las potestades de los cielos, les dice las palabras secretas y vuelve a casa. El cuerpo queda para pudrirse, y al final toda la materia es destruida.', {
         god: ['El Dios verdadero', 'Alcanzado, pero aún desconocido'],
         world: ['El mundo', 'Consumido, no renovado'],
         bridge: ['La chispa', 'En casa, tras los guardianes'],
