@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=100';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=100';
-import { CATALOGUE } from './catalogue.js?v=100';
-import { createMenu } from './menu.js?v=100';
+import { createPainter } from './paint.js?v=104';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=104';
+import { CATALOGUE } from './catalogue.js?v=104';
+import { createMenu } from './menu.js?v=104';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -34,7 +34,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=100'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=104'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -720,6 +720,27 @@ function keepApart(at, godY, worldY, dt) {
   }
 }
 
+// ----- places shared by the connectors and the painting (each worked out once, from the same values) -----
+// the five bonds: ruler, father, elder brother, friend, wife; or, as the line of descent, father to son to son.
+// Each is [x, y in svg coordinates, strength].
+const BOND = [[0, 0.21], [-0.15, 0.14], [0.15, 0.14], [-0.2, 0.02], [0, -0.18]];
+const BLINE = [[0, 0.33], [0, 0.19], [0.06, 0.12], [-0.06, 0.12], [0, -0.17]];
+const BLOP = [0.3, 0.6, 0, 0, 1];
+function bondPlaces(p, t) {
+  const sy = -p.Sy;
+  return BOND.map(([bx, by], i) => {
+    const drift = 0.05 * p.loose;
+    const ox = drift * Math.sin(t * (0.21 + 0.07 * i) + i * 2.3), oy = drift * Math.cos(t * (0.17 + 0.05 * i) + i * 1.7);
+    return [lerp(bx, BLINE[i][0], p.lineage) + ox, sy - (lerp(by, BLINE[i][1], p.lineage) + oy), p.bonds * lerp(1, BLOP[i], p.lineage)];
+  });
+}
+// the scales: the beam's pivot height, its tilt, and its half length
+const scalesAt = (p, G, t) => ({ py: G.y - G.r - 0.1, a: 0.16 * Math.sin(t * 0.35) + 0.05 * Math.sin(t * 0.9), L: 0.2 });
+// the chip set where God was: its centre's height and half size
+const chipAt = (p) => ({ cy: p.Gy - p.rG * 0.42, S: 0.052 });
+// the Quran's line, from God down to man: its two ends (scene units, y up)
+const sentLine = (p, G) => ({ x0: G.x, y0: G.y - G.r - 0.02, y1: p.Sy + 0.095 });
+
 // ---------- connectors ----------
 // Rules for connectors, each learned from something that went wrong:
 // - Work in scene units, y up, as the painting does. SVG's y runs down, so every y written below is negated.
@@ -742,7 +763,9 @@ const COPIES = [[-0.19, 0.1], [-0.1, 0.2], [0.1, 0.2], [0.19, 0.1]], FSZ = 0.044
 const DARK = '#33271f', RED = [163, 38, 43], OCHRE = [176, 122, 30], GREY = '#6f6a66', PAP = '#f8f2e4';
 const f = (n) => n.toFixed(4);
 const rgb = (c) => `rgb(${c.map(Math.round).join(',')})`;
-const stroke = (d, col, wd) => `<path d="${d}" fill="none" stroke="${PAP}" stroke-width="${f(wd + 0.012)}" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="none" stroke="${col}" stroke-width="${f(wd)}" stroke-linecap="round" stroke-linejoin="round"/>`;
+// (bare: a line drawn over something the painting paints, which must not be washed out by paper laid under the line)
+const stroke = (d, col, wd, bare = false) => (bare ? `<path d="${d}" fill="none" stroke="${col}" stroke-width="${f(wd)}" data-bare="1"/>`
+  : `<path d="${d}" fill="none" stroke="${PAP}" stroke-width="${f(wd + 0.012)}" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/><path d="${d}" fill="none" stroke="${col}" stroke-width="${f(wd)}" stroke-linecap="round" stroke-linejoin="round"/>`);
 // A circular arc as cubic Béziers, in svg coordinates (angles grow clockwise on screen). SVG's own arc command has
 // to work out a centre, and for a half circle that sum is balanced on a knife edge: rounding tips it one way or the
 // other from frame to frame, and the curve hops. Béziers have no centre to work out.
@@ -871,7 +894,7 @@ function inkOne(whole, tag, a, seed, k) {
     if (!parts) return whole;
     const op = (A.opacity ? +A.opacity : 1) * (A['stroke-opacity'] ? +A['stroke-opacity'] : 1);
     const keep = ['transform', 'clip-path'].filter((x) => A[x]).map((x) => ` ${x}="${A[x]}"`).join('');
-    const fine = w < 0.003;            // (a hairline: no bleed or paper under it, only the pen)
+    const fine = w < 0.003 || A['data-bare'];   // (a hairline, or a line over painted things: no bleed or paper under it, only the pen)
     let out = '';
     parts.forEach((pt, j) => {
       if (pt.pts.length < 2) return;
@@ -1071,16 +1094,9 @@ function drawConn(p, c, G) {
   //       generations, with offerings rising from the living to the dead. -----
   if (p.bonds > 0.01) {
     const g0 = g; g = '';
-    const BOND = [[0, 0.21], [-0.15, 0.14], [0.15, 0.14], [-0.2, 0.02], [0, -0.18]];
-    const LINE = [[0, 0.33], [0, 0.19], [0.06, 0.12], [-0.06, 0.12], [0, -0.17]];
-    const LOP = [0.3, 0.6, 0, 0, 1];
     const sy = -p.Sy;
     let lines = '', dots = '', rite = '';
-    BOND.forEach(([bx, by], i) => {
-      const drift = 0.05 * p.loose;
-      const ox = drift * Math.sin(c.t * (0.21 + 0.07 * i) + i * 2.3), oy = drift * Math.cos(c.t * (0.17 + 0.05 * i) + i * 1.7);
-      const x = lerp(bx, LINE[i][0], p.lineage) + ox, y = sy - (lerp(by, LINE[i][1], p.lineage) + oy);
-      const op = p.bonds * lerp(1, LOP[i], p.lineage);
+    bondPlaces(p, c.t).forEach(([x, y, op], i) => {
       if (op < 0.01) return;
       const dx = x, dy = y - sy, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
       const a = 0.078, b = L - 0.034;
@@ -1093,7 +1109,8 @@ function drawConn(p, c, G) {
           rite = `<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".005" stroke-linecap="round" stroke-dasharray=".008 .03" stroke-dashoffset="${f(c.t * 0.025)}" opacity="${f(op * p.lineage)}"/>`;
         }
       }
-      dots += `<circle cx="${f(x)}" cy="${f(y)}" r=".028" fill="${PAP}" stroke="${ACC}" stroke-width=".0055" opacity="${f(op)}"/>`;
+      // (where the painting paints the people, only their outline is drawn here)
+      dots += `<circle cx="${f(x)}" cy="${f(y)}" r=".028" fill="${painter ? 'none' : PAP}" stroke="${ACC}" stroke-width=".0055"${painter ? ' data-bare="1"' : ''} opacity="${f(op)}"/>`;
     });
     g += lines + rite + dots;
     g = g0 + reveal('bonds', g, p, G);
@@ -1177,7 +1194,7 @@ function drawConn(p, c, G) {
   // ----- uploading: bits going up from man to a chip set in the place left empty above -----
   if (p.upload > 0.01) {
     const g0 = g; g = '';
-    const cy = p.Gy - p.rG * 0.42, S = 0.052, y0 = p.Sy + 0.09, y1 = cy - S - 0.012;
+    const { cy, S } = chipAt(p), y0 = p.Sy + 0.09, y1 = cy - S - 0.012;
     let pins = '';
     for (let i = -1.5; i <= 1.5; i++) {
       const o = i * 0.026;
@@ -1190,7 +1207,7 @@ function drawConn(p, c, G) {
       g += `<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".02" stroke-dasharray=".014 .018" stroke-dashoffset="${f(-c.t * 0.03 + 0.002)}" opacity=".92"/>`;
       g += `<path d="${d}" fill="none" stroke="${ACC}" stroke-width=".011" stroke-dasharray=".01 .022" stroke-dashoffset="${f(-c.t * 0.03)}"/>`;
     }
-    g += `${stroke(pins, ACC, 0.004)}<path d="${chip}" fill="${PAP}" fill-opacity=".9" stroke="${PAP}" stroke-width=".016" stroke-linejoin="round" opacity=".92"/><path d="${chip}" fill="none" stroke="${ACC}" stroke-width=".0045"/>`;
+    g += `${stroke(pins, ACC, 0.004, !!painter)}${painter ? '' : `<path d="${chip}" fill="${PAP}" fill-opacity=".9" stroke="${PAP}" stroke-width=".016" stroke-linejoin="round" opacity=".92"/>`}<path d="${chip}" fill="none" stroke="${ACC}" stroke-width=".0045"${painter ? ' data-bare="1"' : ''}/>`;
     g += `<rect x="${f(-S * 0.45)}" y="${f(-(cy + S * 0.45))}" width="${f(S * 0.9)}" height="${f(S * 0.9)}" fill="none" stroke="${ACC}" stroke-width=".0025" opacity=".7"/></g>`;
     g = g0 + reveal('upload', g, p, G);
   }
@@ -1218,9 +1235,12 @@ function drawConn(p, c, G) {
       // his line: whole, a little heavier, with the slow dots of his faithfulness running down it
       const his = [[G.x - 0.015, -y0], [-0.015, -y1]], theirs = [[G.x + 0.015, -y0], [0.015, -y1]];
       // (where the painting paints the tablets, the lines pass behind them: they are cut away there)
-      const tm = (G.y - G.r + p.Wy + p.rW) / 2, behind = painter && p.tablets > 0.01;
+      const tm = (G.y - G.r + p.Wy + p.rW) / 2, behind = painter && (p.tablets > 0.01 || p.awaited > 0.01);
+      // (the cut: the tablets' box, or the awaited place's round)
+      const hole = p.tablets >= p.awaited ? `M-.075,${f(-tm - 0.06)} H.075 V${f(-tm + 0.06)} H-.075Z`
+        : `M.052,${f(-tm)}${arcC(0, -tm, 0.052, 0, Math.PI)}${arcC(0, -tm, 0.052, Math.PI, 2 * Math.PI)}Z`;
       const L = `M${f(his[0][0])},${f(his[0][1])} L${f(his[1][0])},${f(his[1][1])}`;
-      if (behind) g += `<defs><clipPath id="cvb"><path clip-rule="evenodd" d="M-3,-3 H3 V3 H-3Z M-.075,${f(-tm - 0.06)} H.075 V${f(-tm + 0.06)} H-.075Z"/></clipPath></defs><g clip-path="url(#cvb)">`;
+      if (behind) g += `<defs><clipPath id="cvb"><path clip-rule="evenodd" d="M-3,-3 H3 V3 H-3Z ${hole}"/></clipPath></defs><g clip-path="url(#cvb)">`;
       g += `<g opacity="${f(p.covenant)}">${ink(his, 0.0058, ACC, 11)}<path d="${L}" fill="none" stroke="${PAP}" stroke-width=".0034" stroke-linecap="round" stroke-dasharray=".001 .03" stroke-dashoffset="${f(-c.t * 0.015)}"/>`;
       // theirs: the same pen, broken into pieces as the people break it
       if (p.broken > 0.02) {
@@ -1266,7 +1286,7 @@ function drawConn(p, c, G) {
   }
   if (p.awaited > 0.01) {
     const g0 = g; g = '';
-    g += `<g opacity="${f(p.awaited)}"><circle cx="0" cy="${f(-mid)}" r=".05" fill="${PAP}" fill-opacity=".85" stroke="${PAP}" stroke-width=".014" opacity=".92"/>`;
+    g += `<g opacity="${f(p.awaited)}">${painter ? '' : `<circle cx="0" cy="${f(-mid)}" r=".05" fill="${PAP}" fill-opacity=".85" stroke="${PAP}" stroke-width=".014" opacity=".92"/>`}`;
     g += `<circle cx="0" cy="${f(-mid)}" r=".05" fill="none" stroke="${ACC}" stroke-width=".0045" stroke-linecap="round" stroke-dasharray=".012 .014" stroke-dashoffset="${f(c.t * 0.004)}"/></g>`;
     g = g0 + reveal('awaited', g, p, G);
   }
@@ -1274,12 +1294,16 @@ function drawConn(p, c, G) {
   // ----- the Quran sent down: a ruled line from God to man, with its pages coming down it. God himself stays above. -----
   if (p.sent > 0.01) {
     const g0 = g; g = '';
-    const y0 = G.y - G.r - 0.02, y1 = p.Sy + 0.095;
+    const { x0, y0, y1 } = sentLine(p, G);
     if (y0 > y1) {
-      const d = `M${f(G.x)},${f(-y0)} L0,${f(-y1)}`;
-      g += `<g opacity="${f(p.sent)}">${stroke(d, ACC, 0.0035)}`;
-      g += `<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".026" stroke-dasharray=".026 .05" stroke-dashoffset="${f(-c.t * 0.02 - 0.002)}" opacity=".92"/>`;
-      g += `<path d="${d}" fill="none" stroke="${ACC}" stroke-width=".016" stroke-dasharray=".022 .054" stroke-dashoffset="${f(-c.t * 0.02)}"/></g>`;
+      const d = `M${f(x0)},${f(-y0)} L0,${f(-y1)}`;
+      g += `<g opacity="${f(p.sent)}">${stroke(d, ACC, 0.0035, !!painter)}`;
+      // (the pages coming down: painted, where there is a painting; drawn as heavy dashes where there is not)
+      if (!painter) {
+        g += `<path d="${d}" fill="none" stroke="${PAP}" stroke-width=".026" stroke-dasharray=".026 .05" stroke-dashoffset="${f(-c.t * 0.02 - 0.002)}" opacity=".92"/>`;
+        g += `<path d="${d}" fill="none" stroke="${ACC}" stroke-width=".016" stroke-dasharray=".022 .054" stroke-dashoffset="${f(-c.t * 0.02)}"/>`;
+      }
+      g += '</g>';
     }
     g = g0 + reveal('sent', g, p, G);
   }
@@ -1287,14 +1311,14 @@ function drawConn(p, c, G) {
   // ----- the scales of judgement: hung below God, tipping one way and then the other, never coming to rest -----
   if (p.scales > 0.01) {
     const g0 = g; g = '';
-    const py = G.y - G.r - 0.1, L = 0.2, a = 0.16 * Math.sin(c.t * 0.35) + 0.05 * Math.sin(c.t * 0.9);
+    const { py, a, L } = scalesAt(p, G, c.t);
     const ex = L * Math.cos(a), ey = L * Math.sin(a);
     let d = `M0,${f(-(G.y - G.r - 0.015))} V${f(-py)} M${f(-ex)},${f(-(py + ey))} L${f(ex)},${f(-(py - ey))} `;
     for (const s of [-1, 1]) {
       const x = s * ex, y = py - s * ey, by = y - 0.11;
       d += `M${f(x)},${f(-y)} L${f(x - 0.05)},${f(-by)} M${f(x)},${f(-y)} L${f(x + 0.05)},${f(-by)} M${f(x + 0.05)},${f(-by)}${arcC(x, -by, 0.05, 0, Math.PI)} `;
     }
-    g += `<g opacity="${f(p.scales)}">${stroke(d, ACC, 0.0045)}<circle cx="0" cy="${f(-py)}" r=".011" fill="${ACC}" stroke="${PAP}" stroke-width=".004"/></g>`;
+    g += `<g opacity="${f(p.scales)}">${stroke(d, ACC, 0.0045, !!painter)}<circle cx="0" cy="${f(-py)}" r=".011" fill="${ACC}" stroke="${PAP}" stroke-width=".004"/></g>`;
     g = g0 + reveal('scales', g, p, G);
   }
 
@@ -1634,6 +1658,32 @@ const SPIRIT = [[0.55, 0.3, 0.07], [0.8, 1.6, -0.05], [0.4, 2.7, 0.06], [0.9, 3.
   [0.85, 0.9, -0.06], [0.5, 2.1, 0.09], [0.75, 4.4, -0.07], [0.9, 5.7, 0.05]];
 const RING = [0.9, 1.75, 2.6, 4.1, 5.2, 0.4, 2.2, 3.4, 5.9];
 const spirits = new Float32Array(36);
+// The pictorial things the painting paints, each as [x, y (scene units, y up), size, how far in]: the Messiah's empty
+// place, the chip, the two pans of the scales, the five people of the bonds, and the Quran's pages coming down.
+const awaitV = new Float32Array(4), chipV = new Float32Array(4), panV = new Float32Array(8), bondV = new Float32Array(20), pageV = new Float32Array(24);
+let accC = [0.64, 0.15, 0.17];
+const inOf = (n, p) => (p[n] > 0.01 ? p[n] * (drawn[n] ?? 1) : 0);
+function paintedThings(p, G, t) {
+  accC = p.acc.map((v) => v / 255);
+  awaitV.set([0, (G.y - G.r + p.Wy + p.rW) / 2, 0.05, inOf('awaited', p)]);
+  const ch = chipAt(p);
+  chipV.set([0, ch.cy, ch.S, inOf('upload', p)]);
+  const sc = scalesAt(p, G, t), ex = sc.L * Math.cos(sc.a), ey = sc.L * Math.sin(sc.a), si = inOf('scales', p);
+  panV.set([-ex, sc.py + ey - 0.11, 0.05, si, ex, sc.py - ey - 0.11, 0.05, si]);
+  const bi = inOf('bonds', p) / Math.max(p.bonds, 1e-3);
+  bondPlaces(p, t).forEach(([x, y, op], i) => bondV.set([x, -y, 0.028, op * bi], i * 4));
+  // the pages: one every .076 along the line, moving down it at .02 a second, as the dashes once did
+  pageV.fill(0);
+  const sl = sentLine(p, G), si2 = inOf('sent', p), dx = 0 - sl.x0, dy = sl.y1 - sl.y0, len = Math.hypot(dx, dy);
+  if (si2 > 0 && len > 0.05) {
+    for (let k = 0; k < 6; k++) {
+      const s0 = ((t * 0.02 + k * 0.076) % (6 * 0.076)) + 0.011;
+      if (s0 > len - 0.011) continue;
+      const u = s0 / len, fade = Math.min(1, s0 / 0.04, (len - s0) / 0.04);
+      pageV.set([sl.x0 + dx * u, sl.y0 + dy * u, Math.atan2(dy, dx), si2 * fade], k * 4);
+    }
+  }
+}
 function spiritsAt(p, t) {
   SPIRIT.forEach(([fr, a0, w], i) => {
     const R = p.rW * (0.25 + 0.6 * fr), a = a0 + t * w;
@@ -1663,7 +1713,7 @@ const U = {};             // the shader's uniforms, refilled each painting
 // The values that never change in some worldviews, as #defines for a version of the shader that leaves out what
 // cannot show there (see version() in paint.js). Only values passed by name are fixed in this way: never those
 // worked out in frame(), which change even where the value of the same name does not (uTick, uSoul).
-const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA', 'uWords', 'uHome', 'uHot', 'uWash', 'uFormsIn', 'uTabletsIn']);
+const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA', 'uWords', 'uHome', 'uHot', 'uWash', 'uFormsIn', 'uTabletsIn', 'uAwait', 'uChip', 'uPan[0]', 'uBond[0]', 'uPage[0]', 'uAccC']);
 const fixedMemo = new Map();
 let readyNext = false, workedChecked = false;
 function fixedIn(ids) {
@@ -1754,6 +1804,8 @@ function frame(now) {
     // the pictorial things the painting paints (the connectors leave them out while it does): as far as they are drawn in
     U.uFormsIn = p.forms > 0.01 ? p.forms * (drawn.forms ?? 1) : 0;
     U.uTabletsIn = p.tablets > 0.01 ? p.tablets * (drawn.tablets ?? 1) : 0;
+    paintedThings(p, G, t);
+    U.uAwait = awaitV; U.uChip = chipV; U['uPan[0]'] = panV; U['uBond[0]'] = bondV; U['uPage[0]'] = pageV; U.uAccC = accC;
     U.uHome = Math.exp(-(((now - homeAt) / 1100) ** 2));
     painter.draw(U, fixedIn(onPage), !reduced && frozen === null && !params.has('k') && now - t0 < dur);
     // once a worldview has settled, its question's move is made ready in the background

@@ -61,7 +61,9 @@ uniform float uStrata, uSplit, uChurn;  // the pyramid in two storeys, split at 
 uniform float uStainOn;         // the stain moved off man and onto the top of the pyramid
 uniform float uShards, uDominant, uPlay, uGap, uScript;  // the world as a collage of shards; one story's colour over most; shards shifting; cracks between; handwriting over all
 uniform float uDemi, uDemiY, uDemiR;   // the maker of this world, a lesser god below the true one: how much of him, his height and size
-uniform float uFormsIn, uTabletsIn;   // pictorial things painted, not drawn: the eternal Forms; the tablets of the law (how far each is in)
+uniform float uFormsIn, uTabletsIn;
+uniform vec4 uAwait, uChip, uPan[2], uBond[5], uPage[6];   // more of them, each [x, y, size, how far in]: the Messiah's empty place, the chip, the pans, the people of the bonds, the Quran's pages (z: angle)
+uniform vec3 uAccC;                // the accent colour of the page, for things painted in it   // pictorial things painted, not drawn: the eternal Forms; the tablets of the law (how far each is in)
 uniform float uMoons, uSeasons;  // the Ultimate as a triple moon (waxing, full, waning); the land's colour turning through the year
 uniform float uAura;           // a soft rainbow aura round man, and how far it reaches
 uniform float uCircuit;        // circuit traces spreading out from man, how far
@@ -622,6 +624,86 @@ void main(){
         A *= 1. - .35 * rule(lp.y - ry + .0028, .0016) * on * uTabletsIn;
       }
     }
+  }
+
+  // ---------- the place where the Messiah is awaited: an empty round, the paper lifted clean inside it, and a faint
+  //            gold at its rim, as of something prepared ----------
+  if (uAwait.w > .001 && length(q - uAwait.xy) < uAwait.z + .06) {
+    vec2 nL, nM, nF; float nPW;
+    field(q - uAwait.xy, nL, nM, nF, nPW);
+    float d = length(q + nL * .01 - uAwait.xy) - uAwait.z;
+    A *= 1. - .75 * smoothstep(.006, -.012, d) * uAwait.w;
+    ink *= 1. - smoothstep(.004, -.004, d) * uAwait.w;
+    A += K(vec3(.98, .9, .68)) * layersAt(abs(d + .004) - .006, 31., .006, .003, .5, nM, nF) * .8 * uAwait.w;
+  }
+
+  // ---------- the chip set where God was: a slate of silicon, its die catching a cold sheen ----------
+  if (uChip.w > .001 && abs(q.x - uChip.x) < uChip.z + .04 && abs(q.y - uChip.y) < uChip.z + .04) {
+    vec2 nL, nM, nF; float nPW;
+    field(q - uChip.xy, nL, nM, nF, nPW);
+    vec2 lp = q - uChip.xy + nL * .004;
+    vec2 cb = abs(lp) - vec2(uChip.z - .004);
+    float d = length(max(cb, 0.)) + min(max(cb.x, cb.y), 0.) - .004;
+    float solid = smoothstep(.004, -.004, d) * uChip.w;
+    A *= 1. - .85 * solid; ink *= 1. - solid;
+    A += K(vec3(.5, .56, .6)) * layersAt(d, 41., .006, .003, .6, nM, nF) * (.85 + .3 * fbm(lp * 50.)) * uChip.w;
+    vec2 db = abs(lp) - vec2(uChip.z * .45);
+    float die = length(max(db, 0.)) + min(max(db.x, db.y), 0.);
+    A += K(vec3(.32, .36, .42)) * smoothstep(.003, -.003, die) * .7 * uChip.w;
+    A *= 1. - .45 * smoothstep(.003, -.003, die) * smoothstep(.2, 1., sin((lp.x + lp.y) * 60. + uT * .3) * .5 + .5) * uChip.w;
+  }
+
+  // ---------- the pans of the scales: two bowls of brass, swinging as the beam tips ----------
+  for (int i = 0; i < 2; i++) {
+    vec4 P = i == 0 ? uPan[0] : uPan[1];
+    if (P.w < .001 || length(q - P.xy) > P.z + .03) continue;
+    vec2 nL, nM, nF; float nPW;
+    field(q - P.xy, nL, nM, nF, nPW);
+    vec2 lp = q - P.xy + nL * .004;
+    // a shallow dish seen a little from above: its curved underside, and the mouth of it as an ellipse at the rim
+    float under = max(length(lp) - P.z, lp.y);
+    float mouth = (length(lp / vec2(P.z, P.z * .26)) - 1.) * P.z * .26;
+    float d = min(under, mouth);
+    float body = smoothstep(.003, -.003, d);
+    A *= 1. - .8 * body * P.w;
+    A += K(vec3(.84, .66, .34)) * layersAt(d, 51. + float(i), .005, .003, .7, nM, nF) * (.85 + .3 * fbm(lp * 40. + float(i))) * P.w;
+    // inside the mouth: the hollow of the dish, darker toward its back edge
+    A += K(vec3(.6, .44, .22)) * smoothstep(.002, -.002, mouth) * (.35 + .5 * smoothstep(-P.z * .26, P.z * .2, lp.y)) * P.w;
+    // the lip: a lit edge along the front of the mouth, and the pen round it
+    A *= 1. - .5 * rule(mouth, .0025) * step(lp.y, 0.) * P.w;
+    ink += penW(mouth, .0016) * .6 * P.w;
+    // a glint on the curve
+    A *= 1. - .4 * body * exp(-pow((lp.x + P.z * .4) / .009, 2.)) * smoothstep(-P.z * .9, -P.z * .3, lp.y) * P.w;
+  }
+
+  // ---------- the people of the five bonds: small rounds of the act's colour, pale, each with its tide line ----------
+  if (abs(q.x) < .32 && abs(q.y - uSy) < .42) {
+    for (int i = 0; i < 5; i++) {
+      vec4 P = i == 0 ? uBond[0] : i == 1 ? uBond[1] : i == 2 ? uBond[2] : i == 3 ? uBond[3] : uBond[4];
+      if (P.w < .001 || length(q - P.xy) > P.z + .03) continue;
+      vec2 nL, nM, nF; float nPW;
+      field(q - P.xy + float(i) * 2.1, nL, nM, nF, nPW);
+      float d = length(q + nL * .006 - P.xy) - P.z;
+      A *= 1. - .8 * smoothstep(.003, -.003, d) * P.w;
+      ink *= 1. - smoothstep(.003, -.003, d) * P.w;
+      A += K(mix(vec3(.99, .96, .9), uAccC, .28)) * layersAt(d, 61. + float(i), .005, .003, .9, nM, nF) * P.w;
+    }
+  }
+
+  // ---------- the Quran's pages, coming down from God one after another: small leaves of parchment, each with its
+  //            lines of writing ----------
+  for (int i = 0; i < 6; i++) {
+    vec4 P = i == 0 ? uPage[0] : i == 1 ? uPage[1] : i == 2 ? uPage[2] : i == 3 ? uPage[3] : i == 4 ? uPage[4] : uPage[5];
+    if (P.w < .001 || length(q - P.xy) > .04) continue;
+    vec2 lp = rot(q - P.xy, -P.z - 1.5708);                                // (the page's width across the line, its height along it)
+    vec2 pb = abs(lp) - vec2(.019, .013);
+    float d = length(max(pb, 0.)) + min(max(pb.x, pb.y), 0.);
+    A *= 1. - .8 * smoothstep(.002, -.002, d) * P.w;
+    ink *= 1. - smoothstep(.002, -.002, d) * P.w;
+    A += K(vec3(.96, .9, .74)) * smoothstep(.002, -.003, d) * (.8 + .4 * fbm(lp * 90. + float(i))) * P.w;
+    ink += penW(d + .0012, .0016) * .8 * P.w;
+    float rows = rule(fract((lp.y + .013) / .0042) * .0042 - .0021, .0006) * smoothstep(-.003, -.005, d) * step(.25, noise(vec2(lp.x * 120., floor((lp.y + .013) / .0042) + float(i) * 7.)));
+    A += K(uAccC) * rows * .75 * P.w;
   }
 
   // ---------- the triple moon: waxing, full and waning, side by side ----------
