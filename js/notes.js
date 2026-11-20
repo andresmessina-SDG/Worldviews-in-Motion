@@ -313,6 +313,121 @@ export const NOTES = {
         2: ['But evil was still there in the hearts of the new rulers. Solzhenitsyn, who survived their camps, wrote that “the line dividing good and evil cuts through the heart of every human being.”', 'Solzhenitsyn, The Gulag Archipelago'],
       },
     },
+
+    individualism: {
+      god: {
+        '*': ['There is no authority above the self: not God, not nature, not tradition. Meaning is found by looking within. Robert Bellah’s Habits of the Heart named it: each person has “a unique core of feeling and intuition that should unfold or be expressed.”', 'Bellah et al., Habits of the Heart'],
+        1: ['God, if he is kept at all, becomes one more rule to throw off, or a supporter of whatever the self has already chosen.', ''],
+        2: ['The self is its own judge: no one may tell it it is wrong. But a judge who answers to no one cannot be appealed against, even by the self it wrongs.', ''],
+        3: ['No one is left to say who I am but me. Yet the self that names itself is never sure the name is true.', 'Ps 139:1–4'],
+      },
+      world: {
+        0: ['Society is a stage on which the self acts out who it is. Rousseau began his Confessions: “I am made unlike any one I have ever met… I may be no better, but at least I am different.”', 'Rousseau, Confessions'],
+        1: ['Family, church and moral law are seen as walls that hem the self in. To be free is to break out of them.', ''],
+        2: ['Society is now required to affirm each self as it presents itself. The American Supreme Court put the creed in law: “At the heart of liberty is the right to define one’s own concept of existence, of meaning, of the universe, and of the mystery of human life.”', 'Planned Parenthood v. Casey (1992)'],
+        3: ['The result is a crowd of selves, each alone: free of every bond, and with no one bound to it either.', ''],
+      },
+      bridge: {
+        2: ['Authenticity: to follow one’s heart, whatever others think. Charles Taylor describes it: “There is a certain way of being human that is my way.” But Scripture warns that “the heart is deceitful above all things.”', 'Taylor, The Ethics of Authenticity · Jer 17:9'],
+      },
+      self: {
+        0: ['Each person has a true self within, found by looking inward: its feelings and desires are its truth. But feelings change, and contradict each other; they cannot all be true.', ''],
+        1: ['The self feels held in by others’ rules: parents, churches, customs and moral codes that tell it who to be. What it truly is, it is not allowed to be, and so it feels false to itself.', ''],
+        2: ['The self is its own maker: it decides what it is, and others must accept it. But a self made by choice can be unmade by the next one.', ''],
+        3: ['The goal is to be fully oneself and feel fulfilled. When the self dies, the story it told about itself ends with it.', 'Mark 8:35'],
+      },
+      sin: {
+        1: ['The only sin is to deny oneself: to suppress what one feels or wants. This turns Jesus’ call on its head: “If anyone would come after me, let him deny himself and take up his cross.”', 'Luke 9:23'],
+      },
+    },
+
+    transhumanism: {
+      god: {
+        0: ['There is no God yet, but there may be one: man himself, remade. Asked whether God exists, Ray Kurzweil answered: “Not yet.”', 'Kurzweil, in Transcendent Man'],
+        1: ['With no one above, death is no one’s judgement and carries no meaning: it is a fault in the machine, an engineering problem waiting to be solved. Nick Bostrom pictured it as a dragon-tyrant that mankind has only to find the courage to slay.', 'Bostrom, The Fable of the Dragon-Tyrant'],
+        2: ['Man means to fill the place left empty. Harari: “we will now aim to upgrade humans into gods, and turn Homo sapiens into Homo deus.”', 'Harari, Homo Deus'],
+        3: ['The Singularity: the moment machine intelligence outruns ours and remakes everything. It is the oldest temptation in a new form: “You will be like God.”', 'Gen 3:5 · Kurzweil, The Singularity Is Near'],
+      },
+      world: {
+        0: ['Nature is raw material to be improved. Max More wrote to her: “Mother Nature, truly we are grateful for what you have made us… we have decided that it is time to amend the human constitution.”', 'More, A Letter to Mother Nature'],
+        1: ['Nature is blind, cruel and slow: evolution took millions of years to give us bodies that age and fail. We can do better, and faster.', ''],
+        2: ['Nature is being redesigned: genes edited, bodies repaired with new parts, minds linked to machines. What evolution did blindly over ages, engineers mean to do on purpose in decades. But who decides what the redesign is for?', ''],
+        3: ['In the end nature itself is wired over: Kurzweil foresees matter and energy “saturated” with intelligence, the universe waking up. The world becomes one great machine of thought, with no Maker but the minds that built it.', 'Kurzweil, The Singularity Is Near'],
+      },
+      bridge: {
+        2: ['Technology is the way of salvation: upgrade by upgrade, man will rise above his limits. Julian Huxley coined the word: “man remaining man, but transcending himself, by realizing new possibilities of and for his human nature.”', 'Huxley, New Bottles for New Wine'],
+        3: ['Uploading: a mind copied into a machine and run for as long as the hardware lasts. But a copy is not the one who was copied: the man still dies, and something else goes on.', ''],
+      },
+      self: {
+        0: ['Man is a rough draft, not a finished work: the product of evolution, which we can now take into our own hands. Scripture says the opposite: man is made in God’s image, and is not an experiment.', 'Gen 1:27'],
+        1: ['Man is trapped in a failing body, limited by ageing, disease and death. Transhumanists call these not the fruit of a fall, nor part of a creature’s lot, but defects in the design that nature happened to give us.', ''],
+        2: ['The posthuman, remade by his own hand: stronger, cleverer, longer-lived. But a man who remakes himself has still not changed his heart.', ''],
+        3: ['The body is left behind as so much hardware. This is not new: it is the old gnostic contempt for flesh, which God made and called good, and which Christ rose in.', 'Luke 24:39'],
+      },
+      sin: {
+        1: ['Death is not a wage for sin but a problem to solve. Harari: “death is not an inevitable destiny, but merely a technical problem… And every technical problem has a technical solution.” Scripture: “the wages of sin is death.”', 'Harari, Homo Deus · Rom 6:23'],
+        2: ['Death is delayed, not defeated: lives lengthen, but every one still ends. Only one has come back from death never to die again, and he promises the same to all who are his.', '1 Cor 15:20–26'],
+      },
+    },
+
+    'new-age': {
+      god: {
+        '*': ['God is the Universe: an impersonal energy, a universal consciousness, of which everything is part. Not a Person who speaks, loves or judges, but a force to be felt and tapped.', ''],
+        1: ['An impersonal energy cannot be offended, so there is nothing to forgive and no one to forgive it. But it cannot love either: a force has no heart to set on anyone.', '1 John 4:8'],
+        2: ['The Universe is tapped, not worshipped: drawn on through techniques for health, wealth and peace. It answers to the right method, like electricity, and asks for nothing back.', ''],
+        3: ['The divine is reached by climbing, through spiritual growth over many lives, not received as a gift. Grace has no place where every soul must earn its own way up.', 'Eph 2:8–9'],
+      },
+      world: {
+        0: ['All is one: the cosmos and the self are one great whole, and the one is divine. The difference between Creator and creature is denied.', 'Rom 1:25'],
+        1: ['Most people see only the surface of things, a world of separate objects and selves, and miss the oneness and divinity beneath. Waking up means seeing through the separateness to the one great whole.', ''],
+        2: ['The world is shaped by the mind: thoughts attract their like and create our reality. Then the sick and the poor have, in some sense, chosen their lot.', ''],
+        3: ['A new age, the Age of Aquarius, is always about to dawn, when humanity will awaken together. Marilyn Ferguson’s Aquarian Conspiracy (1980) announced it.', 'Ferguson, The Aquarian Conspiracy'],
+      },
+      bridge: {
+        2: ['Cosmic consciousness: in meditation and altered states, the self is said to know its oneness with all. There, right and wrong dissolve into the One.', ''],
+        3: ['Reincarnation: the soul returns life after life, learning, until it is pure. There is no Saviour, only the long climb, and no last judgement.', 'Heb 9:27'],
+      },
+      self: {
+        0: ['In the depths of the self, each person is divine. Shirley MacLaine, the movement’s best-known voice, put it most plainly: “I am God.”', 'MacLaine, Out on a Limb'],
+        1: ['The self has forgotten its own divinity and lives shut inside its ordinary mind. Eckhart Tolle’s teaching: “You are not your mind.”', 'Tolle, The Power of Now'],
+        2: ['The awakened self creates its own reality by its thoughts and intentions: what it pictures and expects, the Universe brings. It is the self in the place of the Creator, whose word alone makes things be.', 'Ps 33:9'],
+        3: ['The soul rises from life to life toward the light, with no judgement to face, for there is no one to give account to. Scripture says: “it is appointed for man to die once, and after that comes judgement.”', 'Heb 9:27'],
+      },
+      sin: {
+        1: ['What is wrong is not sin but forgetting: a narrow consciousness. There is no holy God to offend, only a mind to expand.', ''],
+        2: ['Forgetting is cured by technique: meditation, crystals, channelling, the right teacher. Salvation is something done, not received, and it is never finished; there is always a higher level to reach.', ''],
+      },
+    },
+
+    'neo-paganism': {
+      god: {
+        0: ['The Goddess: Maiden, Mother and Crone, the waxing, full and waning moon; and often a horned God beside her. For Starhawk the Goddess does not rule the world from outside it: she is the world.', 'Starhawk, The Spiral Dance'],
+        1: ['The Goddess is forgotten, not offended: she gives no law to break, and asks for no repentance. What has been lost is a relationship with nature, not peace with a holy God.', ''],
+        2: ['In the rite the Goddess is called down into the priestess. In the Charge of the Goddess she says: “All acts of love and pleasure are my rituals.”', 'Valiente, The Charge of the Goddess'],
+        3: ['The Crone gives way to the Maiden again: the cycle never ends, and nothing is made new. Death is only winter, and spring always comes back, the same as before.', 'Rev 21:5'],
+      },
+      world: {
+        0: ['The earth is the Goddess’s body, and so divine: all life shares in her. Nature is not made by God; it is god.', ''],
+        1: ['The earth is wounded by industry, cities and machines, which have cut people off from the cycles of nature. The neo-pagan revival grew in part as a protest against the modern, industrial world.', ''],
+        2: ['The earth is served in place of its Maker, which Paul names precisely: they “worshipped and served the creature rather than the Creator.”', 'Rom 1:25'],
+        3: ['The earth goes round for ever, always turning, never made new. Christ’s promise is not a cycle but a new beginning: “Behold, I am making all things new.”', 'Rev 21:5'],
+      },
+      bridge: {
+        0: ['The wheel of the year: eight festivals (the solstices, the equinoxes and the four days between) turning with the seasons, for ever.', ''],
+        2: ['Magic: power sought by will, ritual and the energies of nature, to bring about change. It is power taken, not grace received.', 'Deut 18:10–12'],
+        3: ['The wheel turns round and round with no last day: no end to history, no judgement and no goal. Time is a circle, not a story going somewhere.', ''],
+      },
+      self: {
+        0: ['Man is a child of the earth, one creature among many in the web of life, no higher than the rest. Nothing sets him apart to rule the earth for its Maker, or answer to him for it.', 'Gen 1:28'],
+        1: ['Man is cut off from the earth and its rhythms: the moon, the seasons, the land. The cure is to come home to nature, not to be reconciled to its Maker.', '2 Cor 5:18'],
+        2: ['The pagan lives by the Wiccan Rede: “An it harm none, do what ye will.” But who decides what harms, and by what measure?', 'The Wiccan Rede'],
+        3: ['At death the soul rests in the Summerland, a pleasant land of the dead, then is born again into another life, round and round with the wheel.', ''],
+      },
+      sin: {
+        1: ['What is wrong is imbalance and disconnection, not sin against a holy God. Harm is real, but it is harm to nature and to others, never an offence against a lawgiver.', ''],
+        2: ['Disconnection is healed by ritual, with nothing to forgive, because no one has been wronged but nature and oneself. Without a holy God, guilt has nowhere to go and no one to lift it.', ''],
+      },
+    },
   },
 
   es: {
@@ -616,6 +731,121 @@ export const NOTES = {
       sin: {
         1: ['El mal está en el sistema, en la propiedad privada y las clases, no en el corazón humano. Cambia el sistema y el mal desaparece.', ''],
         2: ['Pero el mal seguía en el corazón de los nuevos amos. Solzhenitsyn, que sobrevivió a sus campos, escribió que “la línea que separa el bien del mal pasa por el corazón de cada ser humano.”', 'Solzhenitsyn, Archipiélago Gulag'],
+      },
+    },
+
+    individualism: {
+      god: {
+        '*': ['No hay autoridad por encima del yo: ni Dios, ni la naturaleza, ni la tradición. El sentido se encuentra mirando hacia dentro. Robert Bellah lo describió en Hábitos del corazón: cada persona tiene “un núcleo único de sentimiento e intuición que debe desplegarse o expresarse.”', 'Bellah et al., Hábitos del corazón'],
+        1: ['Dios, si se le conserva, se vuelve una norma más que sacudirse, o un respaldo de lo que el yo ya ha elegido.', ''],
+        2: ['El yo es su propio juez: nadie puede decirle que se equivoca. Pero un juez que no responde ante nadie no admite apelación, ni siquiera del yo al que perjudica.', ''],
+        3: ['No queda nadie que diga quién soy, sino yo. Pero el yo que se pone nombre nunca está seguro de que el nombre sea verdadero.', 'Sal 139:1–4'],
+      },
+      world: {
+        0: ['La sociedad es un escenario donde el yo representa quién es. Rousseau empezó sus Confesiones: “No estoy hecho como ninguno de cuantos he visto… Si no valgo más, al menos soy distinto.”', 'Rousseau, Confesiones'],
+        1: ['La familia, la iglesia y la ley moral se ven como muros que encierran al yo. Ser libre es romperlos.', ''],
+        2: ['La sociedad debe ahora afirmar a cada yo tal como se presenta. El Tribunal Supremo de Estados Unidos puso el credo en ley: “En el corazón de la libertad está el derecho a definir el propio concepto de la existencia, del sentido, del universo y del misterio de la vida humana.”', 'Planned Parenthood v. Casey (1992)'],
+        3: ['El resultado es una multitud de yoes, cada uno solo: libres de todo vínculo, y sin nadie vinculado a ellos.', ''],
+      },
+      bridge: {
+        2: ['La autenticidad: seguir al propio corazón, piensen lo que piensen los demás. Charles Taylor la describe: “Hay un cierto modo de ser humano que es mi modo.” Pero la Escritura advierte: “Engañoso es el corazón más que todas las cosas.”', 'Taylor, La ética de la autenticidad · Jer 17:9'],
+      },
+      self: {
+        0: ['Cada persona tiene dentro un yo verdadero, que se encuentra mirando hacia dentro: sus sentimientos y deseos son su verdad. Pero los sentimientos cambian y se contradicen; no pueden ser todos verdad.', ''],
+        1: ['El yo se siente sujeto por normas ajenas: padres, iglesias, costumbres y códigos morales que le dicen quién ser. Lo que de verdad es, no se le permite serlo, y por eso se siente falso consigo mismo.', ''],
+        2: ['El yo es su propio hacedor: decide lo que es, y los demás deben aceptarlo. Pero un yo hecho por elección puede deshacerse con la siguiente.', ''],
+        3: ['La meta es llegar a ser plenamente uno mismo y sentirse realizado. Cuando el yo muere, la historia que contaba de sí acaba con él.', 'Mr 8:35'],
+      },
+      sin: {
+        1: ['El único pecado es negarse a uno mismo: reprimir lo que se siente o se desea. Esto pone del revés el llamado de Jesús: “Si alguno quiere venir en pos de mí, niéguese a sí mismo, tome su cruz.”', 'Lc 9:23'],
+      },
+    },
+
+    transhumanism: {
+      god: {
+        0: ['Todavía no hay Dios, pero puede haberlo: el hombre mismo, rehecho. Preguntado si Dios existe, Ray Kurzweil respondió: “Todavía no.”', 'Kurzweil, en Transcendent Man'],
+        1: ['Sin nadie arriba, la muerte no es juicio de nadie ni tiene sentido alguno: es una avería de la máquina, un problema de ingeniería por resolver. Nick Bostrom la imaginó como un dragón tirano que la humanidad solo necesita atreverse a matar.', 'Bostrom, La fábula del dragón tirano'],
+        2: ['El hombre quiere llenar el hueco que quedó. Harari: “ahora aspiraremos a convertir a los humanos en dioses, y a transformar al Homo sapiens en Homo deus.”', 'Harari, Homo Deus'],
+        3: ['La Singularidad: el momento en que la inteligencia de las máquinas supera la nuestra y lo rehace todo. Es la tentación más antigua en forma nueva: “Seréis como Dios.”', 'Gn 3:5 · Kurzweil, La Singularidad está cerca'],
+      },
+      world: {
+        0: ['La naturaleza es materia prima que mejorar. Max More le escribió: “Madre Naturaleza, de veras te estamos agradecidos por lo que nos has hecho… hemos decidido que es hora de enmendar la constitución humana.”', 'More, Carta a la Madre Naturaleza'],
+        1: ['La naturaleza es ciega, cruel y lenta: la evolución tardó millones de años en darnos cuerpos que envejecen y fallan. Podemos hacerlo mejor, y más rápido.', ''],
+        2: ['La naturaleza está siendo rediseñada: genes editados, cuerpos reparados con piezas nuevas, mentes unidas a máquinas. Lo que la evolución hizo a ciegas durante eras, los ingenieros quieren hacerlo a propósito en décadas. Pero ¿quién decide para qué es el rediseño?', ''],
+        3: ['Al final la naturaleza misma queda cableada: Kurzweil prevé la materia y la energía “saturadas” de inteligencia, el universo despertando. El mundo se vuelve una gran máquina de pensar, sin más Hacedor que las mentes que la construyeron.', 'Kurzweil, La Singularidad está cerca'],
+      },
+      bridge: {
+        2: ['La tecnología es el camino de salvación: mejora a mejora, el hombre se elevará sobre sus límites. Julian Huxley acuñó la palabra: “el hombre sigue siendo hombre, pero se trasciende a sí mismo, realizando nuevas posibilidades de y para su naturaleza humana.”', 'Huxley, New Bottles for New Wine'],
+        3: ['La mente copiada: una mente volcada en una máquina, que funciona mientras dure el equipo. Pero una copia no es el copiado: el hombre muere igual, y otra cosa sigue.', ''],
+      },
+      self: {
+        0: ['El hombre es un borrador, no una obra acabada: producto de la evolución, que ahora podemos tomar en nuestras manos. La Escritura dice lo contrario: el hombre está hecho a imagen de Dios, y no es un experimento.', 'Gn 1:27'],
+        1: ['El hombre está atrapado en un cuerpo que falla, limitado por la vejez, la enfermedad y la muerte. Los transhumanistas no ven en ello el fruto de una caída ni la condición de una criatura, sino defectos del diseño que la naturaleza nos dio por azar.', ''],
+        2: ['El poshumano, rehecho por su propia mano: más fuerte, más listo, más longevo. Pero un hombre que se rehace a sí mismo aún no ha cambiado su corazón.', ''],
+        3: ['El cuerpo queda atrás como un simple equipo. No es nuevo: es el viejo desprecio gnóstico por la carne, que Dios hizo y llamó buena, y en la que Cristo resucitó.', 'Lc 24:39'],
+      },
+      sin: {
+        1: ['La muerte no es la paga del pecado, sino un problema que resolver. Harari: “la muerte no es un destino inevitable, sino solo un problema técnico… Y todo problema técnico tiene una solución técnica.” La Escritura: “la paga del pecado es muerte.”', 'Harari, Homo Deus · Ro 6:23'],
+        2: ['La muerte se aplaza, no se vence: las vidas se alargan, pero todas siguen acabando. Solo uno ha vuelto de la muerte para no morir jamás, y promete lo mismo a todos los que son suyos.', '1 Co 15:20–26'],
+      },
+    },
+
+    'new-age': {
+      god: {
+        '*': ['Dios es el Universo: una energía impersonal, una conciencia universal de la que todo forma parte. No una Persona que habla, ama o juzga, sino una fuerza que se siente y se aprovecha.', ''],
+        1: ['Una energía impersonal no puede ser ofendida, así que no hay nada que perdonar ni nadie que perdone. Pero tampoco puede amar: una fuerza no tiene corazón que poner en nadie.', '1 Jn 4:8'],
+        2: ['Al Universo se le aprovecha, no se le adora: se recurre a él con técnicas para la salud, la riqueza y la paz. Responde al método correcto, como la electricidad, y no pide nada a cambio.', ''],
+        3: ['A lo divino se llega subiendo, por el crecimiento espiritual a lo largo de muchas vidas, no se recibe como un don. La gracia no tiene lugar donde cada alma debe ganarse su propia subida.', 'Ef 2:8–9'],
+      },
+      world: {
+        0: ['Todo es uno: el cosmos y el yo son un gran todo, y lo uno es divino. Se niega la diferencia entre el Creador y la criatura.', 'Ro 1:25'],
+        1: ['La mayoría solo ve la superficie de las cosas, un mundo de objetos y yoes separados, sin advertir la unidad y la divinidad que hay debajo. Despertar es ver a través de la separación hasta el gran todo.', ''],
+        2: ['El mundo lo moldea la mente: los pensamientos atraen a sus semejantes y crean nuestra realidad. Entonces el enfermo y el pobre, en cierto sentido, eligieron su suerte.', ''],
+        3: ['Una nueva era, la Era de Acuario, está siempre a punto de amanecer, cuando la humanidad despertará a la vez. La anunció La conspiración de Acuario de Marilyn Ferguson (1980).', 'Ferguson, La conspiración de Acuario'],
+      },
+      bridge: {
+        2: ['La conciencia cósmica: en la meditación y en estados alterados, se dice que el yo conoce su unidad con todo. Allí el bien y el mal se disuelven en lo Uno.', ''],
+        3: ['La reencarnación: el alma vuelve vida tras vida, aprendiendo, hasta quedar pura. No hay Salvador, solo la larga subida, y ningún juicio final.', 'He 9:27'],
+      },
+      self: {
+        0: ['En lo hondo del yo, cada persona es divina. Shirley MacLaine, la voz más conocida del movimiento, lo dijo sin rodeos: “Yo soy Dios.”', 'MacLaine, Out on a Limb'],
+        1: ['El yo ha olvidado su propia divinidad y vive encerrado en su mente ordinaria. La enseñanza de Eckhart Tolle: “Tú no eres tu mente.”', 'Tolle, El poder del ahora'],
+        2: ['El yo despierto crea su propia realidad con sus pensamientos e intenciones: lo que imagina y espera, el Universo se lo trae. Es el yo en el lugar del Creador, cuya sola palabra hace que las cosas sean.', 'Sal 33:9'],
+        3: ['El alma sube de vida en vida hacia la luz, sin juicio que afrontar, porque no hay ante quién rendir cuentas. La Escritura dice: “está establecido para los hombres que mueran una sola vez, y después de esto el juicio.”', 'He 9:27'],
+      },
+      sin: {
+        1: ['Lo que falla no es el pecado sino el olvido: una conciencia estrecha. No hay Dios santo a quien ofender, solo una mente que expandir.', ''],
+        2: ['El olvido se cura con técnica: meditación, cristales, canalización, el maestro adecuado. La salvación es algo que se hace, no que se recibe, y nunca termina; siempre hay un nivel más alto que alcanzar.', ''],
+      },
+    },
+
+    'neo-paganism': {
+      god: {
+        0: ['La Diosa: Doncella, Madre y Anciana, la luna creciente, llena y menguante; y a menudo un Dios astado a su lado. Para Starhawk, la Diosa no gobierna el mundo desde fuera: es el mundo.', 'Starhawk, La danza en espiral'],
+        1: ['La Diosa es olvidada, no ofendida: no da ninguna ley que quebrantar ni pide arrepentimiento. Lo que se ha perdido es una relación con la naturaleza, no la paz con un Dios santo.', ''],
+        2: ['En el rito se invoca a la Diosa para que descienda en la sacerdotisa. En la Carga de la Diosa ella dice: “Todos los actos de amor y de placer son mis rituales.”', 'Valiente, La carga de la Diosa'],
+        3: ['La Anciana da paso de nuevo a la Doncella: el ciclo nunca termina, y nada es hecho nuevo. La muerte es solo invierno, y la primavera siempre vuelve, igual que antes.', 'Ap 21:5'],
+      },
+      world: {
+        0: ['La tierra es el cuerpo de la Diosa, y por tanto divina: toda vida participa de ella. La naturaleza no está hecha por Dios; es dios.', ''],
+        1: ['La tierra está herida por la industria, las ciudades y las máquinas, que han apartado a la gente de los ciclos de la naturaleza. El resurgir neopagano nació en parte como protesta contra el mundo moderno e industrial.', ''],
+        2: ['A la tierra se la sirve en lugar de su Hacedor, lo que Pablo nombra con precisión: “honrando y dando culto a las criaturas antes que al Creador.”', 'Ro 1:25'],
+        3: ['La tierra gira para siempre, siempre dando vueltas, nunca renovada. La promesa de Cristo no es un ciclo sino un nuevo comienzo: “He aquí, yo hago nuevas todas las cosas.”', 'Ap 21:5'],
+      },
+      bridge: {
+        0: ['La rueda del año: ocho fiestas (los solsticios, los equinoccios y los cuatro días intermedios) que giran con las estaciones, para siempre.', ''],
+        2: ['La magia: poder buscado con la voluntad, el rito y las energías de la naturaleza, para producir cambios. Es poder tomado, no gracia recibida.', 'Dt 18:10–12'],
+        3: ['La rueda da vueltas y vueltas sin día final: sin fin de la historia, sin juicio y sin meta. El tiempo es un círculo, no una historia que va a alguna parte.', ''],
+      },
+      self: {
+        0: ['El hombre es un hijo de la tierra, una criatura entre muchas en la red de la vida, no más alta que las demás. Nada lo aparta para gobernar la tierra en nombre de su Hacedor, ni para responder ante él por ella.', 'Gn 1:28'],
+        1: ['El hombre está desconectado de la tierra y de sus ritmos: la luna, las estaciones, el campo. La cura es volver a la naturaleza, no reconciliarse con su Hacedor.', '2 Co 5:18'],
+        2: ['El pagano vive según la Rede wicana: “Si a nadie dañas, haz lo que quieras.” Pero ¿quién decide qué daña, y con qué medida?', 'La Rede wicana'],
+        3: ['Al morir, el alma descansa en la Tierra del Verano, una tierra apacible de los muertos, y luego vuelve a nacer en otra vida, dando vueltas con la rueda.', ''],
+      },
+      sin: {
+        1: ['Lo que falla es el desequilibrio y la desconexión, no el pecado contra un Dios santo. El daño es real, pero es daño a la naturaleza y a otros, nunca una ofensa contra un legislador.', ''],
+        2: ['La desconexión se sana con ritos, sin nada que perdonar, porque nadie ha sido agraviado salvo la naturaleza y uno mismo. Sin un Dios santo, la culpa no tiene adónde ir ni quién la quite.', ''],
       },
     },
   },
