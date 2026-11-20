@@ -154,7 +154,7 @@ export const NOTES = {
         '*': ['“The Cosmos is all that is or ever was or ever will be.” There is no God and no realm beyond nature: no spirits, no souls, no heaven. Only what science can in principle measure is real.', 'Sagan, Cosmos'],
         1: ['With no one above, suffering is no one’s doing: there is no one to blame, and no one to cry out to. The question “why?” has no one to answer it.', ''],
         2: ['There is no one to ask for help or wisdom; man has only his own mind and the methods of science to guide him.', ''],
-        3: ['No one will remember any of it: when the last mind is gone, no one will know that anything happened at all.', ''],
+        3: ['No one will remember any of it: when the last mind is gone, no one will know that anything happened at all. There is no God to hold the past in mind, so in the end it will be as though nothing had ever been.', ''],
       },
       world: {
         0: ['The cosmos is matter and energy, moving by blind physical law. It was not made, has no purpose and is going nowhere. Everything, including mind and morality, is to be explained from below.', ''],
@@ -198,7 +198,7 @@ export const NOTES = {
         0: ['“Man is the measure of all things,” said Protagoras: he is of great worth, the most remarkable thing nature has produced. But if he is only matter shaped by chance, the worth humanism gives him is a borrowed belief, not a fact.', 'Protagoras · Gen 1:27'],
         1: ['Man is good at heart; what holds him back is ignorance, poverty, prejudice and religion. Remove these, and he will flourish.', ''],
         2: ['Man chooses his own values. But values each man chooses for himself can bind no one else, and cannot condemn anyone who chooses otherwise.', ''],
-        3: ['Each person lives on only in his works and in others’ memory, and these too will fade.', ''],
+        3: ['Each person lives on only in his works and in others’ memory, and these too will fade. The humanist faces death with courage, but without hope: a good life well remembered is the most there is.', '1 Cor 15:19'],
       },
       sin: {
         1: ['What is wrong lies outside man: in superstition, ignorance and bad institutions. The heart itself needs no change, only better teaching.', 'Jer 17:9'],
@@ -217,11 +217,11 @@ export const NOTES = {
       },
       bridge: {
         '*': ['“What does nihilism mean? That the highest values devaluate themselves. The aim is lacking; ‘why?’ finds no answer.” With nothing above, meaning drains away: there is nothing for it to rest on.', 'Nietzsche, The Will to Power 2 · Eccl 1:14'],
-        2: ['There is no way out, because nothing is wrong to escape from, and nowhere better to go.', ''],
-        3: ['Everything runs off and is lost; nothing is kept, and nothing that was done will count.', ''],
+        2: ['There is no way out, because nothing is wrong to escape from, and nowhere better to go. Where there is no meaning, there can be neither a fall nor a rescue: only what happens.', ''],
+        3: ['Everything runs off and is lost; nothing is kept, and nothing that was done will count. “Vanity of vanities,” says the Preacher, but he ends by looking to God; the nihilist ends where Ecclesiastes begins.', 'Eccl 12:13–14'],
       },
       self: {
-        0: ['Man is an accident of matter: no one meant him, and nothing is meant by him.', ''],
+        0: ['Man is an accident of matter: no one meant him, and nothing is meant by him. His sense that his life should count for something is one more accident, pointing at nothing.', ''],
         1: ['If the mind is an accident too, it cannot be trusted to know anything, including that nihilism is true. The view undermines its own ground.', ''],
         2: ['Man is hollow, with no reason to act one way rather than another. Few people can live as though this were true; most borrow meaning they cannot justify.', ''],
         3: ['When a man dies it makes no difference that he lived. Yet no one, not even the nihilist, can bring himself to believe that of the people he loves.', 'Eccl 3:11'],
@@ -232,20 +232,20 @@ export const NOTES = {
       god: {
         '*': ['Sartre took Dostoevsky’s words as his own: “If God did not exist, everything would be permitted… that, for existentialism, is the starting point.” With no God to give man a nature or a purpose, man must give himself one.', 'Sartre, Existentialism Is a Humanism'],
         1: ['Man calls out for meaning, and no one answers. Camus began from there: “There is but one truly serious philosophical problem, and that is suicide.” He did not deny the longing; he denied anyone was there to meet it.', 'Camus, The Myth of Sisyphus'],
-        2: ['No one stands over man to correct him: no law above his choices, and no judge of them.', ''],
-        3: ['No one keeps what a man made of himself: when he dies, it is lost.', ''],
+        2: ['No one stands over man to correct him: no law above his choices, and no judge of them. He answers only to himself. Yet even Sartre held that in choosing for himself, a man chooses for all mankind.', 'Sartre, Existentialism Is a Humanism'],
+        3: ['No one keeps what a man made of himself: when he dies, it is lost. Sartre: “It is absurd that we are born; it is absurd that we die.”', 'Sartre, Being and Nothingness'],
       },
       world: {
         '*': ['The world is simply there: solid, silent and indifferent. Camus: “The absurd is born of this confrontation between the human need and the unreasonable silence of the world.”', 'Camus, The Myth of Sisyphus'],
-        3: ['The world goes on unchanged when a man dies, as if he had never chosen anything.', ''],
+        3: ['The world goes on unchanged when a man dies, as if he had never chosen anything. The silence that met his questions in life meets his death too.', ''],
       },
       bridge: {
         '*': ['Meaning is not found but made, by one’s choices. Camus ends with Sisyphus, pushing his rock for ever: “One must imagine Sisyphus happy.” But meaning a man makes is only as large as he is, and it ends when he does.', 'Camus, The Myth of Sisyphus'],
         2: ['Any choice will do, if it is truly his own. But then nothing can be said against a cruel choice made authentically.', ''],
       },
       self: {
-        0: ['“Existence comes before essence”: man first exists, then defines himself. There is no human nature given in advance.', 'Sartre, Existentialism Is a Humanism'],
-        1: ['Man is free, and his freedom is a burden: he is anxious and alone, “condemned to be free”.', 'Sartre, Being and Nothingness'],
+        0: ['“Existence comes before essence”: man first exists, then defines himself. There is no human nature given in advance, so no one can say what a man is for until he has chosen it.', 'Sartre, Existentialism Is a Humanism'],
+        1: ['Man is free, and his freedom is a burden: he is anxious and alone, “condemned to be free”. No God, no nature and no tradition can choose for him, and every excuse is a lie.', 'Sartre, Being and Nothingness'],
         2: ['“Man is nothing else but what he makes of himself,” wrote Sartre: what a man chooses, he becomes. But a self made from nothing has nothing to measure itself against.', 'Sartre, Existentialism Is a Humanism'],
         3: ['Death ends the work of making oneself, and with it its meaning. The project is left unfinished, for ever.', ''],
       },
@@ -258,7 +258,7 @@ export const NOTES = {
       god: {
         '*': ['There is no God and no final truth above our words: no Word, only words. Lyotard described the postmodern as “incredulity toward metanarratives”.', 'Lyotard, The Postmodern Condition'],
         1: ['God is one more story, told by those who gain power from it: priests, kings, churches. Belief is unmasked as a means of control. Yet the unmasking is itself a claim to see things as they really are.', ''],
-        2: ['Truth is not denied but made small: true for this group, in this place, for now.', ''],
+        2: ['Truth is not denied but made small: true for this group, in this place, for now. Christ claimed more: “I am the way, and the truth, and the life.”', 'John 14:6'],
       },
       world: {
         0: ['Reality is hidden behind our words; we never meet the world as it is, only as our language and culture shape it.', ''],
@@ -273,10 +273,10 @@ export const NOTES = {
         3: ['Stories replace stories without end, and none of them is true; what works for now is all one can hope for. Christianity answers with a story told by the one who stands outside it, and who entered it.', ''],
       },
       self: {
-        0: ['The self is not a soul or a nature, but a product of the stories told about it.', ''],
-        1: ['Man is shaped, even made, by those in power and the categories they impose.', ''],
+        0: ['The self is not a soul or a nature, but a product of the stories told about it: by family, culture and language. There is no one underneath the stories, waiting to be found.', ''],
+        1: ['Man is shaped, even made, by those in power and the categories they impose: sane and mad, normal and deviant. Foucault traced how prisons, clinics and schools made people what they are said to be.', 'Foucault, Discipline and Punish'],
         2: ['Each person is free to tell his own story. But if no story is truer than another, telling his tells no one anything.', ''],
-        3: ['In the end the self comes apart: a crossing-point of voices and roles, with no one at the centre.', ''],
+        3: ['In the end the self comes apart: a crossing-point of voices and roles, with no one at the centre. A self with no centre has no one to be saved, and no one to love.', ''],
       },
       sin: {
         1: ['Oppression is called wrong, and fiercely. Yet postmodernism has no standard by which anything is wrong, so its own outrage borrows the moral law it denies.', 'Rom 2:14–15'],
@@ -288,7 +288,7 @@ export const NOTES = {
       god: {
         0: ['Religion is “the opium of the people”: a comfort the oppressed take to dull their pain, which keeps them from changing their condition. Once society is just, it will no longer be needed.', 'Marx, Critique of Hegel’s Philosophy of Right'],
         1: ['Religion is “the sigh of the oppressed creature”: a real cry, but aimed at heaven instead of at those who exploit.', 'Marx, Critique of Hegel’s Philosophy of Right'],
-        2: ['With no God, man must save himself, and the party will lead him there.', ''],
+        2: ['With no God, man must save himself, and the party will lead him there. Lenin made the party the vanguard that knows what history requires; it answers to no one above it.', 'Lenin, What Is to Be Done?'],
         3: ['There is no judgement to come: the only judge is history, and those who serve it are justified, whatever they do.', ''],
       },
       world: {
@@ -426,6 +426,209 @@ export const NOTES = {
       sin: {
         1: ['What is wrong is imbalance and disconnection, not sin against a holy God. Harm is real, but it is harm to nature and to others, never an offence against a lawgiver.', ''],
         2: ['Disconnection is healed by ritual, with nothing to forgive, because no one has been wronged but nature and oneself. Without a holy God, guilt has nowhere to go and no one to lift it.', ''],
+      },
+    },
+
+    'hindu-monism': {
+      god: {
+        '*': ['Brahman: the one reality, without parts or qualities, beyond all names. Advaita Vedanta, taught above all by Shankara, holds that it is everything that truly is. Not a Person who speaks or loves, but being itself, consciousness and bliss.', 'Shankara · Chandogya Upanishad 6.2.1'],
+        1: ['Brahman alone is real. Shankara’s summary: “Brahman is real, the world is false, and the self is nothing other than Brahman.”', 'Shankara, Brahmajnanavali'],
+        2: ['Brahman is beyond good and evil, as beyond every pair of opposites. Then evil has no final weight, and goodness no final claim: both belong to the dream.', 'Isa 5:20'],
+        3: ['Brahman is all that there ever was: when the dream ends, nothing else remains, and nothing was ever truly other than it.', ''],
+      },
+      world: {
+        0: ['The world is not made by Brahman but is Brahman, appearing in many forms. There is no Creator distinct from creation, and so no creature who could know and love him.', 'Rom 1:25'],
+        1: ['The world of many things is maya, an appearance, like a rope mistaken in the dusk for a snake, Shankara’s own picture. But if all is illusion, whose illusion is it? Brahman cannot be ignorant, and there is no one else.', 'Shankara, Vivekachudamani'],
+        2: ['Maya is seen through: the knower no longer takes the many for real, as one who sees the rope no longer fears the snake.', ''],
+        3: ['Moksha is release from the wheel of rebirth. The Upanishad prays: “Lead me from the unreal to the real, from darkness to light, from death to immortality.”', 'Brihadaranyaka Upanishad 1.3.28'],
+      },
+      bridge: {
+        1: ['Samsara is the wheel of birth, death and rebirth, driven by karma, the moral weight of one’s deeds. The Gita: “as a man casts off worn-out clothes and puts on others that are new, so the embodied self casts off worn-out bodies.”', 'Bhagavad Gita 2.22'],
+        2: ['Release may take many lives: knowledge ripens slowly, through discipline, study and meditation under a teacher. The Gita offers other paths too: devotion and selfless action. But each depends on the seeker’s own effort.', 'Bhagavad Gita 4.39'],
+      },
+      self: {
+        0: ['Atman, the true self, is not the body or the mind but pure consciousness, and it is Brahman. The deepest self of each person is God.', 'Mandukya Upanishad 2'],
+        1: ['The self believes it is a separate person with its own body, thoughts and life. This belief, not rebellion, is what binds it.', ''],
+        2: ['The great saying of the Upanishads: “Tat tvam asi”, “You are that”: the self is Brahman. Then worship ends in identity, and there is no one left to love God.', 'Chandogya Upanishad 6.8.7'],
+        3: ['In release the self is no longer separate. The Upanishad: “As rivers flowing into the ocean lose their name and form, so the knower… goes to the divine Person.” No one is left to enjoy it.', 'Mundaka Upanishad 3.2.8'],
+      },
+      sin: {
+        1: ['Avidya, ignorance of what the self truly is, is the root of bondage: not sin against a holy God, but a mistake about reality.', ''],
+        2: ['Ignorance is cleared by knowledge, not forgiven. Nothing needs pardon, because no one has been wronged; but then guilt, which every conscience knows, is only an illusion too.', 'Rom 2:15'],
+      },
+    },
+
+    buddhism: {
+      god: {
+        '*': ['Buddhism has no creator. Gods may exist, but they too are born, die and are reborn, caught in the same wheel. No one made the world, and no one above can save from it.', ''],
+        1: ['There is no one above to help: suffering must be understood and ended by each person’s own insight. The Buddha is a teacher who points the way, not a saviour who carries anyone along it.', 'Dhammapada 276'],
+        2: ['No grace comes from outside. The Buddha told his disciples: “Be islands unto yourselves, be a refuge unto yourselves, seeking no external refuge.”', 'Mahaparinibbana Sutta (DN 16)'],
+        3: ['In nirvana there is nothing above to meet: no God to see face to face, and no one to be welcomed home.', 'Rev 22:4'],
+      },
+      world: {
+        0: ['Everything arises from causes and passes away; nothing has a lasting essence. “All conditioned things are impermanent”, said the Buddha. Even the world is a stream of events, not a creation.', 'Dhammapada 277'],
+        1: ['Samsara: birth, death and birth again, without beginning. In the Fire Sermon the Buddha declared that “all is burning”: the senses and the mind ablaze with craving, hatred and delusion.', 'Adittapariyaya Sutta (SN 35.28)'],
+        3: ['Nirvana is the flame blown out: craving extinguished, and with it rebirth. It is not a place, and not a union with God.', ''],
+      },
+      bridge: {
+        1: ['Rebirth: the karma of one life shapes the next. Yet since there is no lasting self, there is no one who passes from life to life; a puzzle Buddhists have long debated.', ''],
+        2: ['The Noble Eightfold Path: right view, intention, speech, action, livelihood, effort, mindfulness and concentration. Each must walk it himself.', 'Dhammacakkappavattana Sutta'],
+      },
+      self: {
+        0: ['There is no soul (anatta). The self is five passing parts: body, feeling, perception, mental formations and consciousness. As Nagasena taught, “chariot” names its parts put together, not something more.', 'Milindapanha'],
+        1: ['The self grasps at what cannot last, and so suffers. The first sermon: “birth is suffering, ageing is suffering, sickness is suffering, death is suffering.”', 'Dhammacakkappavattana Sutta'],
+        2: ['The self works its own release by effort, discipline and meditation. The Buddha’s last words: “All conditioned things are subject to decay. Strive on with diligence.”', 'Mahaparinibbana Sutta (DN 16)'],
+        3: ['Was anyone ever there? Asked whether the enlightened one exists after death, the Buddha would not answer. Christianity promises not extinction but a person raised and known.', 'Cula-Malunkyovada Sutta (MN 63) · 1 Cor 13:12'],
+      },
+      sin: {
+        1: ['Craving (tanha) is the cause of suffering: thirst for pleasure, for existence, and even for non-existence. The problem is desire, not sin against God.', 'Dhammacakkappavattana Sutta'],
+        2: ['Craving cools as the path is walked: desire is not redirected to its true good, but put out. Christianity does the opposite: “Delight yourself in the LORD, and he will give you the desires of your heart.”', 'Ps 37:4'],
+      },
+    },
+
+    taoism: {
+      god: {
+        0: ['“The Tao that can be told is not the eternal Tao; the name that can be named is not the eternal name.” The Tao is the nameless source and way of all things, not a person.', 'Tao Te Ching 1'],
+        1: ['The Tao does not take sides. Laozi: “Heaven and earth are not humane; they regard the ten thousand things as straw dogs.” The Way cares no more for the good than for the wicked.', 'Tao Te Ching 5'],
+        2: ['The Tao is followed, but never met: there is no one to pray to, love or thank, only a way to move with.', ''],
+        3: ['The Tao is unaware that a man has gone: it neither mourns nor welcomes him. It is the way things go, not one who knows and keeps those who have gone.', ''],
+      },
+      world: {
+        0: ['“The Tao gave birth to one, one gave birth to two, two to three, and three to the ten thousand things.” All things arise from the interplay of yin and yang, forever turning.', 'Tao Te Ching 42'],
+        1: ['The ten thousand things go on turning, whatever man does. Trouble comes not from them but from his forcing.', ''],
+        2: ['Light and dark, strong and weak, life and death: each needs the other, and neither is better. Good and evil, too, become a pair in balance.', 'Isa 5:20'],
+        3: ['The ten thousand things turn on without end: no beginning, no goal and no last day. Laozi: “Returning is the motion of the Tao.” All things come back to where they began.', 'Tao Te Ching 40'],
+      },
+      bridge: {
+        2: ['Wu wei: effortless action, moving with the current rather than against it. Laozi: “The highest good is like water. Water benefits the ten thousand things and does not contend.”', 'Tao Te Ching 8'],
+      },
+      self: {
+        0: ['Man is one thing among ten thousand, with no special place or calling. Zhuangzi dreamed he was a butterfly, and woke unsure whether he was a man who had dreamed, or a butterfly dreaming he was a man.', 'Zhuangzi 2'],
+        1: ['Man pushes against the current: he grasps, plans and moralises, and falls out of step with the Way. Laozi: “The more laws and orders are made prominent, the more thieves and robbers there will be.”', 'Tao Te Ching 57'],
+        2: ['Man yields like water. Laozi: “Nothing in the world is softer and weaker than water, yet for attacking the hard and strong nothing surpasses it.”', 'Tao Te Ching 78'],
+        3: ['At death man is changed back into the Way. When his wife died, Zhuangzi was found drumming on a bowl and singing: she had only changed form, as the seasons change. There is nothing to mourn, and nothing to hope for.', 'Zhuangzi 18'],
+      },
+      sin: {
+        1: ['The fault is forcing: grasping, scheming and making rules. Laozi: “When the great Way is abandoned, there arise humaneness and righteousness.” Even morality is a sign of decline.', 'Tao Te Ching 18'],
+      },
+    },
+
+    confucianism: {
+      god: {
+        0: ['Heaven (tian) orders all things but does not speak. Confucius: “What does Heaven ever say? The four seasons run their course and the hundred things are born. What does Heaven ever say?”', 'Analects 17.19'],
+        1: ['Heaven is silent still: it gives no law in words, no prophet, no promise. A ruler who loses virtue loses “the Mandate of Heaven”, but Heaven itself says nothing; it is read only in what happens.', 'Mencius 5A.5'],
+        2: ['Heaven is read only in the order of things: in the seasons, in a just ruler, in the harmony of a well-run family.', ''],
+        3: ['Asked about death, Confucius turned the question aside: “Not yet understanding life, how can you understand death?” On the greatest question of all, Heaven gives no word.', 'Analects 11.12'],
+      },
+      world: {
+        0: ['All under Heaven is the family and the state, ordered as one. Confucius: “Let the ruler be a ruler, the minister a minister, the father a father, the son a son.”', 'Analects 12.11'],
+        1: ['When people neglect their duties, all under Heaven falls out of order: rulers without virtue, sons without respect, a land without peace.', ''],
+        2: ['Order returns when each keeps his place. Confucius: “He who governs by virtue is like the pole star, which keeps its place while all the stars turn toward it.”', 'Analects 2.1'],
+        3: ['Order is handed down through the generations, in families and in rites. Filial piety binds the living to the dead, and the past to the present: “When parents are alive, serve them with propriety; when they die, bury them with propriety.”', 'Analects 2.5'],
+      },
+      bridge: {
+        0: ['The five bonds: ruler and subject, father and son, husband and wife, elder and younger brother, friend and friend, each with its own duties. Harmony comes when each is kept.', 'Mencius 3A.4'],
+        1: ['The bonds loosen when duties are neglected, and the whole order with them. A son who dishonours his father, a ruler who oppresses his people: each loosens the bond that holds society together.', ''],
+        2: ['Ritual (li): right conduct, practised daily until it becomes second nature. Confucius: “To restrain oneself and return to ritual is humaneness.”', 'Analects 12.1'],
+        3: ['The ancestors are honoured by the living with offerings and rites. Confucius kept them, but would not speak of what lies beyond: “Not yet able to serve men, how can you serve the spirits?”', 'Analects 11.12'],
+      },
+      self: {
+        0: ['Man is good by nature, if cultivated. Mencius: “Human nature is good, just as water flows downward.” But Xunzi, the other great Confucian teacher, held the opposite: that human nature is bad.', 'Mencius 6A.2 · Xunzi 23'],
+        1: ['Man out of his place brings disorder: duty neglected, the bonds strained. Confucius: “The gentleman understands what is right; the petty man understands what is profitable.”', 'Analects 4.16'],
+        2: ['The gentleman (junzi) perfects himself by study, ritual and reflection, and his example spreads. He is made good by his own effort, with no need of grace.', ''],
+        3: ['Man lives on in the remembrance of his descendants, while the rites continue. Confucianism has little to say of anything beyond.', ''],
+      },
+      sin: {
+        1: ['The fault is neglect of duty: a breach of order between people, not an offence against God. It is set right between people, by restoring proper conduct; Heaven is not a party to be reconciled.', 'Ps 51:4'],
+        2: ['Neglect is mended by study, ritual and self-cultivation, not forgiven. Where the fault lies in the heart, cultivation cannot reach it.', 'Ezek 36:26'],
+      },
+    },
+
+    animism: {
+      god: {
+        0: ['Far above the spirits there is a High God, the creator, but he has withdrawn from daily life and is seldom called on. Scholars of religion call him the deus otiosus, the idle God.', 'Eliade, Patterns in Comparative Religion'],
+        1: ['The High God is too far away to help; daily life is dealt with through the nearer spirits. So the one who made all things is the one least turned to.', 'Rom 1:21'],
+        2: ['The High God is still not called on. Paul says the unknown God has drawn near: “he is actually not far from each one of us.”', 'Acts 17:27'],
+        3: ['The High God is still far off; even death does not bring him closer. The dead go to the ancestors, not to God.', ''],
+      },
+      world: {
+        0: ['The world is alive with spirits: in rivers, trees, animals, places and the dead. John Mbiti wrote that “Africans are notoriously religious”: religion runs through every part of life.', 'Mbiti, African Religions and Philosophy'],
+        1: ['When spirits are offended, the world turns against man: sickness, drought and misfortune follow. Nothing happens by chance; every misfortune has someone behind it, and the question is always who.', 'Evans-Pritchard, Witchcraft, Oracles and Magic among the Azande'],
+        2: ['Balance is restored for now, until the next offence; peace with the spirits is always temporary. There is no lasting reconciliation, only a truce to be renewed.', 'Col 2:15'],
+        3: ['The spirits remain, and the dead join them; the world stays full of unseen powers. The living must keep feeding and honouring the dead, or bear their anger.', ''],
+      },
+      bridge: {
+        2: ['Sacrifice is given to buy peace with an angry spirit. It is a bargain, renewed each time. Christ’s sacrifice was offered “once for all”.', 'Heb 10:10–12'],
+      },
+      self: {
+        0: ['Man is one life among many spirits, and must live carefully among them: honouring the right ones, keeping the taboos, and not giving offence. Life is a web of obligations to unseen powers.', ''],
+        1: ['Man lives in fear of what he cannot see: witchcraft, curses and angry spirits. Christ came to free “those who through fear of death were subject to lifelong slavery.”', 'Heb 2:15'],
+        2: ['Man bargains for safety with sacrifices and charms. There is no promise, only the hope that the bargain holds.', ''],
+        3: ['At death a person becomes an ancestor. Mbiti called the recently dead the “living-dead”: they live on while they are remembered by name, then fade into anonymity.', 'Mbiti, African Religions and Philosophy'],
+      },
+      sin: {
+        1: ['Offence: a taboo broken, a spirit angered. It is a breach of balance with the powers, not sin against a holy God.', ''],
+        2: ['The offence is appeased, not forgiven: the spirit is quieted, but the relationship stays one of fear. “There is no fear in love, but perfect love casts out fear.”', '1 John 4:18'],
+      },
+    },
+
+    platonism: {
+      god: {
+        0: ['The Good: the highest of the Forms, source of the being and truth of all things. Plato calls it “beyond being, exceeding it in dignity and power”. It is the source of all, but not a person.', 'Plato, Republic 509b'],
+        1: ['The Good shines, but those in the cave do not see it: they see only the shadows its light makes.', 'Plato, Republic 517b'],
+        2: ['The Good waits to be reached by the soul’s ascent; it does not come down. The God of the Bible does: “the Word became flesh and dwelt among us.”', 'John 1:14'],
+        3: ['The Good is seen at last, but it cannot love. Plotinus called the end of the journey “the flight of the alone to the Alone”.', 'Plotinus, Enneads VI.9.11'],
+      },
+      world: {
+        0: ['The world of becoming is a copy of the eternal Forms, always changing. In the Timaeus, time is “a moving image of eternity”.', 'Plato, Timaeus 37d'],
+        1: ['The cave: prisoners chained so that they see only shadows on the wall, and take them for real. Freed and led into the sunlight, one of them is at first dazzled, and back in the cave the others would kill him.', 'Plato, Republic 514a–517a'],
+        2: ['The world is seen through at last, for what it is: a shadow of the real. The philosopher turns away from it, but Plato bids him go back down into the cave to lead others out.', 'Plato, Republic 519d'],
+        3: ['The world of becoming is where unpurified souls are born again, until they too are freed. The Phaedo pictures the greedy reborn as donkeys, and the violent as wolves and hawks.', 'Plato, Phaedo 81e–82a'],
+      },
+      bridge: {
+        0: ['The Forms: perfect, eternal, unchanging patterns (justice itself, beauty itself), of which things here are copies. They are known by the mind, not the senses. The Forms are truth without a speaker: perfect ideas, with no mind whose ideas they are.', 'Plato, Phaedo 65d'],
+        1: ['The soul knew the Forms before birth, but has forgotten them in the body. Plato pictures the soul as having beheld true beauty in a former life, before falling to earth.', 'Plato, Phaedrus 249e–250c'],
+        2: ['The ascent: by reason and discipline the soul climbs from shadows to the Forms. Plato’s ladder in the Symposium rises from one beautiful body to “beauty itself”. It is for the few, not the many.', 'Plato, Symposium 211'],
+        3: ['The purified soul leaves the body for ever, to dwell with the divine. Christianity hopes instead for the body raised and glorified: “It is sown a natural body; it is raised a spiritual body.”', '1 Cor 15:42–44'],
+      },
+      self: {
+        0: ['Man is an immortal soul housed in a body; the soul is the real person, akin to the divine and eternal. The body is a temporary dwelling, and often a hindrance.', 'Plato, Phaedo 80a'],
+        1: ['The soul is imprisoned in the body. Plato records the saying that the body (soma) is a tomb (sema).', 'Plato, Gorgias 493a'],
+        2: ['The philosopher recalls what his soul once knew: “learning is recollection”. Socrates said those who rightly practise philosophy “practise nothing else but dying and death”.', 'Plato, Meno 81d · Phaedo 64a'],
+        3: ['The body is left behind like a tomb. Scripture calls the body God’s good work, and the temple of the Holy Spirit.', '1 Cor 6:19'],
+      },
+      sin: {
+        1: ['What is wrong is ignorance, forgetting the Forms, not rebellion against a holy God. No one does wrong willingly, said Socrates: to know the good is to do it.', 'Plato, Protagoras 358c'],
+        2: ['Ignorance is cured by knowledge. But knowing the good is not doing it: “I do not do the good I want.”', 'Rom 7:19'],
+      },
+    },
+
+    gnosticism: {
+      god: {
+        '*': ['The true God, the unknown Father, dwells far above in the Fullness (pleroma), beyond all knowing, untouched by this world. He did not make it.', 'Apocryphon of John'],
+        3: ['The true God is reached at last, but still unknown. The gnostic is saved by knowing about God, not by being known and loved by him.', 'Gal 4:9'],
+      },
+      world: {
+        0: ['The world is matter, made by mistake. A power of the Fullness, Sophia, fell, and from her error came a lesser god who made this world. Creation is a catastrophe, not a gift.', 'Apocryphon of John'],
+        1: ['The world is a prison, ruled by the maker’s powers (archons), who keep the sparks of light asleep in their bodies.', ''],
+        2: ['The world is not worth saving: salvation is escape from it, not its renewal. Paul says the opposite: “the creation itself will be set free from its bondage to corruption.”', 'Rom 8:21'],
+        3: ['In the end all matter is burned up, never made new. God says instead: “Behold, I am making all things new.”', 'Rev 21:5'],
+      },
+      bridge: {
+        0: ['The maker, Yaldabaoth, is a lesser god, ignorant of the Fullness above him. In the Apocryphon of John he boasts: “I am a jealous God, and there is no other God beside me”, turning the God of Israel into the villain.', 'Apocryphon of John · Isa 45:5'],
+        1: ['The maker is a jailer, not a Father: he and his rulers hold the spirit captive in matter, keeping it drunk with forgetfulness. Creation, birth and the body are all part of the prison.', 'Apocryphon of John'],
+        2: ['The Revealer comes down in disguise and only seems to have a body, so does not truly die. John answers: “every spirit that does not confess that Jesus Christ has come in the flesh is not from God.”', '1 John 4:2–3'],
+        3: ['The spark goes home past the gatekeepers, giving them the secret words. The gnostic teacher Theodotus: what frees is “the knowledge of who we were, and what we have become; where we were, and whither we have been thrown”.', 'Clement, Excerpts from Theodotus 78'],
+      },
+      self: {
+        0: ['Man is a spark of the true God trapped in clay: spirit, of divine origin, inside a body made by the lesser god.', 'Apocryphon of John'],
+        1: ['The spark is asleep in the body, forgetting where it came from. The Gospel of Thomas: “When you know yourselves, then you will be known.”', 'Gospel of Thomas 3'],
+        2: ['The awakened few are saved by knowing, not by grace: only those with the spark can wake. Irenaeus answered the gnostics of his day in Against Heresies.', 'Irenaeus, Against Heresies'],
+        3: ['The body is thrown off for good, as worthless, a garment of clay. Christ rose in his body (“a spirit does not have flesh and bones as you see that I have”), and will raise ours.', 'Luke 24:39 · Phil 3:21'],
+      },
+      sin: {
+        1: ['The trouble is matter, not the will: evil lies in the stuff of the world, not in the heart. So no one is to blame, and there is nothing to forgive.', 'Mark 7:21–23'],
+        2: ['Matter is escaped, never forgiven. Sin is left untouched, because it was never seen as sin: a man may lose his body and keep his pride.', '1 John 1:8–9'],
       },
     },
   },
@@ -574,7 +777,7 @@ export const NOTES = {
         '*': ['“El cosmos es todo lo que es, lo que fue y lo que será.” No hay Dios ni ámbito alguno más allá de la naturaleza: ni espíritus, ni almas, ni cielo. Solo es real lo que la ciencia podría en principio medir.', 'Sagan, Cosmos'],
         1: ['Sin nadie arriba, el sufrimiento no es obra de nadie: no hay a quién culpar ni a quién clamar. La pregunta “¿por qué?” no tiene quien la responda.', ''],
         2: ['No hay nadie a quien pedir ayuda o sabiduría; el hombre solo tiene su propia mente y los métodos de la ciencia para guiarse.', ''],
-        3: ['Nadie lo recordará: cuando se apague la última mente, nadie sabrá que algo ocurrió.', ''],
+        3: ['Nadie lo recordará: cuando se apague la última mente, nadie sabrá que algo ocurrió. No hay Dios que guarde el pasado en su memoria, así que al final será como si nada hubiera existido nunca.', ''],
       },
       world: {
         0: ['El cosmos es materia y energía, movidas por leyes físicas ciegas. Nadie lo hizo, no tiene propósito y no va a ninguna parte. Todo, incluidas la mente y la moral, se explica desde abajo.', ''],
@@ -618,7 +821,7 @@ export const NOTES = {
         0: ['“El hombre es la medida de todas las cosas”, dijo Protágoras: tiene gran valor, es lo más notable que ha producido la naturaleza. Pero si solo es materia moldeada por el azar, el valor que el humanismo le da es una creencia prestada, no un hecho.', 'Protágoras · Gn 1:27'],
         1: ['El hombre es bueno en el fondo; lo que lo frena es la ignorancia, la pobreza, el prejuicio y la religión. Quítense, y florecerá.', ''],
         2: ['El hombre elige sus propios valores. Pero valores que cada uno elige para sí no obligan a nadie más, ni pueden condenar a quien elija otros.', ''],
-        3: ['Cada persona sigue viva solo en sus obras y en la memoria de otros, y también estas se desvanecerán.', ''],
+        3: ['Cada persona sigue viva solo en sus obras y en la memoria de otros, y también estas se desvanecerán. El humanista afronta la muerte con valor, pero sin esperanza: una buena vida bien recordada es lo máximo que hay.', '1 Co 15:19'],
       },
       sin: {
         1: ['El mal está fuera del hombre: en la superstición, la ignorancia y las malas instituciones. El corazón no necesita cambiar, solo mejor enseñanza.', 'Jer 17:9'],
@@ -637,11 +840,11 @@ export const NOTES = {
       },
       bridge: {
         '*': ['“¿Qué significa nihilismo? Que los valores supremos se desvalorizan. Falta la meta; falta la respuesta al ‘¿por qué?’.” Sin nada arriba, el sentido se escurre: no hay nada en que apoyarlo.', 'Nietzsche, La voluntad de poder 2 · Ec 1:14'],
-        2: ['No hay salida, porque nada está mal de qué escapar, ni lugar mejor adonde ir.', ''],
-        3: ['Todo se escurre y se pierde; nada se guarda, y nada de lo hecho contará.', ''],
+        2: ['No hay salida, porque nada está mal de qué escapar, ni lugar mejor adonde ir. Donde no hay sentido, no puede haber caída ni rescate: solo lo que ocurre.', ''],
+        3: ['Todo se escurre y se pierde; nada se guarda, y nada de lo hecho contará. “Vanidad de vanidades”, dice el Predicador, pero termina mirando a Dios; el nihilista acaba donde Eclesiastés empieza.', 'Ec 12:13–14'],
       },
       self: {
-        0: ['El hombre es un accidente de la materia: nadie lo quiso, y nada se quiere decir con él.', ''],
+        0: ['El hombre es un accidente de la materia: nadie lo quiso, y nada se quiere decir con él. Su sentido de que su vida debería contar para algo es un accidente más, que no apunta a nada.', ''],
         1: ['Si la mente también es un accidente, no se puede confiar en que sepa nada, ni siquiera que el nihilismo es verdad. La postura socava su propio fundamento.', ''],
         2: ['El hombre está vacío, sin razón para obrar de un modo u otro. Pocos pueden vivir como si esto fuera verdad; la mayoría toma prestado un sentido que no puede justificar.', ''],
         3: ['Cuando un hombre muere, da igual que haya vivido. Pero nadie, ni el nihilista, se atreve a creer eso de las personas que ama.', 'Ec 3:11'],
@@ -652,20 +855,20 @@ export const NOTES = {
       god: {
         '*': ['Sartre hizo suyas las palabras de Dostoievski: “Si Dios no existiera, todo estaría permitido… ese es el punto de partida del existencialismo.” Sin Dios que le dé una naturaleza o un propósito, el hombre debe dárselos a sí mismo.', 'Sartre, El existencialismo es un humanismo'],
         1: ['El hombre clama por sentido, y nadie responde. Camus partió de ahí: “No hay más que un problema filosófico verdaderamente serio: el suicidio.” No negó el anhelo; negó que hubiera alguien para colmarlo.', 'Camus, El mito de Sísifo'],
-        2: ['Nadie está por encima del hombre para corregirlo: ni ley sobre sus elecciones, ni juez de ellas.', ''],
-        3: ['Nadie guarda lo que un hombre hizo de sí mismo: cuando muere, se pierde.', ''],
+        2: ['Nadie está por encima del hombre para corregirlo: ni ley sobre sus elecciones, ni juez de ellas. Solo responde ante sí mismo. Pero aun Sartre sostuvo que al elegir para sí, el hombre elige para toda la humanidad.', 'Sartre, El existencialismo es un humanismo'],
+        3: ['Nadie guarda lo que un hombre hizo de sí mismo: cuando muere, se pierde. Sartre: “Es absurdo que hayamos nacido; es absurdo que muramos.”', 'Sartre, El ser y la nada'],
       },
       world: {
         '*': ['El mundo simplemente está: sólido, callado e indiferente. Camus: “Lo absurdo nace de esta confrontación entre el llamado humano y el silencio irrazonable del mundo.”', 'Camus, El mito de Sísifo'],
-        3: ['El mundo sigue igual cuando un hombre muere, como si nunca hubiera elegido nada.', ''],
+        3: ['El mundo sigue igual cuando un hombre muere, como si nunca hubiera elegido nada. El silencio que respondió a sus preguntas en vida responde también a su muerte.', ''],
       },
       bridge: {
         '*': ['El sentido no se encuentra, se hace, con las propias elecciones. Camus termina con Sísifo, empujando su roca para siempre: “Hay que imaginarse a Sísifo feliz.” Pero un sentido hecho por el hombre es solo tan grande como él, y acaba cuando él acaba.', 'Camus, El mito de Sísifo'],
         2: ['Cualquier elección vale, si es de veras suya. Pero entonces nada puede decirse contra una elección cruel hecha con autenticidad.', ''],
       },
       self: {
-        0: ['“La existencia precede a la esencia”: el hombre primero existe y luego se define. No hay naturaleza humana dada de antemano.', 'Sartre, El existencialismo es un humanismo'],
-        1: ['El hombre es libre, y su libertad es una carga: está angustiado y solo, “condenado a ser libre”.', 'Sartre, El ser y la nada'],
+        0: ['“La existencia precede a la esencia”: el hombre primero existe y luego se define. No hay naturaleza humana dada de antemano, así que nadie puede decir para qué es un hombre hasta que él lo elija.', 'Sartre, El existencialismo es un humanismo'],
+        1: ['El hombre es libre, y su libertad es una carga: está angustiado y solo, “condenado a ser libre”. Ni Dios, ni la naturaleza, ni la tradición pueden elegir por él, y toda excusa es una mentira.', 'Sartre, El ser y la nada'],
         2: ['“El hombre no es otra cosa que lo que él se hace”, escribió Sartre: lo que elige, eso llega a ser. Pero un yo hecho de la nada no tiene nada con que medirse.', 'Sartre, El existencialismo es un humanismo'],
         3: ['La muerte acaba con la tarea de hacerse a sí mismo, y con ella su sentido. El proyecto queda inacabado para siempre.', ''],
       },
@@ -678,7 +881,7 @@ export const NOTES = {
       god: {
         '*': ['No hay Dios ni verdad final por encima de nuestras palabras: ningún Verbo, solo palabras. Lyotard definió lo posmoderno como “la incredulidad ante los metarrelatos”.', 'Lyotard, La condición posmoderna'],
         1: ['Dios es un relato más, contado por quienes ganan poder con él: sacerdotes, reyes, iglesias. La fe queda desenmascarada como medio de control. Pero desenmascarar es ya pretender ver las cosas como de verdad son.', ''],
-        2: ['La verdad no se niega, se empequeñece: verdad para este grupo, en este lugar, por ahora.', ''],
+        2: ['La verdad no se niega, se empequeñece: verdad para este grupo, en este lugar, por ahora. Cristo afirmó más: “Yo soy el camino, y la verdad, y la vida.”', 'Jn 14:6'],
       },
       world: {
         0: ['La realidad queda oculta tras nuestras palabras; nunca encontramos el mundo tal como es, solo como lo moldean nuestro lenguaje y nuestra cultura.', ''],
@@ -693,10 +896,10 @@ export const NOTES = {
         3: ['Unos relatos sustituyen a otros sin fin, y ninguno es verdadero; lo que sirve por ahora es todo lo que cabe esperar. El cristianismo responde con un relato contado por quien está fuera de él, y que entró en él.', ''],
       },
       self: {
-        0: ['El yo no es un alma ni una naturaleza, sino un producto de los relatos que se cuentan de él.', ''],
-        1: ['El hombre es moldeado, y aun hecho, por quienes tienen el poder y las categorías que imponen.', ''],
+        0: ['El yo no es un alma ni una naturaleza, sino un producto de los relatos que se cuentan de él: la familia, la cultura y el lenguaje. No hay nadie debajo de los relatos, esperando ser hallado.', ''],
+        1: ['El hombre es moldeado, y aun hecho, por quienes tienen el poder y las categorías que imponen: cuerdo y loco, normal y desviado. Foucault rastreó cómo cárceles, clínicas y escuelas hicieron a la gente lo que se dice que es.', 'Foucault, Vigilar y castigar'],
         2: ['Cada uno es libre de contar su propio relato. Pero si ningún relato es más verdadero que otro, contar el suyo no le dice nada a nadie.', ''],
-        3: ['Al final el yo se deshace: un cruce de voces y papeles, sin nadie en el centro.', ''],
+        3: ['Al final el yo se deshace: un cruce de voces y papeles, sin nadie en el centro. Un yo sin centro no tiene a nadie que salvar, ni nadie que ame.', ''],
       },
       sin: {
         1: ['La opresión se llama mala, y con fuerza. Pero el posmodernismo no tiene norma por la que algo sea malo, así que su propia indignación toma prestada la ley moral que niega.', 'Ro 2:14–15'],
@@ -708,7 +911,7 @@ export const NOTES = {
       god: {
         0: ['La religión es “el opio del pueblo”: un consuelo que toman los oprimidos para calmar su dolor, que les impide cambiar su condición. Cuando la sociedad sea justa, ya no hará falta.', 'Marx, Crítica de la filosofía del derecho de Hegel'],
         1: ['La religión es “el suspiro de la criatura oprimida”: un clamor real, pero dirigido al cielo en vez de a quienes explotan.', 'Marx, Crítica de la filosofía del derecho de Hegel'],
-        2: ['Sin Dios, el hombre debe salvarse a sí mismo, y el partido lo llevará hasta allí.', ''],
+        2: ['Sin Dios, el hombre debe salvarse a sí mismo, y el partido lo llevará hasta allí. Lenin hizo del partido la vanguardia que sabe lo que exige la historia; no responde ante nadie por encima de él.', 'Lenin, ¿Qué hacer?'],
         3: ['No hay juicio por venir: el único juez es la historia, y quienes la sirven quedan justificados, hagan lo que hagan.', ''],
       },
       world: {
@@ -846,6 +1049,209 @@ export const NOTES = {
       sin: {
         1: ['Lo que falla es el desequilibrio y la desconexión, no el pecado contra un Dios santo. El daño es real, pero es daño a la naturaleza y a otros, nunca una ofensa contra un legislador.', ''],
         2: ['La desconexión se sana con ritos, sin nada que perdonar, porque nadie ha sido agraviado salvo la naturaleza y uno mismo. Sin un Dios santo, la culpa no tiene adónde ir ni quién la quite.', ''],
+      },
+    },
+
+    'hindu-monism': {
+      god: {
+        '*': ['Brahman: la única realidad, sin partes ni cualidades, más allá de todo nombre. El Advaita Vedanta, enseñado sobre todo por Shankara, sostiene que es todo lo que de verdad es. No una Persona que habla o ama, sino el ser mismo, conciencia y dicha.', 'Shankara · Chandogya Upanishad 6.2.1'],
+        1: ['Solo Brahman es real. El resumen de Shankara: “Brahman es real, el mundo es falso, y el yo no es otra cosa que Brahman.”', 'Shankara, Brahmajnanavali'],
+        2: ['Brahman está más allá del bien y del mal, como de todo par de opuestos. Entonces el mal no tiene peso final, ni el bien un derecho final: ambos pertenecen al sueño.', 'Is 5:20'],
+        3: ['Brahman es todo lo que siempre hubo: cuando el sueño acaba, no queda nada más, y nada fue nunca de verdad distinto de él.', ''],
+      },
+      world: {
+        0: ['El mundo no está hecho por Brahman: es Brahman, que aparece en muchas formas. No hay Creador distinto de la creación, y así no hay criatura que pueda conocerlo y amarlo.', 'Ro 1:25'],
+        1: ['El mundo de las muchas cosas es maya, una apariencia, como una cuerda que al anochecer se toma por una serpiente, la imagen del propio Shankara. Pero si todo es ilusión, ¿de quién es la ilusión? Brahman no puede ignorar, y no hay nadie más.', 'Shankara, Vivekachudamani'],
+        2: ['Maya queda vista por lo que es: el que conoce ya no toma lo múltiple por real, como quien ve la cuerda ya no teme a la serpiente.', ''],
+        3: ['Moksha es la liberación de la rueda de los renacimientos. El Upanishad ora: “Llévame de lo irreal a lo real, de la oscuridad a la luz, de la muerte a la inmortalidad.”', 'Brihadaranyaka Upanishad 1.3.28'],
+      },
+      bridge: {
+        1: ['El samsara es la rueda del nacimiento, la muerte y el renacimiento, movida por el karma, el peso moral de los propios actos. La Gita: “como el hombre se quita la ropa gastada y se pone otra nueva, así el ser encarnado deja los cuerpos gastados.”', 'Bhagavad Gita 2.22'],
+        2: ['La liberación puede llevar muchas vidas: el conocimiento madura despacio, con disciplina, estudio y meditación junto a un maestro. La Gita ofrece también otros caminos: la devoción y la acción desinteresada. Pero todos dependen del esfuerzo del que busca.', 'Bhagavad Gita 4.39'],
+      },
+      self: {
+        0: ['El Atman, el yo verdadero, no es el cuerpo ni la mente sino pura conciencia, y es Brahman. El yo más hondo de cada persona es Dios.', 'Mandukya Upanishad 2'],
+        1: ['El yo se cree una persona separada, con su propio cuerpo, sus pensamientos y su vida. Esta creencia, no la rebelión, es lo que lo ata.', ''],
+        2: ['La gran sentencia de los Upanishads: “Tat tvam asi”, “Tú eres Eso”: el yo es Brahman. Entonces la adoración acaba en identidad, y no queda nadie que ame a Dios.', 'Chandogya Upanishad 6.8.7'],
+        3: ['En la liberación el yo ya no está separado. El Upanishad: “Como los ríos que fluyen al océano pierden su nombre y su forma, así el que conoce… va a la Persona divina.” No queda nadie para disfrutarla.', 'Mundaka Upanishad 3.2.8'],
+      },
+      sin: {
+        1: ['Avidya, la ignorancia de lo que el yo es de verdad, es la raíz de la atadura: no un pecado contra un Dios santo, sino un error sobre la realidad.', ''],
+        2: ['La ignorancia se disipa con el conocimiento, no se perdona. Nada necesita perdón, porque nadie ha sido agraviado; pero entonces la culpa, que toda conciencia conoce, también es solo ilusión.', 'Ro 2:15'],
+      },
+    },
+
+    buddhism: {
+      god: {
+        '*': ['El budismo no tiene creador. Puede haber dioses, pero también nacen, mueren y renacen, atrapados en la misma rueda. Nadie hizo el mundo, y nadie arriba puede salvar de él.', ''],
+        1: ['No hay nadie arriba que ayude: el sufrimiento debe entenderse y acabarse por la propia comprensión de cada uno. El Buda es un maestro que señala el camino, no un salvador que lleva a nadie por él.', 'Dhammapada 276'],
+        2: ['Ninguna gracia viene de fuera. El Buda dijo a sus discípulos: “Sed islas para vosotros mismos, sed vuestro propio refugio, sin buscar refugio fuera.”', 'Mahaparinibbana Sutta (DN 16)'],
+        3: ['En el nirvana no hay nada arriba que encontrar: ningún Dios que ver cara a cara, ni nadie que reciba en casa.', 'Ap 22:4'],
+      },
+      world: {
+        0: ['Todo surge de causas y pasa; nada tiene esencia duradera. “Todas las cosas condicionadas son impermanentes”, dijo el Buda. Hasta el mundo es una corriente de sucesos, no una creación.', 'Dhammapada 277'],
+        1: ['Samsara: nacer, morir y volver a nacer, sin principio. En el Sermón del Fuego el Buda declaró que “todo está ardiendo”: los sentidos y la mente en llamas de ansia, odio y engaño.', 'Adittapariyaya Sutta (SN 35.28)'],
+        3: ['El nirvana es la llama apagada: el ansia extinguida, y con ella el renacimiento. No es un lugar, ni una unión con Dios.', ''],
+      },
+      bridge: {
+        1: ['El renacimiento: el karma de una vida da forma a la siguiente. Pero como no hay un yo duradero, no hay nadie que pase de una vida a otra; un enigma que los budistas han debatido largamente.', ''],
+        2: ['El Noble Óctuple Sendero: recta visión, intención, palabra, acción, modo de vida, esfuerzo, atención y concentración. Cada uno debe recorrerlo por sí mismo.', 'Dhammacakkappavattana Sutta'],
+      },
+      self: {
+        0: ['No hay alma (anatta). El yo es cinco partes pasajeras: cuerpo, sensación, percepción, formaciones mentales y conciencia. Como enseñó Nagasena, “carro” nombra sus piezas juntas, no algo más.', 'Milindapanha'],
+        1: ['El yo se aferra a lo que no puede durar, y por eso sufre. El primer sermón: “el nacimiento es sufrimiento, la vejez es sufrimiento, la enfermedad es sufrimiento, la muerte es sufrimiento.”', 'Dhammacakkappavattana Sutta'],
+        2: ['El yo obra su propia liberación con esfuerzo, disciplina y meditación. Las últimas palabras del Buda: “Todas las cosas condicionadas están sujetas a decadencia. Esforzaos con diligencia.”', 'Mahaparinibbana Sutta (DN 16)'],
+        3: ['¿Hubo alguna vez alguien? Preguntado si el iluminado existe tras la muerte, el Buda no quiso responder. El cristianismo no promete la extinción, sino una persona resucitada y conocida.', 'Cula-Malunkyovada Sutta (MN 63) · 1 Co 13:12'],
+      },
+      sin: {
+        1: ['El ansia (tanha) es la causa del sufrimiento: sed de placer, de existencia, y aun de no existencia. El problema es el deseo, no el pecado contra Dios.', 'Dhammacakkappavattana Sutta'],
+        2: ['El ansia se enfría al recorrer el sendero: el deseo no se reorienta hacia su verdadero bien, sino que se apaga. El cristianismo hace lo contrario: “Deléitate asimismo en el SEÑOR, y él te concederá las peticiones de tu corazón.”', 'Sal 37:4'],
+      },
+    },
+
+    taoism: {
+      god: {
+        0: ['“El Tao que puede expresarse no es el Tao eterno; el nombre que puede nombrarse no es el nombre eterno.” El Tao es la fuente sin nombre y el camino de todas las cosas, no una persona.', 'Tao Te Ching 1'],
+        1: ['El Tao no toma partido. Laozi: “El cielo y la tierra no son benévolos; tratan a los diez mil seres como perros de paja.” El Camino no se ocupa más del bueno que del malvado.', 'Tao Te Ching 5'],
+        2: ['Al Tao se le sigue, pero nunca se le encuentra: no hay nadie a quien orar, amar o dar gracias, solo un camino con el que moverse.', ''],
+        3: ['El Tao no nota que un hombre se ha ido: ni lo llora ni lo recibe. Es el modo en que van las cosas, no alguien que conoce y guarda a los que se han ido.', ''],
+      },
+      world: {
+        0: ['“El Tao engendró el uno, el uno engendró el dos, el dos el tres, y el tres los diez mil seres.” Todo surge del juego del yin y el yang, que giran sin cesar.', 'Tao Te Ching 42'],
+        1: ['Los diez mil seres siguen girando, haga lo que haga el hombre. Los males no vienen de ellos sino de su forzar.', ''],
+        2: ['Luz y sombra, fuerte y débil, vida y muerte: cada uno necesita al otro, y ninguno es mejor. También el bien y el mal se vuelven un par en equilibrio.', 'Is 5:20'],
+        3: ['Los diez mil seres giran sin fin: sin principio, sin meta y sin día final. Laozi: “El retorno es el movimiento del Tao.” Todas las cosas vuelven a donde empezaron.', 'Tao Te Ching 40'],
+      },
+      bridge: {
+        2: ['Wu wei: la acción sin esfuerzo, moverse con la corriente y no contra ella. Laozi: “El bien supremo es como el agua. El agua beneficia a los diez mil seres y no compite.”', 'Tao Te Ching 8'],
+      },
+      self: {
+        0: ['El hombre es una cosa entre diez mil, sin lugar ni vocación especiales. Zhuangzi soñó que era una mariposa, y al despertar no sabía si era un hombre que había soñado, o una mariposa que soñaba ser hombre.', 'Zhuangzi 2'],
+        1: ['El hombre empuja contra la corriente: se aferra, planea y moraliza, y pierde el paso del Camino. Laozi: “Cuantas más leyes y órdenes se promulgan, más ladrones y bandidos hay.”', 'Tao Te Ching 57'],
+        2: ['El hombre cede como el agua. Laozi: “Nada en el mundo es más blando y débil que el agua, pero para atacar lo duro y fuerte nada la supera.”', 'Tao Te Ching 78'],
+        3: ['Al morir, el hombre vuelve a transformarse en el Camino. Cuando murió su esposa, encontraron a Zhuangzi tamborileando en un cuenco y cantando: ella solo había cambiado de forma, como cambian las estaciones. No hay nada que llorar, ni nada que esperar.', 'Zhuangzi 18'],
+      },
+      sin: {
+        1: ['La falta es forzar: aferrarse, maquinar y poner reglas. Laozi: “Cuando se abandona el gran Tao, surgen la benevolencia y la rectitud.” Hasta la moral es señal de decadencia.', 'Tao Te Ching 18'],
+      },
+    },
+
+    confucianism: {
+      god: {
+        0: ['El Cielo (tian) ordena todas las cosas, pero no habla. Confucio: “¿Acaso habla el Cielo? Las cuatro estaciones siguen su curso y nacen los cien seres. ¿Acaso habla el Cielo?”', 'Analectas 17.19'],
+        1: ['El Cielo sigue callado: no da ley en palabras, ni profeta, ni promesa. El gobernante que pierde la virtud pierde “el Mandato del Cielo”, pero el Cielo mismo no dice nada; solo se le lee en lo que ocurre.', 'Mencio 5A.5'],
+        2: ['Al Cielo solo se le lee en el orden de las cosas: en las estaciones, en un gobernante justo, en la armonía de una familia bien llevada.', ''],
+        3: ['Preguntado por la muerte, Confucio desvió la pregunta: “Si aún no entiendes la vida, ¿cómo vas a entender la muerte?” Sobre la mayor de las preguntas, el Cielo no dice palabra.', 'Analectas 11.12'],
+      },
+      world: {
+        0: ['Todo bajo el Cielo es la familia y el Estado, ordenados como uno. Confucio: “Que el príncipe sea príncipe, el ministro ministro, el padre padre y el hijo hijo.”', 'Analectas 12.11'],
+        1: ['Cuando la gente descuida sus deberes, todo bajo el Cielo se desordena: gobernantes sin virtud, hijos sin respeto, una tierra sin paz.', ''],
+        2: ['El orden vuelve cuando cada uno guarda su lugar. Confucio: “Quien gobierna por la virtud es como la estrella polar, que permanece en su lugar mientras todas las estrellas giran hacia ella.”', 'Analectas 2.1'],
+        3: ['El orden se transmite de generación en generación, en las familias y en los ritos. La piedad filial une a los vivos con los muertos, y el pasado con el presente: “Cuando los padres viven, sírvelos con decoro; cuando mueren, entiérralos con decoro.”', 'Analectas 2.5'],
+      },
+      bridge: {
+        0: ['Los cinco lazos: príncipe y súbdito, padre e hijo, marido y mujer, hermano mayor y menor, amigo y amigo, cada uno con sus deberes. La armonía llega cuando cada uno se cumple.', 'Mencio 3A.4'],
+        1: ['Los lazos se aflojan cuando se descuidan los deberes, y con ellos todo el orden. Un hijo que deshonra a su padre, un gobernante que oprime a su pueblo: cada uno afloja el lazo que sostiene la sociedad.', ''],
+        2: ['El rito (li): la conducta recta, practicada a diario hasta volverse segunda naturaleza. Confucio: “Dominarse a sí mismo y volver al rito es la benevolencia.”', 'Analectas 12.1'],
+        3: ['Los vivos honran a los antepasados con ofrendas y ritos. Confucio los guardaba, pero no quería hablar de lo que hay más allá: “Si aún no puedes servir a los hombres, ¿cómo vas a servir a los espíritus?”', 'Analectas 11.12'],
+      },
+      self: {
+        0: ['El hombre es bueno por naturaleza, si se cultiva. Mencio: “La naturaleza humana es buena, como el agua fluye hacia abajo.” Pero Xunzi, el otro gran maestro confuciano, sostuvo lo contrario: que la naturaleza humana es mala.', 'Mencio 6A.2 · Xunzi 23'],
+        1: ['El hombre fuera de su lugar trae desorden: el deber descuidado, los lazos tensos. Confucio: “El caballero entiende lo que es justo; el hombre mezquino entiende lo que da provecho.”', 'Analectas 4.16'],
+        2: ['El caballero (junzi) se perfecciona con el estudio, el rito y la reflexión, y su ejemplo se extiende. Se hace bueno por su propio esfuerzo, sin necesidad de gracia.', ''],
+        3: ['El hombre sigue vivo en el recuerdo de sus descendientes, mientras duran los ritos. El confucianismo dice poco de lo que hay más allá.', ''],
+      },
+      sin: {
+        1: ['La falta es descuidar el deber: una ruptura del orden entre personas, no una ofensa contra Dios. Se arregla entre personas, restaurando la conducta debida; el Cielo no es una parte con quien reconciliarse.', 'Sal 51:4'],
+        2: ['El descuido se remedia con estudio, rito y cultivo de sí, no se perdona. Cuando la falta está en el corazón, el cultivo no llega hasta ella.', 'Ez 36:26'],
+      },
+    },
+
+    animism: {
+      god: {
+        0: ['Muy por encima de los espíritus hay un Dios Supremo, el creador, pero se ha retirado de la vida diaria y rara vez se le invoca. Los estudiosos de la religión lo llaman deus otiosus, el Dios ocioso.', 'Eliade, Tratado de historia de las religiones'],
+        1: ['El Dios Supremo está demasiado lejos para ayudar; la vida diaria se resuelve con los espíritus cercanos. Así, el que hizo todas las cosas es al que menos se acude.', 'Ro 1:21'],
+        2: ['Al Dios Supremo aún no se le invoca. Pablo dice que el Dios desconocido se ha acercado: “no está lejos de cada uno de nosotros.”', 'Hch 17:27'],
+        3: ['El Dios Supremo sigue lejos; ni siquiera la muerte lo acerca. Los muertos van con los antepasados, no con Dios.', ''],
+      },
+      world: {
+        0: ['El mundo está lleno de espíritus: en ríos, árboles, animales, lugares y en los muertos. John Mbiti escribió que “los africanos son notoriamente religiosos”: la religión atraviesa cada parte de la vida.', 'Mbiti, Religiones y filosofía africanas'],
+        1: ['Cuando se ofende a los espíritus, el mundo se vuelve contra el hombre: llegan la enfermedad, la sequía y la desgracia. Nada ocurre por azar; detrás de cada desgracia hay alguien, y la pregunta es siempre quién.', 'Evans-Pritchard, Brujería, magia y oráculos entre los azande'],
+        2: ['El equilibrio se restablece por ahora, hasta la próxima ofensa; la paz con los espíritus es siempre pasajera. No hay reconciliación duradera, solo una tregua que renovar.', 'Col 2:15'],
+        3: ['Los espíritus permanecen, y los muertos se les unen; el mundo sigue lleno de poderes invisibles. Los vivos deben seguir alimentando y honrando a los muertos, o sufrir su ira.', ''],
+      },
+      bridge: {
+        2: ['El sacrificio se da para comprar la paz con un espíritu airado. Es un trato, que se renueva cada vez. El sacrificio de Cristo se ofreció “una vez para siempre”.', 'He 10:10–12'],
+      },
+      self: {
+        0: ['El hombre es una vida entre muchos espíritus, y debe vivir con cuidado entre ellos: honrando a los debidos, guardando los tabúes y sin ofender. La vida es una red de obligaciones con poderes invisibles.', ''],
+        1: ['El hombre vive con miedo a lo que no ve: la brujería, las maldiciones y los espíritus airados. Cristo vino a librar “a todos los que por el temor de la muerte estaban durante toda la vida sujetos a servidumbre.”', 'He 2:15'],
+        2: ['El hombre regatea su seguridad con sacrificios y amuletos. No hay promesa, solo la esperanza de que el trato se mantenga.', ''],
+        3: ['Al morir, la persona se vuelve antepasado. Mbiti llamó a los muertos recientes los “muertos vivientes”: siguen vivos mientras se les recuerda por su nombre, y luego se desvanecen en el anonimato.', 'Mbiti, Religiones y filosofía africanas'],
+      },
+      sin: {
+        1: ['La ofensa: un tabú roto, un espíritu airado. Es una ruptura del equilibrio con los poderes, no un pecado contra un Dios santo.', ''],
+        2: ['La ofensa se apacigua, no se perdona: el espíritu se calma, pero la relación sigue siendo de miedo. “En el amor no hay temor, sino que el perfecto amor echa fuera el temor.”', '1 Jn 4:18'],
+      },
+    },
+
+    platonism: {
+      god: {
+        0: ['El Bien: la más alta de las Formas, fuente del ser y de la verdad de todas las cosas. Platón lo llama “más allá del ser, por encima de él en dignidad y poder”. Es fuente de todo, pero no una persona.', 'Platón, República 509b'],
+        1: ['El Bien brilla, pero los de la caverna no lo ven: solo ven las sombras que hace su luz.', 'Platón, República 517b'],
+        2: ['El Bien espera a ser alcanzado por el ascenso del alma; no desciende. El Dios de la Biblia sí: “el Verbo se hizo carne, y habitó entre nosotros.”', 'Jn 1:14'],
+        3: ['El Bien se ve al fin, pero no puede amar. Plotino llamó al final del viaje “la huida del solo hacia el Solo”.', 'Plotino, Enéadas VI.9.11'],
+      },
+      world: {
+        0: ['El mundo del devenir es copia de las Formas eternas, siempre cambiante. En el Timeo, el tiempo es “una imagen móvil de la eternidad”.', 'Platón, Timeo 37d'],
+        1: ['La caverna: prisioneros encadenados de modo que solo ven sombras en la pared, y las toman por reales. Liberado y llevado a la luz del sol, uno de ellos queda al principio deslumbrado, y de vuelta en la caverna los demás lo matarían.', 'Platón, República 514a–517a'],
+        2: ['El mundo se ve al fin por lo que es: una sombra de lo real. El filósofo se aparta de él, pero Platón le pide que vuelva a bajar a la caverna para sacar a otros.', 'Platón, República 519d'],
+        3: ['El mundo del devenir es donde renacen las almas no purificadas, hasta que también ellas queden libres. El Fedón imagina a los glotones renaciendo como asnos, y a los violentos como lobos y halcones.', 'Platón, Fedón 81e–82a'],
+      },
+      bridge: {
+        0: ['Las Formas: modelos perfectos, eternos e inmutables (la justicia misma, la belleza misma), de los que las cosas de aquí son copias. Se conocen con la mente, no con los sentidos. Son verdad sin nadie que la diga: ideas perfectas, sin mente de quien sean.', 'Platón, Fedón 65d'],
+        1: ['El alma conoció las Formas antes de nacer, pero las ha olvidado en el cuerpo. Platón imagina que el alma contempló la verdadera belleza en una vida anterior, antes de caer a la tierra.', 'Platón, Fedro 249e–250c'],
+        2: ['El ascenso: con la razón y la disciplina el alma sube de las sombras a las Formas. La escala de Platón en el Banquete sube de un cuerpo bello a “la belleza misma”. Es para unos pocos, no para muchos.', 'Platón, Banquete 211'],
+        3: ['El alma purificada deja el cuerpo para siempre, para morar con lo divino. El cristianismo espera en cambio el cuerpo resucitado y glorificado: “Se siembra cuerpo animal, resucitará cuerpo espiritual.”', '1 Co 15:42–44'],
+      },
+      self: {
+        0: ['El hombre es un alma inmortal alojada en un cuerpo; el alma es la persona real, afín a lo divino y eterno. El cuerpo es una morada pasajera, y a menudo un estorbo.', 'Platón, Fedón 80a'],
+        1: ['El alma está presa en el cuerpo. Platón recoge el dicho de que el cuerpo (soma) es una tumba (sema).', 'Platón, Gorgias 493a'],
+        2: ['El filósofo recuerda lo que su alma supo una vez: “aprender es recordar”. Sócrates dijo que quienes practican rectamente la filosofía “no practican otra cosa que morir y estar muertos”.', 'Platón, Menón 81d · Fedón 64a'],
+        3: ['El cuerpo queda atrás como una tumba. La Escritura llama al cuerpo buena obra de Dios, y templo del Espíritu Santo.', '1 Co 6:19'],
+      },
+      sin: {
+        1: ['Lo que falla es la ignorancia, el olvido de las Formas, no la rebelión contra un Dios santo. Nadie obra mal voluntariamente, decía Sócrates: conocer el bien es hacerlo.', 'Platón, Protágoras 358c'],
+        2: ['La ignorancia se cura con el conocimiento. Pero conocer el bien no es hacerlo: “no hago el bien que quiero.”', 'Ro 7:19'],
+      },
+    },
+
+    gnosticism: {
+      god: {
+        '*': ['El Dios verdadero, el Padre desconocido, mora muy por encima, en la Plenitud (pleroma), más allá de todo conocimiento, intocado por este mundo. No lo hizo él.', 'Apócrifo de Juan'],
+        3: ['El Dios verdadero se alcanza al fin, pero sigue desconocido. El gnóstico se salva por saber de Dios, no por ser conocido y amado por él.', 'Gá 4:9'],
+      },
+      world: {
+        0: ['El mundo es materia, hecha por error. Un poder de la Plenitud, Sofía, cayó, y de su error nació un dios menor que hizo este mundo. La creación es una catástrofe, no un don.', 'Apócrifo de Juan'],
+        1: ['El mundo es una prisión, regida por las potestades del hacedor (arcontes), que mantienen dormidas en sus cuerpos las chispas de luz.', ''],
+        2: ['El mundo no merece salvarse: la salvación es escapar de él, no su renovación. Pablo dice lo contrario: “la creación misma será libertada de la esclavitud de corrupción.”', 'Ro 8:21'],
+        3: ['Al final toda la materia es consumida, nunca renovada. Dios dice en cambio: “He aquí, yo hago nuevas todas las cosas.”', 'Ap 21:5'],
+      },
+      bridge: {
+        0: ['El hacedor, Yaldabaot, es un dios menor, ignorante de la Plenitud que está sobre él. En el Apócrifo de Juan se jacta: “Yo soy un Dios celoso, y no hay otro Dios fuera de mí”, haciendo del Dios de Israel el villano.', 'Apócrifo de Juan · Is 45:5'],
+        1: ['El hacedor es un carcelero, no un Padre: él y sus potestades tienen cautivo al espíritu en la materia, embriagándolo de olvido. La creación, el nacimiento y el cuerpo son parte de la prisión.', 'Apócrifo de Juan'],
+        2: ['El Revelador desciende disfrazado y solo parece tener cuerpo, así que no muere de verdad. Juan responde: “todo espíritu que no confiesa que Jesucristo ha venido en carne, no es de Dios.”', '1 Jn 4:2–3'],
+        3: ['La chispa vuelve a casa más allá de los guardianes, diciéndoles las palabras secretas. El maestro gnóstico Teodoto: lo que libera es “el conocimiento de quiénes éramos y en qué nos hemos convertido; dónde estábamos y adónde hemos sido arrojados”.', 'Clemente, Extractos de Teodoto 78'],
+      },
+      self: {
+        0: ['El hombre es una chispa del Dios verdadero atrapada en el barro: espíritu de origen divino dentro de un cuerpo hecho por el dios menor.', 'Apócrifo de Juan'],
+        1: ['La chispa duerme en el cuerpo, olvidada de su origen. El Evangelio de Tomás: “Cuando os conozcáis a vosotros mismos, entonces seréis conocidos.”', 'Evangelio de Tomás 3'],
+        2: ['Los pocos despiertos se salvan por saber, no por gracia: solo quienes tienen la chispa pueden despertar. Ireneo respondió a los gnósticos de su tiempo en Contra las herejías.', 'Ireneo, Contra las herejías'],
+        3: ['El cuerpo se desecha para siempre, como cosa sin valor, un vestido de barro. Cristo resucitó en su cuerpo (“un espíritu no tiene carne ni huesos, como veis que yo tengo”), y resucitará el nuestro.', 'Lc 24:39 · Flp 3:21'],
+      },
+      sin: {
+        1: ['El problema es la materia, no la voluntad: el mal está en la sustancia del mundo, no en el corazón. Así nadie tiene la culpa, y no hay nada que perdonar.', 'Mr 7:21–23'],
+        2: ['De la materia se escapa, nunca se perdona. El pecado queda intacto, porque nunca se vio como pecado: un hombre puede perder su cuerpo y conservar su orgullo.', '1 Jn 1:8–9'],
       },
     },
   },
