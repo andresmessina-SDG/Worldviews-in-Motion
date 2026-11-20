@@ -148,6 +148,171 @@ export const NOTES = {
         2: ['Unhappiness is soothed, and nothing is forgiven, because nothing needed forgiving. So the cross has no place, and grace becomes needless.', 'Gal 2:21'],
       },
     },
+
+    naturalism: {
+      god: {
+        '*': ['There is no God and no realm beyond nature: no spirits, no souls, no heaven. Only what science can in principle measure is real. As Carl Sagan put it, the cosmos is all that is, or ever was, or ever will be.', 'Sagan, Cosmos'],
+        1: ['With no one above, suffering is no one’s doing: there is no one to blame, and no one to cry out to. The question “why?” has no one to answer it.', ''],
+        2: ['There is no one to ask for help or wisdom; man has only his own mind and the methods of science to guide him.', ''],
+        3: ['No one will remember any of it: when the last mind is gone, no one will know that anything happened at all.', ''],
+      },
+      world: {
+        0: ['The cosmos is matter and energy, moving by blind physical law. It was not made, has no purpose and is going nowhere. Everything, including mind and morality, is to be explained from below.', ''],
+        1: ['Nature does not care. Pain, disease and death are not a fall from something better; they are simply how evolution works, by waste and death. Good and evil are words men use, not things in the world.', 'Dawkins, River Out of Eden'],
+        2: ['Science studies the world, and technology puts it to use. That the world can be understood at all is a fact naturalism cannot explain: why should a mindless universe be so orderly and so open to minds?', ''],
+        3: ['In time the stars burn out and the universe runs down to a cold, dark sameness, as the second law of thermodynamics requires. Nothing that happened will have mattered to anything.', 'Russell, A Free Man’s Worship'],
+      },
+      bridge: {
+        '*': ['A closed system: every event has a natural cause within nature, and nothing from outside ever breaks in. So miracles, revelation and answered prayer are ruled out before any evidence is heard.', 'Lewis, Miracles'],
+        2: ['The system is still closed: no help can come from outside. Whatever man needs, he must find or make within nature himself.', ''],
+        3: ['History has no goal. It is the long result of chance and necessity, heading nowhere in particular.', 'Monod, Chance and Necessity'],
+      },
+      self: {
+        0: ['Man is a complex animal, produced by unguided evolution over long ages. His mind is the brain at work; there is no soul to survive it.', ''],
+        1: ['Man suffers and dies like every other living thing. His sense that this is wrong, that it ought not to be, is itself only a product of nature.', ''],
+        2: ['If the mind is only the product of blind processes aimed at survival, why trust it to find truth? Darwin himself felt this “horrid doubt”, and the argument cuts against naturalism itself.', 'Darwin, letter to W. Graham, 1881'],
+        3: ['Each person lives briefly and is gone for ever. His love, his work and his memory end with the chemistry that made them.', ''],
+      },
+      sin: {
+        1: ['Suffering is not a punishment or a sign of anything; no one meant it. Yet if no one meant it, there is no ground to call it evil, only unwelcome.', ''],
+      },
+    },
+
+    humanism: {
+      god: {
+        '*': ['There is no God, so man must make what he can of himself and his world by reason and science. The Humanist Manifestos of 1933 and 1973 set this out: “No deity will save us; we must save ourselves.”', 'Humanist Manifesto II'],
+        1: ['Religion is a story man tells in his childhood and outgrows as he learns. Belief in God is seen as a stage of human development, now past.', ''],
+        3: ['When mankind is gone, there will be no one to remember it: no God to keep its works, and no history to write them.', ''],
+      },
+      world: {
+        '*': ['The cosmos is all there is: matter, and nothing more. It was not made for us, but we can understand it and shape it to our good.', ''],
+        1: ['The universe is neither friendly nor hostile: it does not know we are here. Whatever good there is, man must bring.', ''],
+        2: ['Nature tells us what is, not what ought to be: from facts alone no duty follows, as Hume saw. So where does the humanist’s “ought” come from?', 'Hume, A Treatise of Human Nature'],
+        3: ['In the far future the sun will die and take mankind with it. Every achievement of progress will end in the same silence.', ''],
+      },
+      bridge: {
+        2: ['Progress: by education, science and good laws, mankind can rise ever higher, by its own effort. The twentieth century, the most educated and scientific yet, was also the bloodiest.', ''],
+        3: ['If all ends in extinction, progress is a stair that leads nowhere. Hope that rests only on man’s effort runs out with man.', 'Eccl 1:2–4'],
+      },
+      self: {
+        0: ['Man is of great worth, the most remarkable thing nature has produced. But if he is only matter shaped by chance, the worth humanism gives him is a borrowed belief, not a fact.', 'Gen 1:27'],
+        1: ['Man is good at heart; what holds him back is ignorance, poverty, prejudice and religion. Remove these, and he will flourish.', ''],
+        2: ['Man chooses his own values. But values each man chooses for himself can bind no one else, and cannot condemn anyone who chooses otherwise.', ''],
+        3: ['Each person lives on only in his works and in others’ memory, and these too will fade.', ''],
+      },
+      sin: {
+        1: ['What is wrong lies outside man: in superstition, ignorance and bad institutions. The heart itself needs no change, only better teaching.', 'Jer 17:9'],
+      },
+    },
+
+    nihilism: {
+      god: {
+        '*': ['There is no God, and so no purpose, no meaning and no value built into anything. Nietzsche saw what the death of God meant: the horizon wiped away, and nothing left to steer by.', 'Nietzsche, The Gay Science 125'],
+        1: ['There is no one to judge, so nothing is truly good or evil. Even condemning cruelty is only a preference.', ''],
+        2: ['There is no one to save, and nothing to be saved from. Salvation needs something wrong and someone able to put it right; nihilism has neither, so it can offer no remedy at all.', ''],
+      },
+      world: {
+        '*': ['The cosmos is here for no reason. It means nothing, aims at nothing and values nothing; it is simply there.', ''],
+        1: ['Nothing in the world is worth more than anything else. If no value exists, then neither does the value of truth, and nihilism cannot even call itself true.', ''],
+      },
+      bridge: {
+        '*': ['With nothing above, meaning drains away: there is nothing for it to rest on. Every attempt to find meaning in the world returns empty.', 'Eccl 1:14'],
+        2: ['There is no way out, because nothing is wrong to escape from, and nowhere better to go.', ''],
+        3: ['Everything runs off and is lost; nothing is kept, and nothing that was done will count.', ''],
+      },
+      self: {
+        0: ['Man is an accident of matter: no one meant him, and nothing is meant by him.', ''],
+        1: ['If the mind is an accident too, it cannot be trusted to know anything, including that nihilism is true. The view undermines its own ground.', ''],
+        2: ['Man is hollow, with no reason to act one way rather than another. Few people can live as though this were true; most borrow meaning they cannot justify.', ''],
+        3: ['When a man dies it makes no difference that he lived. Yet no one, not even the nihilist, can bring himself to believe that of the people he loves.', 'Eccl 3:11'],
+      },
+    },
+
+    existentialism: {
+      god: {
+        '*': ['There is no God to give man a nature or a purpose, so man must give himself one. Sartre’s atheist existentialism, unlike Kierkegaard’s Christian kind, begins here.', 'Sartre, Existentialism Is a Humanism'],
+        1: ['Man calls out for meaning, and no one answers. Camus did not deny the longing; he denied that anyone was there to meet it, and told man to live in the silence without hope of an answer.', 'Camus, The Myth of Sisyphus'],
+        2: ['No one stands over man to correct him: no law above his choices, and no judge of them.', ''],
+        3: ['No one keeps what a man made of himself: when he dies, it is lost.', ''],
+      },
+      world: {
+        '*': ['The world is simply there: solid, silent and indifferent. Camus called the clash between man’s longing for meaning and the world’s silence “the absurd”.', 'Camus, The Myth of Sisyphus'],
+        3: ['The world goes on unchanged when a man dies, as if he had never chosen anything.', ''],
+      },
+      bridge: {
+        '*': ['Meaning is not found but made: a man gives his life meaning by his choices. But meaning a man makes is only as large as he is, and it ends when he does.', ''],
+        2: ['Any choice will do, if it is truly his own. But then nothing can be said against a cruel choice made authentically.', ''],
+      },
+      self: {
+        0: ['“Existence comes before essence”: man first exists, then defines himself. There is no human nature given in advance.', 'Sartre, Existentialism Is a Humanism'],
+        1: ['Man is free, and his freedom is a burden: he is anxious and alone, “condemned to be free”.', 'Sartre, Being and Nothingness'],
+        2: ['What a man chooses, he becomes; he is nothing but the sum of his acts.', ''],
+        3: ['Death ends the work of making oneself, and with it its meaning. The project is left unfinished, for ever.', ''],
+      },
+      sin: {
+        1: ['The one fault is “bad faith”: hiding from one’s freedom behind roles, rules or excuses. It is the existentialist’s sin, but it is a failure toward oneself, never toward God.', 'Sartre, Being and Nothingness'],
+      },
+    },
+
+    postmodernism: {
+      god: {
+        '*': ['There is no God and no final truth above our words: no Word, only words. Lyotard described the postmodern as “incredulity toward metanarratives”.', 'Lyotard, The Postmodern Condition'],
+        1: ['God is one more story, told by those who gain power from it: priests, kings, churches. Belief is unmasked as a means of control. Yet the unmasking is itself a claim to see things as they really are.', ''],
+        2: ['Truth is not denied but made small: true for this group, in this place, for now.', ''],
+      },
+      world: {
+        0: ['Reality is hidden behind our words; we never meet the world as it is, only as our language and culture shape it.', ''],
+        1: ['The world we see is painted in the colours of those in power: what counts as true, normal or good is decided by the strong.', 'Foucault, Discipline and Punish'],
+        2: ['Reality is whatever a group agrees on. But if truth is only agreement, there is nothing to appeal to when groups disagree, except power.', ''],
+        3: ['Reality is lost for good, behind an endless play of words: every sign points only to other signs, never to the thing itself. If so, this sentence too points to nothing.', ''],
+      },
+      bridge: {
+        0: ['Language does not describe the world, it builds one. But this claim is itself offered as a true description of language.', ''],
+        1: ['Every grand story (Christianity, the Enlightenment, Marxism) is called a mask for power, told to silence others. Yet the claim that all stories serve power is itself a grand story.', ''],
+        2: ['Deconstruction takes apart a text or tradition to expose what it hides. It spares only its own story: its own claims are never deconstructed.', 'Derrida, Of Grammatology'],
+        3: ['Stories replace stories without end, and none of them is true; what works for now is all one can hope for. Christianity answers with a story told by the one who stands outside it, and who entered it.', ''],
+      },
+      self: {
+        0: ['The self is not a soul or a nature, but a product of the stories told about it.', ''],
+        1: ['Man is shaped, even made, by those in power and the categories they impose.', ''],
+        2: ['Each person is free to tell his own story. But if no story is truer than another, telling his tells no one anything.', ''],
+        3: ['In the end the self comes apart: a crossing-point of voices and roles, with no one at the centre.', ''],
+      },
+      sin: {
+        1: ['Oppression is called wrong, and fiercely. Yet postmodernism has no standard by which anything is wrong, so its own outrage borrows the moral law it denies.', 'Rom 2:14–15'],
+        2: ['Oppression is named and fought, but with no standard above all groups to judge it; the judgment can only be one group’s power against another’s.', ''],
+      },
+    },
+
+    marxism: {
+      god: {
+        0: ['Religion is “the opium of the people”: a comfort the oppressed take to dull their pain, which keeps them from changing their condition. Once society is just, it will no longer be needed.', 'Marx, Critique of Hegel’s Philosophy of Right'],
+        1: ['Religion is “the sigh of the oppressed creature”: a real cry, but aimed at heaven instead of at those who exploit.', 'Marx, Critique of Hegel’s Philosophy of Right'],
+        2: ['With no God, man must save himself, and the party will lead him there.', ''],
+        3: ['There is no judgement to come: the only judge is history, and those who serve it are justified, whatever they do.', ''],
+      },
+      world: {
+        0: ['Matter is all there is, and history moves forward by conflict (dialectical materialism). How men make a living, the “economic base”, shapes everything else: law, morals, art and religion.', 'Marx & Engels, The Communist Manifesto'],
+        1: ['All history is the history of class struggle: owners against workers, those who hold the means of production against those who have only their labour to sell.', 'The Communist Manifesto'],
+        2: ['After the revolution the workers’ state plans all production from the centre. But without market prices it cannot know what anything is worth, and so cannot plan: as Mises showed, rational economic calculation becomes impossible.', 'Mises, Economic Calculation in the Socialist Commonwealth'],
+        3: ['In the end the state withers away and a classless society emerges: “from each according to his ability, to each according to his needs.” It is heaven on earth, and always still to come.', 'Marx, Critique of the Gotha Programme'],
+      },
+      bridge: {
+        0: ['All ideas rest on the economic base and serve the class that holds it. But then Marx’s own ideas are only the product of his class position too, and no truer than any other.', ''],
+        1: ['Surplus value: profit is what the owner takes from the worker’s labour beyond his wage. It rests on the claim that labour alone makes value, which Böhm-Bawerk showed fails: value comes from what people want, not from labour put in.', 'Böhm-Bawerk, Karl Marx and the Close of His System'],
+        2: ['Revolution is salvation: the workers seize power by force, and the old order is swept away. In every land it was tried, it brought not liberation but the gulag and the famine.', ''],
+      },
+      self: {
+        0: ['Man is not a soul made in God’s image but “the ensemble of the social relations”: what society and labour make him.', 'Marx, Theses on Feuerbach'],
+        1: ['The worker is alienated: cut off from what he makes, from his work, from others and from himself. Marx saw a real ache, but traced it to property, not to man’s separation from God.', ''],
+        2: ['Change the conditions and you change man: a “new man” will be made by the new society. Where it was tried, the new man had to be forced.', ''],
+        3: ['Each generation is spent for a future it will never see, and the individual counts for nothing beside the cause.', ''],
+      },
+      sin: {
+        1: ['Evil lies in the system, in private property and class, not in the human heart. Change the system and evil goes.', ''],
+        2: ['But evil was still there in the hearts of the new rulers. As Solzhenitsyn wrote, the line between good and evil runs not between classes but through every human heart.', 'Solzhenitsyn, The Gulag Archipelago'],
+      },
+    },
   },
 
   es: {
@@ -286,6 +451,171 @@ export const NOTES = {
       sin: {
         1: ['Lo que falla es la infelicidad: el estrés, los sentimientos heridos y la baja autoestima. No hay pecado contra Dios, solo sentimientos que aliviar.', ''],
         2: ['La infelicidad se alivia y nada se perdona, porque nada necesitaba perdón. Así la cruz no tiene lugar, y la gracia se vuelve innecesaria.', 'Gá 2:21'],
+      },
+    },
+
+    naturalism: {
+      god: {
+        '*': ['No hay Dios ni ámbito alguno más allá de la naturaleza: ni espíritus, ni almas, ni cielo. Solo es real lo que la ciencia podría en principio medir. Como dijo Carl Sagan, el cosmos es todo lo que es, lo que fue y lo que será.', 'Sagan, Cosmos'],
+        1: ['Sin nadie arriba, el sufrimiento no es obra de nadie: no hay a quién culpar ni a quién clamar. La pregunta “¿por qué?” no tiene quien la responda.', ''],
+        2: ['No hay nadie a quien pedir ayuda o sabiduría; el hombre solo tiene su propia mente y los métodos de la ciencia para guiarse.', ''],
+        3: ['Nadie lo recordará: cuando se apague la última mente, nadie sabrá que algo ocurrió.', ''],
+      },
+      world: {
+        0: ['El cosmos es materia y energía, movidas por leyes físicas ciegas. Nadie lo hizo, no tiene propósito y no va a ninguna parte. Todo, incluidas la mente y la moral, se explica desde abajo.', ''],
+        1: ['A la naturaleza no le importa. El dolor, la enfermedad y la muerte no son una caída desde algo mejor: son sin más el modo en que obra la evolución, con derroche y muerte. El bien y el mal son palabras de los hombres, no cosas del mundo.', 'Dawkins, El río del Edén'],
+        2: ['La ciencia estudia el mundo y la tecnología lo pone a trabajar. Que el mundo pueda entenderse es un hecho que el naturalismo no explica: ¿por qué un universo sin mente habría de ser tan ordenado y tan accesible a la mente?', ''],
+        3: ['Con el tiempo las estrellas se apagan y el universo se agota hasta una igualdad fría y oscura, como exige la segunda ley de la termodinámica. Nada de lo ocurrido habrá importado a nada.', 'Russell, El culto del hombre libre'],
+      },
+      bridge: {
+        '*': ['Un sistema cerrado: todo suceso tiene una causa natural dentro de la naturaleza, y nada de fuera irrumpe jamás. Así los milagros, la revelación y la oración respondida quedan descartados antes de oír prueba alguna.', 'Lewis, Los milagros'],
+        2: ['El sistema sigue cerrado: ninguna ayuda puede venir de fuera. Lo que el hombre necesite, ha de encontrarlo o hacerlo él mismo dentro de la naturaleza.', ''],
+        3: ['La historia no tiene meta. Es el largo resultado del azar y la necesidad, y no se dirige a ninguna parte.', 'Monod, El azar y la necesidad'],
+      },
+      self: {
+        0: ['El hombre es un animal complejo, producto de una evolución sin guía a lo largo de eras. Su mente es el cerebro en funcionamiento; no hay alma que le sobreviva.', ''],
+        1: ['El hombre sufre y muere como cualquier otro ser vivo. Su sensación de que eso está mal, de que no debería ser así, es también solo un producto de la naturaleza.', ''],
+        2: ['Si la mente es solo producto de procesos ciegos orientados a sobrevivir, ¿por qué confiar en que halle la verdad? El propio Darwin sintió esa “horrible duda”, y el argumento se vuelve contra el naturalismo mismo.', 'Darwin, carta a W. Graham, 1881'],
+        3: ['Cada persona vive un instante y desaparece para siempre. Su amor, su obra y su memoria acaban con la química que los produjo.', ''],
+      },
+      sin: {
+        1: ['El sufrimiento no es castigo ni señal de nada; nadie lo quiso. Pero si nadie lo quiso, no hay base para llamarlo malo, solo indeseado.', ''],
+      },
+    },
+
+    humanism: {
+      god: {
+        '*': ['No hay Dios, así que el hombre debe hacer lo que pueda de sí mismo y de su mundo con la razón y la ciencia. Los Manifiestos Humanistas de 1933 y 1973 lo expusieron: “Ninguna deidad nos salvará; debemos salvarnos nosotros mismos.”', 'Manifiesto Humanista II'],
+        1: ['La religión es un cuento que el hombre se cuenta en su infancia y deja atrás al aprender. La fe en Dios se ve como una etapa del desarrollo humano, ya superada.', ''],
+        3: ['Cuando la humanidad desaparezca, no habrá nadie que la recuerde: ningún Dios que guarde sus obras, ni historia que las escriba.', ''],
+      },
+      world: {
+        '*': ['El cosmos es todo lo que hay: materia, y nada más. No fue hecho para nosotros, pero podemos entenderlo y moldearlo para nuestro bien.', ''],
+        1: ['El universo no es amigo ni enemigo: no sabe que estamos aquí. El bien que haya, ha de traerlo el hombre.', ''],
+        2: ['La naturaleza nos dice lo que es, no lo que debe ser: de los hechos solos no se sigue ningún deber, como vio Hume. ¿De dónde sale entonces el “debes” del humanista?', 'Hume, Tratado de la naturaleza humana'],
+        3: ['En un futuro lejano el sol morirá y se llevará consigo a la humanidad. Todo logro del progreso acabará en el mismo silencio.', ''],
+      },
+      bridge: {
+        2: ['El progreso: con educación, ciencia y buenas leyes, la humanidad puede subir siempre más alto, por su propio esfuerzo. El siglo XX, el más instruido y científico hasta entonces, fue también el más sangriento.', ''],
+        3: ['Si todo acaba en la extinción, el progreso es una escalera que no lleva a ninguna parte. La esperanza que descansa solo en el esfuerzo del hombre se agota con el hombre.', 'Ec 1:2–4'],
+      },
+      self: {
+        0: ['El hombre tiene gran valor: es lo más notable que ha producido la naturaleza. Pero si solo es materia moldeada por el azar, el valor que el humanismo le da es una creencia prestada, no un hecho.', 'Gn 1:27'],
+        1: ['El hombre es bueno en el fondo; lo que lo frena es la ignorancia, la pobreza, el prejuicio y la religión. Quítense, y florecerá.', ''],
+        2: ['El hombre elige sus propios valores. Pero valores que cada uno elige para sí no obligan a nadie más, ni pueden condenar a quien elija otros.', ''],
+        3: ['Cada persona sigue viva solo en sus obras y en la memoria de otros, y también estas se desvanecerán.', ''],
+      },
+      sin: {
+        1: ['El mal está fuera del hombre: en la superstición, la ignorancia y las malas instituciones. El corazón no necesita cambiar, solo mejor enseñanza.', 'Jer 17:9'],
+      },
+    },
+
+    nihilism: {
+      god: {
+        '*': ['No hay Dios, y por tanto ni propósito, ni sentido, ni valor inscritos en nada. Nietzsche vio lo que significaba la muerte de Dios: el horizonte borrado, y nada por lo que guiarse.', 'Nietzsche, La gaya ciencia 125'],
+        1: ['No hay nadie que juzgue, así que nada es de veras bueno ni malo. Hasta condenar la crueldad es solo una preferencia.', ''],
+        2: ['No hay nadie que salve, ni nada de qué ser salvado. La salvación necesita algo que esté mal y alguien capaz de arreglarlo; el nihilismo no tiene ninguna de las dos cosas, así que no puede ofrecer remedio alguno.', ''],
+      },
+      world: {
+        '*': ['El cosmos está aquí sin razón alguna. No significa nada, no apunta a nada y no valora nada; simplemente está.', ''],
+        1: ['Nada en el mundo vale más que otra cosa. Si no existe ningún valor, tampoco el de la verdad, y el nihilismo ni siquiera puede llamarse verdadero.', ''],
+      },
+      bridge: {
+        '*': ['Sin nada arriba, el sentido se escurre: no hay nada en que apoyarlo. Todo intento de hallar sentido en el mundo vuelve vacío.', 'Ec 1:14'],
+        2: ['No hay salida, porque nada está mal de qué escapar, ni lugar mejor adonde ir.', ''],
+        3: ['Todo se escurre y se pierde; nada se guarda, y nada de lo hecho contará.', ''],
+      },
+      self: {
+        0: ['El hombre es un accidente de la materia: nadie lo quiso, y nada se quiere decir con él.', ''],
+        1: ['Si la mente también es un accidente, no se puede confiar en que sepa nada, ni siquiera que el nihilismo es verdad. La postura socava su propio fundamento.', ''],
+        2: ['El hombre está vacío, sin razón para obrar de un modo u otro. Pocos pueden vivir como si esto fuera verdad; la mayoría toma prestado un sentido que no puede justificar.', ''],
+        3: ['Cuando un hombre muere, da igual que haya vivido. Pero nadie, ni el nihilista, se atreve a creer eso de las personas que ama.', 'Ec 3:11'],
+      },
+    },
+
+    existentialism: {
+      god: {
+        '*': ['No hay Dios que dé al hombre una naturaleza o un propósito, así que el hombre debe dárselos. El existencialismo ateo de Sartre, a diferencia del cristiano de Kierkegaard, parte de aquí.', 'Sartre, El existencialismo es un humanismo'],
+        1: ['El hombre clama por sentido, y nadie responde. Camus no negó el anhelo; negó que hubiera alguien para colmarlo, y dijo al hombre que viviera en el silencio sin esperar respuesta.', 'Camus, El mito de Sísifo'],
+        2: ['Nadie está por encima del hombre para corregirlo: ni ley sobre sus elecciones, ni juez de ellas.', ''],
+        3: ['Nadie guarda lo que un hombre hizo de sí mismo: cuando muere, se pierde.', ''],
+      },
+      world: {
+        '*': ['El mundo simplemente está: sólido, callado e indiferente. Camus llamó “lo absurdo” al choque entre el anhelo de sentido del hombre y el silencio del mundo.', 'Camus, El mito de Sísifo'],
+        3: ['El mundo sigue igual cuando un hombre muere, como si nunca hubiera elegido nada.', ''],
+      },
+      bridge: {
+        '*': ['El sentido no se encuentra, se hace: el hombre da sentido a su vida con sus elecciones. Pero un sentido hecho por el hombre es solo tan grande como él, y acaba cuando él acaba.', ''],
+        2: ['Cualquier elección vale, si es de veras suya. Pero entonces nada puede decirse contra una elección cruel hecha con autenticidad.', ''],
+      },
+      self: {
+        0: ['“La existencia precede a la esencia”: el hombre primero existe y luego se define. No hay naturaleza humana dada de antemano.', 'Sartre, El existencialismo es un humanismo'],
+        1: ['El hombre es libre, y su libertad es una carga: está angustiado y solo, “condenado a ser libre”.', 'Sartre, El ser y la nada'],
+        2: ['Lo que el hombre elige, eso llega a ser; no es más que la suma de sus actos.', ''],
+        3: ['La muerte acaba con la tarea de hacerse a sí mismo, y con ella su sentido. El proyecto queda inacabado para siempre.', ''],
+      },
+      sin: {
+        1: ['La única falta es la “mala fe”: esconderse de la propia libertad tras papeles, normas o excusas. Es el pecado del existencialista, pero una falta contra uno mismo, nunca contra Dios.', 'Sartre, El ser y la nada'],
+      },
+    },
+
+    postmodernism: {
+      god: {
+        '*': ['No hay Dios ni verdad final por encima de nuestras palabras: ningún Verbo, solo palabras. Lyotard definió lo posmoderno como “la incredulidad ante los metarrelatos”.', 'Lyotard, La condición posmoderna'],
+        1: ['Dios es un relato más, contado por quienes ganan poder con él: sacerdotes, reyes, iglesias. La fe queda desenmascarada como medio de control. Pero desenmascarar es ya pretender ver las cosas como de verdad son.', ''],
+        2: ['La verdad no se niega, se empequeñece: verdad para este grupo, en este lugar, por ahora.', ''],
+      },
+      world: {
+        0: ['La realidad queda oculta tras nuestras palabras; nunca encontramos el mundo tal como es, solo como lo moldean nuestro lenguaje y nuestra cultura.', ''],
+        1: ['El mundo que vemos está pintado con los colores de quien manda: lo que cuenta como verdadero, normal o bueno lo deciden los fuertes.', 'Foucault, Vigilar y castigar'],
+        2: ['La realidad es lo que un grupo acuerde. Pero si la verdad es solo acuerdo, cuando los grupos discrepan no queda nada a qué apelar, salvo el poder.', ''],
+        3: ['La realidad se pierde para siempre, tras un juego interminable de palabras: cada signo apunta solo a otros signos, nunca a la cosa misma. Si es así, también esta frase apunta a nada.', ''],
+      },
+      bridge: {
+        0: ['El lenguaje no describe el mundo: lo construye. Pero esta afirmación se ofrece ella misma como una descripción verdadera del lenguaje.', ''],
+        1: ['Todo gran relato (el cristianismo, la Ilustración, el marxismo) se llama máscara del poder, contado para acallar a otros. Pero afirmar que todo relato sirve al poder es también un gran relato.', ''],
+        2: ['La deconstrucción desarma un texto o una tradición para exponer lo que oculta. Solo perdona su propio relato: sus propias afirmaciones nunca se deconstruyen.', 'Derrida, De la gramatología'],
+        3: ['Unos relatos sustituyen a otros sin fin, y ninguno es verdadero; lo que sirve por ahora es todo lo que cabe esperar. El cristianismo responde con un relato contado por quien está fuera de él, y que entró en él.', ''],
+      },
+      self: {
+        0: ['El yo no es un alma ni una naturaleza, sino un producto de los relatos que se cuentan de él.', ''],
+        1: ['El hombre es moldeado, y aun hecho, por quienes tienen el poder y las categorías que imponen.', ''],
+        2: ['Cada uno es libre de contar su propio relato. Pero si ningún relato es más verdadero que otro, contar el suyo no le dice nada a nadie.', ''],
+        3: ['Al final el yo se deshace: un cruce de voces y papeles, sin nadie en el centro.', ''],
+      },
+      sin: {
+        1: ['La opresión se llama mala, y con fuerza. Pero el posmodernismo no tiene norma por la que algo sea malo, así que su propia indignación toma prestada la ley moral que niega.', 'Ro 2:14–15'],
+        2: ['La opresión se denuncia y se combate, pero sin norma por encima de todos los grupos para juzgarla; el juicio solo puede ser el poder de un grupo contra el de otro.', ''],
+      },
+    },
+
+    marxism: {
+      god: {
+        0: ['La religión es “el opio del pueblo”: un consuelo que toman los oprimidos para calmar su dolor, que les impide cambiar su condición. Cuando la sociedad sea justa, ya no hará falta.', 'Marx, Crítica de la filosofía del derecho de Hegel'],
+        1: ['La religión es “el suspiro de la criatura oprimida”: un clamor real, pero dirigido al cielo en vez de a quienes explotan.', 'Marx, Crítica de la filosofía del derecho de Hegel'],
+        2: ['Sin Dios, el hombre debe salvarse a sí mismo, y el partido lo llevará hasta allí.', ''],
+        3: ['No hay juicio por venir: el único juez es la historia, y quienes la sirven quedan justificados, hagan lo que hagan.', ''],
+      },
+      world: {
+        0: ['La materia es todo lo que hay, y la historia avanza mediante el conflicto (materialismo dialéctico). Cómo se ganan la vida los hombres, la “base económica”, da forma a todo lo demás: el derecho, la moral, el arte y la religión.', 'Marx y Engels, Manifiesto comunista'],
+        1: ['Toda la historia es la historia de la lucha de clases: dueños contra obreros, los que poseen los medios de producción contra los que solo tienen su trabajo que vender.', 'Manifiesto comunista'],
+        2: ['Tras la revolución, el Estado obrero planifica toda la producción desde el centro. Pero sin precios de mercado no puede saber lo que vale nada, y por tanto no puede planificar: como mostró Mises, el cálculo económico racional se vuelve imposible.', 'Mises, El cálculo económico en la comunidad socialista'],
+        3: ['Al final el Estado se extingue y surge la sociedad sin clases: “de cada cual según su capacidad, a cada cual según sus necesidades.” Es el cielo en la tierra, y siempre está por venir.', 'Marx, Crítica del programa de Gotha'],
+      },
+      bridge: {
+        0: ['Toda idea descansa en la base económica y sirve a la clase que la posee. Pero entonces las ideas del propio Marx son también solo producto de su posición de clase, y no más verdaderas que otras.', ''],
+        1: ['La plusvalía: la ganancia es lo que el dueño toma del trabajo del obrero por encima de su salario. Se apoya en la tesis de que solo el trabajo crea valor, que Böhm-Bawerk mostró falsa: el valor nace de lo que la gente quiere, no del trabajo invertido.', 'Böhm-Bawerk, La conclusión del sistema marxiano'],
+        2: ['La revolución es la salvación: los obreros toman el poder por la fuerza y el viejo orden es barrido. En todas las tierras donde se intentó, no trajo liberación, sino el gulag y la hambruna.', ''],
+      },
+      self: {
+        0: ['El hombre no es un alma hecha a imagen de Dios, sino “el conjunto de las relaciones sociales”: lo que la sociedad y el trabajo hacen de él.', 'Marx, Tesis sobre Feuerbach'],
+        1: ['El obrero está alienado: separado de lo que produce, de su trabajo, de los demás y de sí mismo. Marx vio un dolor real, pero lo atribuyó a la propiedad, no a la separación del hombre de Dios.', ''],
+        2: ['Cambia las condiciones y cambiarás al hombre: la nueva sociedad hará un “hombre nuevo”. Donde se intentó, al hombre nuevo hubo que forzarlo.', ''],
+        3: ['Cada generación se gasta por un futuro que nunca verá, y el individuo no cuenta nada frente a la causa.', ''],
+      },
+      sin: {
+        1: ['El mal está en el sistema, en la propiedad privada y las clases, no en el corazón humano. Cambia el sistema y el mal desaparece.', ''],
+        2: ['Pero el mal seguía en el corazón de los nuevos amos. Como escribió Solzhenitsyn, la línea entre el bien y el mal no pasa entre las clases, sino por el corazón de cada ser humano.', 'Solzhenitsyn, Archipiélago Gulag'],
       },
     },
   },
