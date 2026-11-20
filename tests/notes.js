@@ -81,6 +81,35 @@ const state = (p) => p.evaluate(() => {
     await p.close();
   }
 
+  // switching from one card straight to another, and the page not turning the act while a card is open
+  {
+    const p = await page(1280, 800);
+    await p.goto(`${BASE}/?nopaint&lang=en`); await p.waitForTimeout(1500);   // (no address: the acts turn by themselves)
+    await p.click('#labels .l.self'); await p.waitForTimeout(1500);
+    await p.click('#labels .l.god'); await p.waitForTimeout(1500);
+    const s1 = await state(p);
+    ok('a click on another label opens its card at once', s1.cls.includes('open') && s1.k === 'The triune God', JSON.stringify(s1));
+    await p.waitForTimeout(15000);
+    const s2 = await state(p), act = await p.evaluate(() => document.getElementById('actName').textContent);
+    ok('the acts do not turn under an open card', s2.cls.includes('open') && act === 'Creation', `${act} ${s2.cls}`);
+    await p.close();
+  }
+
+  // screen readers: labels with a note are buttons they can reach, and a card opened from the keyboard takes the focus
+  {
+    const p = await page(1280, 800);
+    await p.goto(`${BASE}/?nopaint&lang=en#christian/fall`); await p.waitForTimeout(1500);
+    const a = await p.evaluate(() => [document.getElementById('labels').getAttribute('aria-hidden'), document.querySelector('#labels .l.sin').getAttribute('role'), document.querySelector('#labels .l.sin').getAttribute('aria-hidden')]);
+    ok('labels with a note are buttons, not hidden from screen readers', a[0] === null && a[1] === 'button' && a[2] === null, JSON.stringify(a));
+    await p.focus('#labels .l.sin'); await p.keyboard.press('Enter'); await p.waitForTimeout(1800);
+    const f = await p.evaluate(() => document.activeElement.id);
+    ok('a card opened from the keyboard takes the focus', f === 'card', f);
+    await p.keyboard.press('Escape'); await p.waitForTimeout(600);
+    const back = await p.evaluate(() => document.activeElement.classList.contains('sin'));
+    ok('Escape gives the focus back to its label', back);
+    await p.close();
+  }
+
   // the keyboard, and reduced motion
   {
     const p = await page(1280, 800, { reducedMotion: 'reduce' });

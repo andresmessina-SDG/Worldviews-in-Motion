@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=122';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=122';
-import { CATALOGUE } from './catalogue.js?v=122';
-import { createMenu } from './menu.js?v=122';
+import { createPainter } from './paint.js?v=125';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=125';
+import { CATALOGUE } from './catalogue.js?v=125';
+import { createMenu } from './menu.js?v=125';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -17,7 +17,7 @@ const num = (name, lo, hi, fallback) => { const v = Number(params.get(name)); re
 // The notes on the cards are a help, not a part the page needs: if they cannot be fetched, the page works as before,
 // with no cards (see the note card below).
 let noteFor = () => null;
-try { ({ noteFor } = await import('./notes.js?v=122')); } catch (err) { console.error(err); }
+try { ({ noteFor } = await import('./notes.js?v=125')); } catch (err) { console.error(err); }
 
 // ---------- language ----------
 // English unless Spanish is asked for: in the address (?lang=es), by the reader's earlier choice, or by the browser's
@@ -39,7 +39,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=122'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=125'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -194,6 +194,7 @@ let budsKnown = (() => { try { return localStorage.getItem('budsKnown') === '1';
 for (const k of KEYS) {
   const el = document.createElement('div');
   el.className = `l ${ALIGN[k]} ${k}`;
+  el.setAttribute('aria-hidden', 'true');      // (until it has a note, when it becomes a button: see setLabel)
   $('labels').appendChild(el);
   // On a phone only a label's first line shows; a tap opens its second, and closes any other that was open.
   el.addEventListener('click', (e) => {
@@ -212,9 +213,10 @@ for (const k of KEYS) {
     repaint = true;
   });
   // The pointer on a label (or, on a phone, the label opened) lights the thing it names: see hot below.
-  el.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse' && pageLayout !== 'narrow') hotKey = k; });
+  // (while a card is open the light stays on the thing its label names)
+  el.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse' && pageLayout !== 'narrow' && !card.key) hotKey = k; });
   el.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && pageLayout !== 'narrow' && hotKey === k && card.key !== k) hotKey = null; });
-  el.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && labels[k].note) { e.preventDefault(); openCard(k); } });
+  el.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && labels[k].note) { e.preventDefault(); openCard(k, true); } });
   const g = document.createElementNS(NS, 'g');
   const path = document.createElementNS(NS, 'path');
   const dot = document.createElementNS(NS, 'circle');
@@ -1917,7 +1919,34 @@ const noise2C = (x, y) => {
   return a + (b - a) * su + (c - a) * sv + (a - b - c + d) * su * sv;
 };
 // the stroke, painted once: its colour onto one canvas and its dried edge onto another (W, H in css pixels)
-function paintStroke(W, H, rgbc, dpr) {
+// (a soft stroke loses nothing painted at one pixel to the point and scaled up, and costs a quarter as much to paint on a
+// sharp screen; and one painted is kept, so the same card opens again at once)
+const strokes = new Map();
+function paintStroke(W, H, rgbc, dprWanted) {
+  const key = `${Math.round(W)}x${Math.round(H)} ${rgbc.join(',')}`;
+  if (strokes.has(key)) return strokes.get(key);
+  if (strokes.size > 24) strokes.clear();
+  const st = paintStrokeAt(W, H, rgbc, Math.min(1, dprWanted));
+  strokes.set(key, st);
+  return st;
+}
+// the paper's noise for the stroke, worked out once in small tiles that repeat (128 pixels across, the slow wash at a
+// quarter of that scale, so it repeats only every 512): reading them is far quicker than working noise out per pixel
+let tiles = null;
+function makeTiles() {
+  const low = new Float32Array(128 * 128), grain = new Float32Array(128 * 128), pits = new Uint8Array(128 * 128);
+  for (let y = 0; y < 128; y++) {
+    for (let x = 0; x < 128; x++) {
+      const i = (y << 7) | x;
+      low[i] = noise2C(x * 4 * 0.025, y * 4 * 0.03);
+      grain[i] = Math.pow(noise2C(x * 0.9, y * 0.9), 3);
+      pits[i] = noise2C(x * 2.3 + 7, y * 2.3) > 0.78 ? 1 : 0;
+    }
+  }
+  return { low, grain, pits };
+}
+function paintStrokeAt(W, H, rgbc, dpr) {
+  tiles ||= makeTiles();
   const mk = () => { const k = document.createElement('canvas'); k.width = Math.round(W * dpr); k.height = Math.round(H * dpr); const x = k.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); return [k, x]; };
   const x0 = 20, x1 = W - 8, cy = H / 2 + 2, half = H / 2 - 20;
   const spine = (x) => cy - 0.03 * H * Math.sin(((x - x0) / (x1 - x0)) * Math.PI * 0.9) + 0.02 * H * ((x - x0) / (x1 - x0));
@@ -1952,10 +1981,11 @@ function paintStroke(W, H, rgbc, dpr) {
     for (let i = 0; i < cw; i++) {
       const o = (j * cw + i) * 4, a = md[o + 3] / 255;
       if (a < 0.01) continue;
-      const x = i / dpr, y = j / dpr, u = (x - x0) / (x1 - x0);
+      const x = (i / dpr) | 0, y = (j / dpr) | 0, u = (i / dpr - x0) / (x1 - x0);
       const load = 1.06 - 0.16 * Math.max(0, u);
-      const low = 0.92 + 0.16 * noise2C(x * 0.025, y * 0.03);
-      const grain = 1 - 0.14 * Math.pow(noise2C(x * 0.9, y * 0.9), 3) - (noise2C(x * 2.3 + 7, y * 2.3) > 0.78 ? 0.1 : 0);
+      const t = ((y & 127) << 7) | (x & 127), tl = (((y >> 2) & 127) << 7) | ((x >> 2) & 127);
+      const low = 0.92 + 0.16 * tiles.low[tl];
+      const grain = 1 - 0.14 * tiles.grain[t] - (tiles.pits[t] ? 0.1 : 0);
       const k = load * low * grain;
       const thin = u > 0.84 ? 1 - 0.45 * Math.min(1, (u - 0.84) / 0.16) : 1;          // (the paint thinning as the brush runs dry)
       img.data[o] = rgbc[0] * k; img.data[o + 1] = rgbc[1] * k; img.data[o + 2] = rgbc[2] * k; img.data[o + 3] = 255 * Math.min(1, a * 1.15) * 0.97 * thin;
@@ -2038,7 +2068,7 @@ function closeCard(animated) {
   card.closeAt = performance.now();
   card.timers.push(setTimeout(() => { if (!card.key) { cancelAnimationFrame(card.raf); el.className = ''; } }, 760));
 }
-function openCard(k) {
+function openCard(k, byKey = false) {
   const L = labels[k];
   // (only a label that is fully there: not one fading out as the page changes, nor one not yet arrived)
   if (!L.note || !L.on || L.el.style.opacity === '0') return;
@@ -2095,6 +2125,11 @@ function openCard(k) {
   void card.lead.getBoundingClientRect();
   card.leadPath.style.strokeDashoffset = '0';
   el.className = reduced ? 'open words' : 'open';
+  // (someone reading a note does not want the page to turn the act under it)
+  auto = false;
+  // (opened from the keyboard, the focus goes to the card, so that its words are read out; Escape brings it back)
+  const focusCard = () => { if (byKey && card.key === k) { el.tabIndex = -1; el.focus({ preventScroll: true }); } };
+  if (reduced) focusCard();
   // painting it on: the brush sets down, sweeps across fast and slows as it lifts; the paint dries behind it
   const g = cv.getContext('2d');
   const start = performance.now(), T0 = reduced ? -1e4 : 160, T = 880;
@@ -2142,7 +2177,7 @@ function openCard(k) {
   };
   cancelAnimationFrame(card.raf);
   card.raf = requestAnimationFrame(frame);
-  if (!reduced) card.timers.push(setTimeout(() => { if (card.key === k) el.classList.add('words'); }, T0 + T + 260));
+  if (!reduced) card.timers.push(setTimeout(() => { if (card.key === k) { el.classList.add('words'); focusCard(); } }, T0 + T + 260));
 }
 
 // ---------- a change of language ----------

@@ -461,7 +461,9 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 @media (prefers-reduced-motion: reduce) { #card .w, #card-lead path { transition: none; } }
 /* while a card is open, the rest of the lettering in the painting steps back, so the card and its label stand forward */
 #labels .l, svg#lines g { transition: opacity .35s ease; }
-.card-open #labels .l:not(.open) { opacity: .14 !important; pointer-events: none; }
+.card-open #labels .l:not(.open) { opacity: .14 !important; }
+.card-open #labels .l:not(.open):hover { opacity: .5 !important; }   /* (another label can still be opened, straight from this one's card) */
+#card:focus { outline: none; }
 .card-open svg#lines g:not(.hot) { opacity: .14; }
 .card-over-words .t { opacity: .14; transition: opacity .35s ease; }
 .card-open .l:not(.open):focus-visible { outline-color: transparent; }
