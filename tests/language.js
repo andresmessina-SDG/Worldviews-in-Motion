@@ -104,7 +104,10 @@ const settledOk = (s) => s.textOp.every((o) => o > 0.99) && !/lang-(in|out)|swap
     await p.focus('#lang a[lang=es]'); await p.keyboard.press('Enter'); await p.waitForTimeout(3000); const s = await state(p);
     check('Enter on the switch works', allIn(s, 'es') && settledOk(s), JSON.stringify(s)); }
   // 10. buds on a phone (on labels with no note, which open their second line in place: those with notes are tests/notes.js's)
-  { const p = await mk(390, 844, { hasTouch: true }); await p.goto(URL0 + '#deism/clockmaker'); await p.mouse.move(387, 841); await p.waitForTimeout(3200);
+  // (every label has a note now, so the notes are withheld here to see the buds on labels that open in place)
+  { const ctxB = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true }); await ctxB.route(/notes\.js/, (r) => r.abort());
+    const p = await ctxB.newPage(); p.errs = []; p.on('pageerror', (e) => p.errs.push(e.message));
+    await p.goto(URL0 + '#deism/clockmaker'); await p.mouse.move(387, 841); await p.waitForTimeout(3200);
     const calls = await p.evaluate(() => document.querySelectorAll('#labels .l.call').length);
     const bud = await p.evaluate(() => { const t = document.querySelector('#labels .l.bridge .tl'); const cs = getComputedStyle(t, '::after'); return [cs.width, cs.borderRadius, cs.animationName]; });
     check('buds call before any is opened', calls >= 4 && bud[2] === 'bud-call', `${calls} ${bud}`);
@@ -123,10 +126,13 @@ const settledOk = (s) => s.textOp.every((o) => o > 0.99) && !/lang-(in|out)|swap
     check('language change with a label open: settled, closed', allIn(s, 'es') && settledOk(s) && open === 0, `${open} ${JSON.stringify(s)}`);
     check('no errors (buds)', !p.errs.length, p.errs.join(' | ')); }
   // 11. a wide screen: a bud only where a label has a note
-  { const p = await mk(1280, 800); await p.goto(URL0 + '#deism/clockmaker'); await p.waitForTimeout(1500);
-    const bud = (k) => p.evaluate((k) => getComputedStyle(document.querySelector(`#labels .l.${k} .tl`), '::after').content, k);
-    const w = await bud('god');
+  { const ctxW = await b.newContext({ viewport: { width: 1280, height: 800 } }); await ctxW.route(/notes\.js/, (r) => r.abort());
+    const q = await ctxW.newPage(); await q.goto(URL0 + '#deism/clockmaker'); await q.waitForTimeout(1500);
+    const w = await q.evaluate(() => getComputedStyle(document.querySelector('#labels .l.god .tl'), '::after').content);
     check('no bud on a wide screen where there is no note', w === 'none' || w === 'normal', w);
+    await ctxW.close();
+    const p = await mk(1280, 800);
+    const bud = (k) => p.evaluate((k) => getComputedStyle(document.querySelector(`#labels .l.${k} .tl`), '::after').content, k);
     await p.goto(URL0 + '#christian/redemption'); await p.waitForTimeout(7500);   // (a move: the labels come as it settles)
     const w2 = await bud('god');
     check('a bud on a wide screen where there is a note', w2 !== 'none' && w2 !== 'normal', w2); }

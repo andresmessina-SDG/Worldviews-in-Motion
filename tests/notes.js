@@ -93,12 +93,27 @@ const state = (p) => p.evaluate(() => {
 
   // labels with no note: on a phone, a tap still opens the second line in place, and no card
   {
-    const p = await page(390, 844, { hasTouch: true });
+    // (every label has a note now, so the notes are withheld to see how a label without one behaves)
+    const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
+    await ctx.route(/notes\.js/, (r) => r.abort());
+    const p = await ctx.newPage(); await p.mouse.move(387, 841);
     await p.goto(`${BASE}/?nopaint&lang=en#deism/reason`); await p.waitForTimeout(900);
     await p.tap('#labels .l.self'); await p.waitForTimeout(500);
     const r = await p.evaluate(() => [document.getElementById('card').className, document.querySelector('#labels .l.self').classList.contains('open'), document.querySelectorAll('#labels .has-note').length]);
     ok('a label with no note: its second line, and no card', r[0] === '' && r[1] && r[2] === 0, JSON.stringify(r));
-    await p.close();
+    await ctx.close();
+  }
+
+  // every label on the site has a note, in both languages
+  {
+    const path = require('path'), { pathToFileURL } = require('url'), root = path.resolve(__dirname, '..');
+    const { NOTES } = await import(pathToFileURL(path.join(root, 'js/notes.js')).href);
+    const { WORLDVIEWS } = await import(pathToFileURL(path.join(root, 'js/worldviews.js')).href);
+    const missing = [];
+    for (const l of ['en', 'es']) for (const [id, w] of Object.entries(WORLDVIEWS)) w.acts.forEach((a, i) => {
+      for (const k in a.labels) { const n = NOTES[l]?.[id]?.[k]; if (!n || !(n[i] ?? n['*'])) missing.push(`${l} ${id} ${i + 1} ${k}`); }
+    });
+    ok('every label in every worldview has a note, in English and Spanish', missing.length === 0, missing.slice(0, 6).join(', '));
   }
 
   ok('no errors in the console', errs.length === 0, errs.slice(0, 3).join(' | '));

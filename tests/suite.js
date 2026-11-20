@@ -119,9 +119,13 @@ const atRest = (r) => !r.ask && r.askOp < 0.02 && !/swap|rise/.test(r.cls) && r.
     await p.close();
   }
 
-  // G. phone labels
+  // G. phone labels, as they behave with no note to open (every label now has one, so the notes are withheld here;
+  // the cards themselves are tests/notes.js's)
   {
-    const p = await page(375, 667, { hasTouch: true }); await p.goto(URL + '#gnosticism/knowledge'); await p.waitForTimeout(1500);
+    const ctx = await b.newContext({ viewport: { width: 375, height: 667 }, hasTouch: true });
+    await ctx.route(/notes\.js/, (r) => r.abort());
+    const p = await ctx.newPage(); await p.mouse.move(372, 664);
+    await p.goto(URL + '#gnosticism/knowledge'); await p.waitForTimeout(1500);
     const smalls = () => p.evaluate(() => [...document.querySelectorAll('.l small')].filter((e) => getComputedStyle(e).display !== 'none').length);
     const s0 = await smalls();
     await p.evaluate((t) => [...document.querySelectorAll('.l')].find((e) => e.textContent.includes(t)).click(), W.gnosticism.acts[2].labels.bridge[0]); await p.waitForTimeout(300); const s1 = await smalls();
@@ -133,7 +137,7 @@ const atRest = (r) => !r.ask && r.askOp < 0.02 && !/swap|rise/.test(r.cls) && r.
     await p.evaluate(() => document.querySelectorAll('#marks button')[3].click()); await p.waitForTimeout(3600); const s4 = await smalls();
     ok('phone: second lines closed; a tap opens one, another tap moves it, a tap elsewhere or a new act closes it', s0 === 0 && s1 === 1 && s2 === 1 && s3 === 0 && s4 === 0, [s0, s1, s2, s3, s4].join(' '));
     ok('phone: an opened label lies on no other label', over === 0, `${over} overlaps`);
-    await p.close();
+    await ctx.close();
   }
   ok('no errors in the console through all of it', errs.length === 0, errs.slice(0, 4).join(' | '));
   console.log(fails ? `${fails} FAILED` : 'ALL PASS'); await b.close();
