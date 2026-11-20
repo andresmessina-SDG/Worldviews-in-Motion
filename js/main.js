@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
 // value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=117';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=117';
-import { CATALOGUE } from './catalogue.js?v=117';
-import { createMenu } from './menu.js?v=117';
+import { createPainter } from './paint.js?v=118';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=118';
+import { CATALOGUE } from './catalogue.js?v=118';
+import { createMenu } from './menu.js?v=118';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -17,7 +17,7 @@ const num = (name, lo, hi, fallback) => { const v = Number(params.get(name)); re
 // The notes on the cards are a help, not a part the page needs: if they cannot be fetched, the page works as before,
 // with no cards (see the note card below).
 let noteFor = () => null;
-try { ({ noteFor } = await import('./notes.js?v=117')); } catch (err) { console.error(err); }
+try { ({ noteFor } = await import('./notes.js?v=118')); } catch (err) { console.error(err); }
 
 // ---------- language ----------
 // English unless Spanish is asked for: in the address (?lang=es), by the reader's earlier choice, or by the browser's
@@ -39,7 +39,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=117'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=118'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
