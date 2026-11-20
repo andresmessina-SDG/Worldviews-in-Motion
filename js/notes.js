@@ -23,12 +23,12 @@ export const NOTES = {
       },
       bridge: {
         0: ['From the beginning God spoke to man and bound himself to him by covenant, with commands, promises and his own company. Man knows God because God makes himself known.', 'Gen 2:16–17 · Heb 1:1–2'],
-        1: ['Man broke covenant with God, and fellowship turned to fear: Adam hid among the trees. The distance is moral, not a matter of space: sin separates man from a holy God.', 'Gen 3:8–10 · Isa 59:2'],
+        1: ['Man broke covenant with God, and fellowship turned to fear: Adam hid among the trees. The distance is moral, not a matter of space. Yet the longing remains, as Augustine prayed: “You have made us for yourself, and our heart is restless until it rests in you.”', 'Gen 3:8–10 · Augustine, Confessions I.1'],
         2: ['The eternal Son took on flesh, so that one person, fully God and fully man, could stand between a holy God and guilty people. He did not only teach the way back: he bore sin’s penalty himself and rose again.', '1 Tim 2:5 · 2 Cor 5:21'],
         3: ['What was lost in Eden is given back, and more: God’s people will see him as he is. Faith gives way to sight, and nothing will ever come between them again.', 'Rev 22:4 · 1 John 3:2'],
       },
       self: {
-        0: ['Man is made in God’s image: personal, rational and moral, made to know God and to rule the earth under him. His worth does not come from his usefulness but from his Maker.', 'Gen 1:26–27'],
+        0: ['Man is made in God’s image: personal, rational and moral, made to know God and rule the earth under him. His worth comes from his Maker, not his usefulness. “Man’s chief end is to glorify God, and to enjoy him for ever.”', 'Gen 1:26–27 · Westminster Shorter Catechism, Q. 1'],
         1: ['Man still bears God’s image, but sin has bent every part of him: mind, will and affections. He is not merely weak or ignorant; he is a rebel who cannot save himself.', 'Rom 3:10–12 · Eph 2:1–3'],
         2: ['Saved not by his own merit but by God’s grace, received through faith alone in Christ alone. Forgiven, declared righteous and made new, he now lives to please God.', 'Eph 2:8–10 · Rom 5:1'],
         3: ['Raised in body and made perfect in holiness, the redeemed live with God for ever. They do not dissolve into God or drift as spirits: they are themselves, at last as they were meant to be.', '1 Cor 15:42–44 · Rev 21:3'],
@@ -41,7 +41,7 @@ export const NOTES = {
 
     judaism: {
       god: {
-        '*': ['The LORD, the God of Abraham, Isaac and Jacob: one, holy, just and merciful, the maker of all, who acts in history. A Jew confesses him morning and evening in the Shema. He has no image, no partner and no incarnation.', 'Deut 6:4–5 · Exod 34:6–7'],
+        '*': ['“Hear, O Israel: the LORD our God, the LORD is one.” The God of Abraham, Isaac and Jacob: holy, just and merciful, the maker of all, who acts in history. A Jew says the Shema morning and evening. He has no image, no partner and no incarnation.', 'Deut 6:4–5 · Exod 34:6–7'],
       },
       world: {
         '*': ['God made the world good and gave it to man to tend. It is not to be escaped but enjoyed and made holy: a meal, a marriage, a day of rest are all occasions for blessing him.', 'Gen 1:31; 2:15'],
@@ -52,8 +52,8 @@ export const NOTES = {
       bridge: {
         0: ['God bound himself to Abraham by oath: a land, descendants beyond counting, and a blessing for every nation through his seed. At Sinai the covenant was given to his children as a people.', 'Gen 12:1–3; 15:17–18'],
         1: ['The prophets charge Israel with breaking the covenant, yet God does not cast them off. Jeremiah promised a new covenant, written on the heart, with sins remembered no more: a promise Judaism still awaits.', 'Jer 31:31–34'],
-        2: ['Judaism holds that Moses received two Torahs at Sinai: the written books, and an oral law handed down until the rabbis set it out in the Mishnah and the Talmud. Scripture itself knows of no second law, and Jesus rebuked traditions that set God’s word aside.', 'Avot 1:1 · Mark 7:8–13'],
-        3: ['Maimonides set the Jewish hope: a king of David’s line who will rebuild the temple and gather Israel. Yet Daniel and Haggai place the Messiah’s coming while the second temple still stood, and it fell in AD 70.', 'Dan 9:26 · Hag 2:9'],
+        2: ['“Moses received the Torah at Sinai and handed it on to Joshua”, and so on, to the rabbis: Judaism holds that God gave a written law and an oral one, later set down in the Mishnah and the Talmud. Scripture knows of no second law, and Jesus rebuked traditions that set God’s word aside.', 'Avot 1:1 · Mark 7:8–13'],
+        3: ['“I believe with perfect faith in the coming of the Messiah; and though he tarry, I will wait daily for his coming.” So runs Maimonides’ twelfth principle. Yet Daniel and Haggai place the Messiah’s coming while the second temple still stood, and it fell in AD 70.', 'Maimonides, Thirteen Principles · Dan 9:26 · Hag 2:9'],
       },
       self: {
         0: ['Man is made in God’s image, and every life is of great worth. Israel was chosen not because it was great, but to be a holy people and a light to the nations.', 'Gen 1:27 · Deut 7:6–8'],
@@ -62,15 +62,15 @@ export const NOTES = {
         3: ['The resurrection of the dead is one of Judaism’s thirteen principles of faith. Israel, scattered among the nations, will be brought home and raised to life.', 'Ezek 37:12–14 · Dan 12:2'],
       },
       sin: {
-        1: ['Sin is a wrong act, not a fallen nature. The evil inclination is a drive to be tamed and even put to good use, and the Torah is its remedy. But a drive to be tamed needs no saviour.', 'Gen 4:7 · Kiddushin 30b'],
+        1: ['Sin is a wrong act, not a fallen nature. The evil inclination is a drive to be tamed, and the Torah its remedy. The Talmud has God say: “I created the evil inclination, and I created the Torah as its antidote.” But a drive to be tamed needs no saviour.', 'Kiddushin 30b · Gen 8:21'],
         2: ['Without the temple there is no altar, so the rabbis taught that prayer, repentance and charity take the place of the offerings. Yet the Law taught that it is the blood that makes atonement.', 'Lev 17:11 · Heb 10:4'],
       },
     },
 
     islam: {
       god: {
-        '*': ['Allah, the one God: absolutely one, with no partner, no son and no equal, merciful and almighty, wholly beyond his creation. To confess his oneness (tawhid) is the heart of Islam.', 'Quran 112'],
-        1: ['To set up partners beside God (shirk) is the one sin he will not forgive. In the Quran’s eyes this includes calling Jesus the Son of God, and the Trinity itself.', 'Quran 4:48; 5:73'],
+        '*': ['“Say: He is God, the One, God the Eternal. He begets not, nor is he begotten, and there is none like him.” Allah is absolutely one, merciful and almighty, wholly beyond his creation. To confess his oneness (tawhid) is the heart of Islam.', 'Quran 112'],
+        1: ['“God does not forgive that partners be set up beside him, but he forgives what is less than that to whom he wills.” In the Quran’s eyes this shirk includes calling Jesus the Son of God, and the Trinity itself.', 'Quran 4:48; 5:73'],
         2: ['God reveals his will, in law and prophets, but not himself. He is known by his names and his commands, not met as a person who comes to man.', 'Quran 42:51'],
         3: ['Of God’s ninety-nine names in Islam, none is Father. The believer is God’s servant, never his child; the cry “Abba, Father” has no place in Islam.', 'Quran 19:93 · Rom 8:15'],
       },
@@ -81,8 +81,8 @@ export const NOTES = {
         3: ['Paradise is a garden of rivers, shade, fruit and companions, for those God admits. Sunni teaching counts the sight of God as its highest joy; yet even there he is Lord and Judge, never Father.', 'Quran 47:15; 75:22–23'],
       },
       bridge: {
-        2: ['Muslims hold the Quran to be God’s own speech, uncreated, sent down to Muhammad through Gabriel over twenty-three years: his final word to mankind. It reveals his will and his law, but between God and man it offers a book to obey, with no mediator and no atonement.', 'Quran 2:2; 42:51'],
-        3: ['On the Last Day each person’s deeds are weighed: heavy scales lead to the Garden, light ones to the Fire. Even Muhammad said his deeds would not admit him unless God covered him with mercy.', 'Quran 101:6–9 · Bukhari 6467'],
+        2: ['Muslims hold the Quran to be God’s own speech, sent down to Muhammad through Gabriel: his final word. It denies the cross outright: “they did not kill him, nor did they crucify him, but it was made to appear so to them.” Between God and man it offers a book to obey, with no mediator and no atonement.', 'Quran 4:157; 42:51'],
+        3: ['On the Last Day each person’s deeds are weighed: heavy scales lead to the Garden, light ones to the Fire. Even Muhammad said: “None of you will enter Paradise by his deeds… not even I, unless God covers me with his mercy.”', 'Quran 101:6–9 · Bukhari 6467'],
       },
       self: {
         0: ['Man is God’s deputy (khalifa) on earth, entrusted with its care. Every child is born with a natural disposition (fitra) to know and submit to God.', 'Quran 2:30; 30:30'],
@@ -99,7 +99,7 @@ export const NOTES = {
     deism: {
       god: {
         '*': ['A supreme being, known by reason from the order of nature, who made the world and left it to run by its own laws. He does not reveal himself, work miracles or answer prayer. Voltaire, Paine and many of the Enlightenment held to such a God.', 'Paine, The Age of Reason'],
-        2: ['God is known only by inference, from the design of the world, as a watchmaker is inferred from a watch. But a God known only as a conclusion is a hypothesis, not one who can be loved or trusted.', 'Paley, Natural Theology'],
+        2: ['God is known only by inference, from the design of the world, as a watchmaker from a watch. Voltaire held that “if God did not exist, it would be necessary to invent him.” But a God known only as a conclusion is a hypothesis, not one who can be loved or trusted.', 'Voltaire, Épître à l’auteur des Trois imposteurs'],
         3: ['God is further off than ever: if he never speaks, nothing can be known of what he thinks of us, or of what comes after death.', 'Heb 1:1–2'],
       },
       world: {
@@ -109,14 +109,14 @@ export const NOTES = {
         3: ['The machine runs on, with no end in view and no day of reckoning, for its Maker has said nothing of either.', ''],
       },
       bridge: {
-        '*': ['Deism denies that God has spoken: no prophets, no miracles, no scripture and no incarnation. Whatever can be known of God, reason finds out. But if God has not spoken, his mind and will remain closed to us.', 'Heb 1:1–2'],
+        '*': ['Deism denies that God has spoken: no prophets, no miracles, no scripture and no incarnation. “My own mind is my own church,” wrote Thomas Paine. But if God has not spoken, his mind and will remain closed to us.', 'Paine, The Age of Reason · Heb 1:1–2'],
         2: ['Man climbs toward God by reason alone. Reason is God’s gift, but on the Bible’s account it is darkened by sin, and men “became futile in their thinking”.', 'Rom 1:21'],
         3: ['God has promised nothing: neither forgiveness, nor resurrection, nor a life to come. A deist can hope, but he has no word to rest his hope on.', ''],
       },
       self: {
         '*': ['Man is a rational being, able to discover by the light of nature that God exists and what is right. He needs no revelation and no redeemer.', ''],
         1: ['What holds man back is not a sinful heart but ignorance, superstition and the priests who keep him in the dark. Teach him, and he will do well.', 'Paine, The Age of Reason'],
-        3: ['The deist hopes that a just God will reward the good after death, but cannot be sure there is a life to come at all.', ''],
+        3: ['Paine’s whole creed: “I believe in one God, and no more; and I hope for happiness beyond this life.” He hopes, but a God who has promised nothing gives him nothing to stand on.', 'Paine, The Age of Reason'],
       },
       sin: {
         1: ['Deism has no fall: wrong comes from ignorance and superstition, and the cure is education and reason. Yet the most enlightened men are not thereby the most good.', 'Jer 17:9'],
@@ -127,7 +127,7 @@ export const NOTES = {
       god: {
         '*': ['A God who made the world and watches over it, but is not much involved in daily life. Sociologists Christian Smith and Melinda Denton named this the working faith of many young Americans, often within churches.', 'Smith & Denton, Soul Searching'],
         1: ['God is out of mind until something goes wrong. He asks for nothing: no worship, no obedience, no repentance. He is there to be fetched in an emergency, and is forgotten again when it passes.', ''],
-        2: ['God is on call, like a butler or a therapist: there to solve problems and help people feel better. Such a God serves man’s wishes; he is not the Lord.', 'Isa 45:9'],
+        2: ['God is on call, there to solve problems and help people feel better: “something like a combination Divine Butler and Cosmic Therapist,” as Smith and Denton put it. Such a God serves man’s wishes; he is not the Lord.', 'Smith & Denton, Soul Searching · Isa 45:9'],
         3: ['In heaven God is still at people’s service, the guarantor of their happiness. What they look forward to is not God, but a good time.', 'Ps 73:25'],
       },
       world: {
@@ -139,9 +139,9 @@ export const NOTES = {
         2: ['Prayer is a call for help when things go wrong: asking, not worship, confession or thanks. Jesus taught his disciples to pray first, “hallowed be your name; your kingdom come.”', 'Matt 6:9–10'],
       },
       self: {
-        '*': ['People are basically good. The goal of life is to be happy and feel good about oneself, and to be nice and fair to others.', ''],
+        '*': ['People are basically good, and one of the creed’s tenets is that “the central goal of life is to be happy and to feel good about oneself.” Being nice and fair to others follows from that.', 'Smith & Denton, Soul Searching'],
         1: ['Even when people do wrong, they are still good underneath; what has gone wrong is how they feel. Scripture says, “None is righteous, no, not one.”', 'Rom 3:10'],
-        3: ['Good people go to heaven when they die, and nearly everyone is good enough by their own measure. But God’s measure is his own holiness.', 'Rom 3:23'],
+        3: ['“Good people go to heaven when they die,” and nearly everyone is good enough by their own measure. But God’s measure is his own holiness: “all have sinned and fall short of the glory of God.”', 'Smith & Denton, Soul Searching · Rom 3:23'],
       },
       sin: {
         1: ['What is wrong is unhappiness: stress, hurt feelings and low self-esteem. There is no sin against God, only feelings to be soothed.', ''],
@@ -151,26 +151,26 @@ export const NOTES = {
 
     naturalism: {
       god: {
-        '*': ['There is no God and no realm beyond nature: no spirits, no souls, no heaven. Only what science can in principle measure is real. As Carl Sagan put it, the cosmos is all that is, or ever was, or ever will be.', 'Sagan, Cosmos'],
+        '*': ['“The Cosmos is all that is or ever was or ever will be.” There is no God and no realm beyond nature: no spirits, no souls, no heaven. Only what science can in principle measure is real.', 'Sagan, Cosmos'],
         1: ['With no one above, suffering is no one’s doing: there is no one to blame, and no one to cry out to. The question “why?” has no one to answer it.', ''],
         2: ['There is no one to ask for help or wisdom; man has only his own mind and the methods of science to guide him.', ''],
         3: ['No one will remember any of it: when the last mind is gone, no one will know that anything happened at all.', ''],
       },
       world: {
         0: ['The cosmos is matter and energy, moving by blind physical law. It was not made, has no purpose and is going nowhere. Everything, including mind and morality, is to be explained from below.', ''],
-        1: ['Nature does not care. Pain, disease and death are not a fall from something better; they are simply how evolution works, by waste and death. Good and evil are words men use, not things in the world.', 'Dawkins, River Out of Eden'],
+        1: ['Pain, disease and death are not a fall from something better; they are how evolution works. Dawkins: the universe has “no design, no purpose, no evil and no good, nothing but blind, pitiless indifference.” Yet if there is no evil, suffering cannot be called wrong.', 'Dawkins, River Out of Eden'],
         2: ['Science studies the world, and technology puts it to use. That the world can be understood at all is a fact naturalism cannot explain: why should a mindless universe be so orderly and so open to minds?', ''],
-        3: ['In time the stars burn out and the universe runs down to a cold, dark sameness, as the second law of thermodynamics requires. Nothing that happened will have mattered to anything.', 'Russell, A Free Man’s Worship'],
+        3: ['In time the stars burn out and the universe runs down. Russell: “all the labours of the ages, all the devotion, all the inspiration, all the noonday brightness of human genius, are destined to extinction in the vast death of the solar system.”', 'Russell, A Free Man’s Worship'],
       },
       bridge: {
-        '*': ['A closed system: every event has a natural cause within nature, and nothing from outside ever breaks in. So miracles, revelation and answered prayer are ruled out before any evidence is heard.', 'Lewis, Miracles'],
+        '*': ['A closed system: every event has a natural cause, and nothing from outside breaks in. Lewontin admitted the commitment comes first: “we cannot allow a Divine Foot in the door.” So miracles and revelation are ruled out before any evidence is heard.', 'Lewontin, Billions and Billions of Demons'],
         2: ['The system is still closed: no help can come from outside. Whatever man needs, he must find or make within nature himself.', ''],
-        3: ['History has no goal. It is the long result of chance and necessity, heading nowhere in particular.', 'Monod, Chance and Necessity'],
+        3: ['History has no goal. Monod: “man knows at last that he is alone in the universe’s unfeeling immensity, out of which he emerged only by chance.”', 'Monod, Chance and Necessity'],
       },
       self: {
-        0: ['Man is a complex animal, produced by unguided evolution over long ages. His mind is the brain at work; there is no soul to survive it.', ''],
+        0: ['Man is a complex animal, produced by unguided evolution. Francis Crick: “You, your joys and your sorrows, your memories and your ambitions… are in fact no more than the behavior of a vast assembly of nerve cells and their associated molecules.”', 'Crick, The Astonishing Hypothesis'],
         1: ['Man suffers and dies like every other living thing. His sense that this is wrong, that it ought not to be, is itself only a product of nature.', ''],
-        2: ['If the mind is only the product of blind processes aimed at survival, why trust it to find truth? Darwin himself felt this “horrid doubt”, and the argument cuts against naturalism itself.', 'Darwin, letter to W. Graham, 1881'],
+        2: ['If the mind is the product of blind processes aimed at survival, why trust it to find truth? Darwin felt it: “the horrid doubt always arises whether the convictions of man’s mind, which has been developed from the mind of the lower animals, are of any value or at all trustworthy.”', 'Darwin, letter to W. Graham, 1881'],
         3: ['Each person lives briefly and is gone for ever. His love, his work and his memory end with the chemistry that made them.', ''],
       },
       sin: {
@@ -195,7 +195,7 @@ export const NOTES = {
         3: ['If all ends in extinction, progress is a stair that leads nowhere. Hope that rests only on man’s effort runs out with man.', 'Eccl 1:2–4'],
       },
       self: {
-        0: ['Man is of great worth, the most remarkable thing nature has produced. But if he is only matter shaped by chance, the worth humanism gives him is a borrowed belief, not a fact.', 'Gen 1:27'],
+        0: ['“Man is the measure of all things,” said Protagoras: he is of great worth, the most remarkable thing nature has produced. But if he is only matter shaped by chance, the worth humanism gives him is a borrowed belief, not a fact.', 'Protagoras · Gen 1:27'],
         1: ['Man is good at heart; what holds him back is ignorance, poverty, prejudice and religion. Remove these, and he will flourish.', ''],
         2: ['Man chooses his own values. But values each man chooses for himself can bind no one else, and cannot condemn anyone who chooses otherwise.', ''],
         3: ['Each person lives on only in his works and in others’ memory, and these too will fade.', ''],
@@ -207,7 +207,7 @@ export const NOTES = {
 
     nihilism: {
       god: {
-        '*': ['There is no God, and so no purpose, no meaning and no value built into anything. Nietzsche saw what the death of God meant: the horizon wiped away, and nothing left to steer by.', 'Nietzsche, The Gay Science 125'],
+        '*': ['Nietzsche’s madman: “God is dead. God remains dead. And we have killed him… Who gave us the sponge to wipe away the entire horizon?” With no God, there is no purpose, meaning or value built into anything.', 'Nietzsche, The Gay Science 125'],
         1: ['There is no one to judge, so nothing is truly good or evil. Even condemning cruelty is only a preference.', ''],
         2: ['There is no one to save, and nothing to be saved from. Salvation needs something wrong and someone able to put it right; nihilism has neither, so it can offer no remedy at all.', ''],
       },
@@ -216,7 +216,7 @@ export const NOTES = {
         1: ['Nothing in the world is worth more than anything else. If no value exists, then neither does the value of truth, and nihilism cannot even call itself true.', ''],
       },
       bridge: {
-        '*': ['With nothing above, meaning drains away: there is nothing for it to rest on. Every attempt to find meaning in the world returns empty.', 'Eccl 1:14'],
+        '*': ['“What does nihilism mean? That the highest values devaluate themselves. The aim is lacking; ‘why?’ finds no answer.” With nothing above, meaning drains away: there is nothing for it to rest on.', 'Nietzsche, The Will to Power 2 · Eccl 1:14'],
         2: ['There is no way out, because nothing is wrong to escape from, and nowhere better to go.', ''],
         3: ['Everything runs off and is lost; nothing is kept, and nothing that was done will count.', ''],
       },
@@ -230,23 +230,23 @@ export const NOTES = {
 
     existentialism: {
       god: {
-        '*': ['There is no God to give man a nature or a purpose, so man must give himself one. Sartre’s atheist existentialism, unlike Kierkegaard’s Christian kind, begins here.', 'Sartre, Existentialism Is a Humanism'],
-        1: ['Man calls out for meaning, and no one answers. Camus did not deny the longing; he denied that anyone was there to meet it, and told man to live in the silence without hope of an answer.', 'Camus, The Myth of Sisyphus'],
+        '*': ['Sartre took Dostoevsky’s words as his own: “If God did not exist, everything would be permitted… that, for existentialism, is the starting point.” With no God to give man a nature or a purpose, man must give himself one.', 'Sartre, Existentialism Is a Humanism'],
+        1: ['Man calls out for meaning, and no one answers. Camus began from there: “There is but one truly serious philosophical problem, and that is suicide.” He did not deny the longing; he denied anyone was there to meet it.', 'Camus, The Myth of Sisyphus'],
         2: ['No one stands over man to correct him: no law above his choices, and no judge of them.', ''],
         3: ['No one keeps what a man made of himself: when he dies, it is lost.', ''],
       },
       world: {
-        '*': ['The world is simply there: solid, silent and indifferent. Camus called the clash between man’s longing for meaning and the world’s silence “the absurd”.', 'Camus, The Myth of Sisyphus'],
+        '*': ['The world is simply there: solid, silent and indifferent. Camus: “The absurd is born of this confrontation between the human need and the unreasonable silence of the world.”', 'Camus, The Myth of Sisyphus'],
         3: ['The world goes on unchanged when a man dies, as if he had never chosen anything.', ''],
       },
       bridge: {
-        '*': ['Meaning is not found but made: a man gives his life meaning by his choices. But meaning a man makes is only as large as he is, and it ends when he does.', ''],
+        '*': ['Meaning is not found but made, by one’s choices. Camus ends with Sisyphus, pushing his rock for ever: “One must imagine Sisyphus happy.” But meaning a man makes is only as large as he is, and it ends when he does.', 'Camus, The Myth of Sisyphus'],
         2: ['Any choice will do, if it is truly his own. But then nothing can be said against a cruel choice made authentically.', ''],
       },
       self: {
         0: ['“Existence comes before essence”: man first exists, then defines himself. There is no human nature given in advance.', 'Sartre, Existentialism Is a Humanism'],
         1: ['Man is free, and his freedom is a burden: he is anxious and alone, “condemned to be free”.', 'Sartre, Being and Nothingness'],
-        2: ['What a man chooses, he becomes; he is nothing but the sum of his acts.', ''],
+        2: ['“Man is nothing else but what he makes of himself,” wrote Sartre: what a man chooses, he becomes. But a self made from nothing has nothing to measure itself against.', 'Sartre, Existentialism Is a Humanism'],
         3: ['Death ends the work of making oneself, and with it its meaning. The project is left unfinished, for ever.', ''],
       },
       sin: {
@@ -262,12 +262,12 @@ export const NOTES = {
       },
       world: {
         0: ['Reality is hidden behind our words; we never meet the world as it is, only as our language and culture shape it.', ''],
-        1: ['The world we see is painted in the colours of those in power: what counts as true, normal or good is decided by the strong.', 'Foucault, Discipline and Punish'],
-        2: ['Reality is whatever a group agrees on. But if truth is only agreement, there is nothing to appeal to when groups disagree, except power.', ''],
+        1: ['Foucault: “Each society has its régime of truth”: what counts as true, normal or good is set by those with power. Yet Foucault wrote as though his own account were simply true.', 'Foucault, Truth and Power'],
+        2: ['Reality is whatever a group agrees on. Rorty described truth as what our peers will “let us get away with saying.” But if truth is only agreement, nothing is left to appeal to when groups disagree, except power.', 'Rorty, Philosophy and the Mirror of Nature'],
         3: ['Reality is lost for good, behind an endless play of words: every sign points only to other signs, never to the thing itself. If so, this sentence too points to nothing.', ''],
       },
       bridge: {
-        0: ['Language does not describe the world, it builds one. But this claim is itself offered as a true description of language.', ''],
+        0: ['Language does not describe the world, it builds one. “There is nothing outside the text,” wrote Derrida. But this claim is itself offered as a true description of how things are.', 'Derrida, Of Grammatology'],
         1: ['Every grand story (Christianity, the Enlightenment, Marxism) is called a mask for power, told to silence others. Yet the claim that all stories serve power is itself a grand story.', ''],
         2: ['Deconstruction takes apart a text or tradition to expose what it hides. It spares only its own story: its own claims are never deconstructed.', 'Derrida, Of Grammatology'],
         3: ['Stories replace stories without end, and none of them is true; what works for now is all one can hope for. Christianity answers with a story told by the one who stands outside it, and who entered it.', ''],
@@ -293,14 +293,14 @@ export const NOTES = {
       },
       world: {
         0: ['Matter is all there is, and history moves forward by conflict (dialectical materialism). How men make a living, the “economic base”, shapes everything else: law, morals, art and religion.', 'Marx & Engels, The Communist Manifesto'],
-        1: ['All history is the history of class struggle: owners against workers, those who hold the means of production against those who have only their labour to sell.', 'The Communist Manifesto'],
-        2: ['After the revolution the workers’ state plans all production from the centre. But without market prices it cannot know what anything is worth, and so cannot plan: as Mises showed, rational economic calculation becomes impossible.', 'Mises, Economic Calculation in the Socialist Commonwealth'],
+        1: ['“The history of all hitherto existing society is the history of class struggles”: owners against workers, those who hold the means of production against those with only their labour to sell.', 'Marx & Engels, The Communist Manifesto'],
+        2: ['The workers’ state plans all production from the centre. Mises showed why it cannot work: “where there is no free market, there is no pricing mechanism; without a pricing mechanism, there is no economic calculation.”', 'Mises, Economic Calculation in the Socialist Commonwealth'],
         3: ['In the end the state withers away and a classless society emerges: “from each according to his ability, to each according to his needs.” It is heaven on earth, and always still to come.', 'Marx, Critique of the Gotha Programme'],
       },
       bridge: {
-        0: ['All ideas rest on the economic base and serve the class that holds it. But then Marx’s own ideas are only the product of his class position too, and no truer than any other.', ''],
+        0: ['“It is not the consciousness of men that determines their being, but their social being that determines their consciousness.” All ideas rest on the economic base. But then Marx’s own ideas are only the product of his class position, and no truer than any other.', 'Marx, Preface to A Contribution to the Critique of Political Economy'],
         1: ['Surplus value: profit is what the owner takes from the worker’s labour beyond his wage. It rests on the claim that labour alone makes value, which Böhm-Bawerk showed fails: value comes from what people want, not from labour put in.', 'Böhm-Bawerk, Karl Marx and the Close of His System'],
-        2: ['Revolution is salvation: the workers seize power by force, and the old order is swept away. In every land it was tried, it brought not liberation but the gulag and the famine.', ''],
+        2: ['“The philosophers have only interpreted the world, in various ways; the point is to change it.” Revolution is salvation: the workers seize power by force. Wherever it was tried, it brought not liberation but the gulag and the famine.', 'Marx, Theses on Feuerbach XI'],
       },
       self: {
         0: ['Man is not a soul made in God’s image but “the ensemble of the social relations”: what society and labour make him.', 'Marx, Theses on Feuerbach'],
@@ -310,7 +310,7 @@ export const NOTES = {
       },
       sin: {
         1: ['Evil lies in the system, in private property and class, not in the human heart. Change the system and evil goes.', ''],
-        2: ['But evil was still there in the hearts of the new rulers. As Solzhenitsyn wrote, the line between good and evil runs not between classes but through every human heart.', 'Solzhenitsyn, The Gulag Archipelago'],
+        2: ['But evil was still there in the hearts of the new rulers. Solzhenitsyn, who survived their camps, wrote that “the line dividing good and evil cuts through the heart of every human being.”', 'Solzhenitsyn, The Gulag Archipelago'],
       },
     },
   },
@@ -328,12 +328,12 @@ export const NOTES = {
       },
       bridge: {
         0: ['Desde el principio Dios habló al hombre y se comprometió con él por pacto, con mandamientos, promesas y su propia compañía. El hombre conoce a Dios porque Dios se da a conocer.', 'Gn 2:16–17 · He 1:1–2'],
-        1: ['El hombre quebrantó el pacto con Dios, y la comunión se volvió temor: Adán se escondió entre los árboles. La distancia es moral, no de lugar: el pecado separa al hombre de un Dios santo.', 'Gn 3:8–10 · Is 59:2'],
+        1: ['El hombre quebrantó el pacto con Dios, y la comunión se volvió temor: Adán se escondió entre los árboles. La distancia es moral, no de lugar. Pero el anhelo permanece, como oró Agustín: “Nos hiciste, Señor, para ti, y nuestro corazón está inquieto hasta que descanse en ti.”', 'Gn 3:8–10 · Agustín, Confesiones I.1'],
         2: ['El Hijo eterno se hizo carne, para que una sola persona, plenamente Dios y plenamente hombre, se interpusiera entre un Dios santo y un pueblo culpable. No solo enseñó el camino de vuelta: cargó él mismo con la pena del pecado y resucitó.', '1 Ti 2:5 · 2 Co 5:21'],
         3: ['Lo que se perdió en el Edén se devuelve, y aún más: el pueblo de Dios lo verá tal como es. La fe da paso a la vista, y nada volverá a interponerse entre ellos.', 'Ap 22:4 · 1 Jn 3:2'],
       },
       self: {
-        0: ['El hombre está hecho a imagen de Dios: personal, racional y moral, creado para conocer a Dios y gobernar la tierra bajo él. Su valor no viene de su utilidad, sino de su Hacedor.', 'Gn 1:26–27'],
+        0: ['El hombre está hecho a imagen de Dios: personal, racional y moral, creado para conocer a Dios y gobernar la tierra bajo él. Su valor viene de su Hacedor, no de su utilidad. “El fin principal del hombre es glorificar a Dios y gozar de él para siempre.”', 'Gn 1:26–27 · Catecismo Menor de Westminster, P. 1'],
         1: ['El hombre aún lleva la imagen de Dios, pero el pecado ha torcido cada parte de él: mente, voluntad y afectos. No es solo débil o ignorante: es un rebelde que no puede salvarse a sí mismo.', 'Ro 3:10–12 · Ef 2:1–3'],
         2: ['Salvo no por su propio mérito sino por la gracia de Dios, recibida solo por la fe, solo en Cristo. Perdonado, declarado justo y hecho nuevo, ahora vive para agradar a Dios.', 'Ef 2:8–10 · Ro 5:1'],
         3: ['Resucitados en el cuerpo y perfeccionados en santidad, los redimidos viven con Dios para siempre. No se disuelven en Dios ni vagan como espíritus: son ellos mismos, al fin como debían ser.', '1 Co 15:42–44 · Ap 21:3'],
@@ -346,7 +346,7 @@ export const NOTES = {
 
     judaism: {
       god: {
-        '*': ['El SEÑOR, el Dios de Abraham, Isaac y Jacob: uno, santo, justo y misericordioso, Hacedor de todo, que actúa en la historia. El judío lo confiesa mañana y tarde en el Shemá. No tiene imagen, ni asociado, ni encarnación.', 'Dt 6:4–5 · Éx 34:6–7'],
+        '*': ['“Oye, Israel: el SEÑOR nuestro Dios, el SEÑOR uno es.” El Dios de Abraham, Isaac y Jacob: santo, justo y misericordioso, Hacedor de todo, que actúa en la historia. El judío dice el Shemá mañana y tarde. No tiene imagen, ni asociado, ni encarnación.', 'Dt 6:4–5 · Éx 34:6–7'],
       },
       world: {
         '*': ['Dios creó un mundo bueno y lo dio al hombre para que lo cuidara. No hay que huir de él, sino disfrutarlo y santificarlo: una comida, un matrimonio, un día de reposo son ocasiones de bendecirlo.', 'Gn 1:31; 2:15'],
@@ -357,8 +357,8 @@ export const NOTES = {
       bridge: {
         0: ['Dios se comprometió con Abraham bajo juramento: una tierra, una descendencia incontable y una bendición para todas las naciones por medio de su simiente. En el Sinaí el pacto se dio a sus hijos como pueblo.', 'Gn 12:1–3; 15:17–18'],
         1: ['Los profetas acusan a Israel de quebrantar el pacto, pero Dios no lo desecha. Jeremías prometió un nuevo pacto, escrito en el corazón, en el que los pecados ya no se recuerdan: una promesa que el judaísmo aún espera.', 'Jer 31:31–34'],
-        2: ['El judaísmo sostiene que Moisés recibió dos Torás en el Sinaí: los libros escritos y una ley oral transmitida hasta que los rabinos la fijaron en la Mishná y el Talmud. La Escritura misma no conoce una segunda ley, y Jesús reprendió las tradiciones que dejaban de lado la palabra de Dios.', 'Avot 1:1 · Mr 7:8–13'],
-        3: ['Maimónides fijó la esperanza judía: un rey del linaje de David que reconstruirá el templo y reunirá a Israel. Pero Daniel y Hageo sitúan la venida del Mesías cuando el segundo templo aún estaba en pie, y cayó en el año 70.', 'Dn 9:26 · Hag 2:9'],
+        2: ['“Moisés recibió la Torá en el Sinaí y la transmitió a Josué”, y así hasta los rabinos: el judaísmo sostiene que Dios dio una ley escrita y otra oral, fijada luego en la Mishná y el Talmud. La Escritura no conoce una segunda ley, y Jesús reprendió las tradiciones que dejaban de lado la palabra de Dios.', 'Avot 1:1 · Mr 7:8–13'],
+        3: ['“Creo con fe completa en la venida del Mesías; y aunque se demore, esperaré cada día su venida.” Así dice el duodécimo principio de Maimónides. Pero Daniel y Hageo sitúan la venida del Mesías cuando el segundo templo aún estaba en pie, y cayó en el año 70.', 'Maimónides, Trece principios · Dn 9:26 · Hag 2:9'],
       },
       self: {
         0: ['El hombre está hecho a imagen de Dios, y toda vida tiene gran valor. Israel fue escogido no por ser grande, sino para ser un pueblo santo y luz de las naciones.', 'Gn 1:27 · Dt 7:6–8'],
@@ -367,15 +367,15 @@ export const NOTES = {
         3: ['La resurrección de los muertos es uno de los trece principios de fe del judaísmo. Israel, disperso entre las naciones, será traído a casa y devuelto a la vida.', 'Ez 37:12–14 · Dn 12:2'],
       },
       sin: {
-        1: ['El pecado es un acto malo, no una naturaleza caída. La mala inclinación es un impulso que hay que domar y aun aprovechar, y la Torá es su remedio. Pero un impulso que se doma no necesita un salvador.', 'Gn 4:7 · Kidushín 30b'],
+        1: ['El pecado es un acto malo, no una naturaleza caída. La mala inclinación es un impulso que hay que domar, y la Torá su remedio. El Talmud pone en boca de Dios: “Yo creé la mala inclinación, y creé la Torá como su antídoto.” Pero un impulso que se doma no necesita un salvador.', 'Kidushín 30b · Gn 8:21'],
         2: ['Sin templo no hay altar, así que los rabinos enseñaron que la oración, el arrepentimiento y la caridad ocupan el lugar de las ofrendas. Pero la Ley enseñaba que es la sangre la que hace expiación.', 'Lv 17:11 · He 10:4'],
       },
     },
 
     islam: {
       god: {
-        '*': ['Alá, el único Dios: absolutamente uno, sin asociado, sin hijo y sin igual, misericordioso y todopoderoso, del todo por encima de su creación. Confesar su unicidad (tawhid) es el corazón del islam.', 'Corán 112'],
-        1: ['Asociar a otros con Dios (shirk) es el único pecado que no perdona. A ojos del Corán esto incluye llamar a Jesús Hijo de Dios, y la Trinidad misma.', 'Corán 4:48; 5:73'],
+        '*': ['“Di: Él es Dios, Uno, Dios el Eterno. No ha engendrado ni ha sido engendrado, y no hay nadie igual a él.” Alá es absolutamente uno, misericordioso y todopoderoso, del todo por encima de su creación. Confesar su unicidad (tawhid) es el corazón del islam.', 'Corán 112'],
+        1: ['“Dios no perdona que se le asocie a nadie, pero perdona lo que es menos que eso a quien quiere.” A ojos del Corán, este shirk incluye llamar a Jesús Hijo de Dios, y la Trinidad misma.', 'Corán 4:48; 5:73'],
         2: ['Dios revela su voluntad, en la ley y los profetas, pero no a sí mismo. Se le conoce por sus nombres y sus mandatos, no se le encuentra como persona que viene al hombre.', 'Corán 42:51'],
         3: ['De los noventa y nueve nombres de Dios en el islam, ninguno es Padre. El creyente es siervo de Dios, nunca su hijo; el clamor “¡Abba, Padre!” no tiene lugar en el islam.', 'Corán 19:93 · Ro 8:15'],
       },
@@ -386,8 +386,8 @@ export const NOTES = {
         3: ['El paraíso es un jardín de ríos, sombra, frutos y compañía para los que Dios admite. La enseñanza suní cuenta la visión de Dios como su gozo más alto; pero aun allí él es Señor y Juez, nunca Padre.', 'Corán 47:15; 75:22–23'],
       },
       bridge: {
-        2: ['Los musulmanes sostienen que el Corán es la palabra misma de Dios, increada, revelada a Mahoma por medio de Gabriel a lo largo de veintitrés años: su palabra final a la humanidad. Revela su voluntad y su ley, pero entre Dios y el hombre ofrece un libro que obedecer, sin mediador y sin expiación.', 'Corán 2:2; 42:51'],
-        3: ['En el Último Día se pesan las obras de cada uno: la balanza pesada lleva al Jardín, la ligera al Fuego. Aun Mahoma dijo que sus obras no le darían entrada si Dios no lo cubría con su misericordia.', 'Corán 101:6–9 · Bujari 6467'],
+        2: ['Los musulmanes sostienen que el Corán es la palabra misma de Dios, revelada a Mahoma por medio de Gabriel: su palabra final. Niega la cruz sin rodeos: “no lo mataron ni lo crucificaron, sino que así se les hizo parecer.” Entre Dios y el hombre ofrece un libro que obedecer, sin mediador y sin expiación.', 'Corán 4:157; 42:51'],
+        3: ['En el Último Día se pesan las obras de cada uno: la balanza pesada lleva al Jardín, la ligera al Fuego. Aun Mahoma dijo: “Las obras de ninguno de vosotros lo harán entrar en el Paraíso… ni siquiera a mí, si Dios no me cubre con su misericordia.”', 'Corán 101:6–9 · Bujari 6467'],
       },
       self: {
         0: ['El hombre es el lugarteniente de Dios (jalifa) en la tierra, encargado de cuidarla. Todo niño nace con una disposición natural (fitra) a conocer a Dios y someterse a él.', 'Corán 2:30; 30:30'],
@@ -404,7 +404,7 @@ export const NOTES = {
     deism: {
       god: {
         '*': ['Un ser supremo, conocido por la razón a partir del orden de la naturaleza, que hizo el mundo y lo dejó funcionar con sus propias leyes. No se revela, no hace milagros ni responde la oración. Voltaire, Paine y muchos de la Ilustración creyeron en un Dios así.', 'Paine, La edad de la razón'],
-        2: ['A Dios solo se le conoce por inferencia, a partir del diseño del mundo, como se infiere un relojero de un reloj. Pero un Dios conocido solo como conclusión es una hipótesis, no alguien a quien se pueda amar o en quien confiar.', 'Paley, Teología natural'],
+        2: ['A Dios solo se le conoce por inferencia, a partir del diseño del mundo, como al relojero por el reloj. Voltaire sostenía que “si Dios no existiera, habría que inventarlo.” Pero un Dios conocido solo como conclusión es una hipótesis, no alguien a quien amar o en quien confiar.', 'Voltaire, Epístola al autor de los Tres impostores'],
         3: ['Dios está más lejos que nunca: si nunca habla, nada puede saberse de lo que piensa de nosotros, ni de lo que viene tras la muerte.', 'He 1:1–2'],
       },
       world: {
@@ -414,14 +414,14 @@ export const NOTES = {
         3: ['La máquina sigue funcionando, sin fin a la vista ni día de rendir cuentas, porque su Hacedor no ha dicho nada de ninguno de los dos.', ''],
       },
       bridge: {
-        '*': ['El deísmo niega que Dios haya hablado: ni profetas, ni milagros, ni escritura, ni encarnación. Lo que pueda saberse de Dios lo descubre la razón. Pero si Dios no ha hablado, su mente y su voluntad nos quedan cerradas.', 'He 1:1–2'],
+        '*': ['El deísmo niega que Dios haya hablado: ni profetas, ni milagros, ni escritura, ni encarnación. “Mi propia mente es mi propia iglesia”, escribió Thomas Paine. Pero si Dios no ha hablado, su mente y su voluntad nos quedan cerradas.', 'Paine, La edad de la razón · He 1:1–2'],
         2: ['El hombre sube hacia Dios solo con la razón. La razón es un don de Dios, pero según la Biblia está oscurecida por el pecado, y los hombres “se envanecieron en sus razonamientos”.', 'Ro 1:21'],
         3: ['Dios no ha prometido nada: ni perdón, ni resurrección, ni vida venidera. El deísta puede esperar, pero no tiene palabra en que apoyar su esperanza.', ''],
       },
       self: {
         '*': ['El hombre es un ser racional, capaz de descubrir por la luz natural que Dios existe y qué es lo justo. No necesita revelación ni redentor.', ''],
         1: ['Lo que frena al hombre no es un corazón pecador sino la ignorancia, la superstición y los sacerdotes que lo mantienen a oscuras. Enséñale, y obrará bien.', 'Paine, La edad de la razón'],
-        3: ['El deísta espera que un Dios justo premie a los buenos tras la muerte, pero no puede estar seguro de que haya vida venidera alguna.', ''],
+        3: ['Todo el credo de Paine: “Creo en un solo Dios, y en nada más; y espero la felicidad más allá de esta vida.” Espera, pero un Dios que no ha prometido nada no le da nada en que apoyarse.', 'Paine, La edad de la razón'],
       },
       sin: {
         1: ['El deísmo no tiene caída: el mal viene de la ignorancia y la superstición, y la cura es la educación y la razón. Pero los hombres más ilustrados no son por ello los más buenos.', 'Jer 17:9'],
@@ -432,7 +432,7 @@ export const NOTES = {
       god: {
         '*': ['Un Dios que hizo el mundo y vela por él, pero apenas interviene en la vida diaria. Los sociólogos Christian Smith y Melinda Denton llamaron así a la fe real de muchos jóvenes estadounidenses, a menudo dentro de las iglesias.', 'Smith y Denton, Soul Searching'],
         1: ['Dios está olvidado hasta que algo sale mal. No pide nada: ni culto, ni obediencia, ni arrepentimiento. Se le busca en una urgencia, y se le vuelve a olvidar cuando pasa.', ''],
-        2: ['Dios está de guardia, como un mayordomo o un terapeuta: para resolver problemas y ayudar a sentirse mejor. Un Dios así sirve a los deseos del hombre; no es el Señor.', 'Is 45:9'],
+        2: ['Dios está de guardia, para resolver problemas y ayudar a sentirse mejor: “algo así como una combinación de Mayordomo Divino y Terapeuta Cósmico”, en palabras de Smith y Denton. Un Dios así sirve a los deseos del hombre; no es el Señor.', 'Smith y Denton, Soul Searching · Is 45:9'],
         3: ['En el cielo Dios sigue al servicio de la gente, garante de su felicidad. Lo que esperan no es a Dios, sino pasarlo bien.', 'Sal 73:25'],
       },
       world: {
@@ -444,9 +444,9 @@ export const NOTES = {
         2: ['La oración es una llamada de auxilio cuando algo va mal: pedir, no adorar, confesar ni dar gracias. Jesús enseñó a sus discípulos a orar primero: “santificado sea tu nombre; venga tu reino.”', 'Mt 6:9–10'],
       },
       self: {
-        '*': ['La gente es buena en el fondo. La meta de la vida es ser feliz y sentirse bien con uno mismo, y ser amable y justo con los demás.', ''],
+        '*': ['La gente es buena en el fondo, y uno de los artículos de este credo es que “el objetivo central de la vida es ser feliz y sentirse bien con uno mismo.” Ser amable y justo con los demás se sigue de ahí.', 'Smith y Denton, Soul Searching'],
         1: ['Aun cuando la gente obra mal, sigue siendo buena por dentro; lo que ha fallado es cómo se siente. La Escritura dice: “No hay justo, ni aun uno.”', 'Ro 3:10'],
-        3: ['La gente buena va al cielo al morir, y casi todos son lo bastante buenos según su propia medida. Pero la medida de Dios es su propia santidad.', 'Ro 3:23'],
+        3: ['“La gente buena va al cielo al morir”, y casi todos son lo bastante buenos según su propia medida. Pero la medida de Dios es su propia santidad: “todos pecaron, y están destituidos de la gloria de Dios.”', 'Smith y Denton, Soul Searching · Ro 3:23'],
       },
       sin: {
         1: ['Lo que falla es la infelicidad: el estrés, los sentimientos heridos y la baja autoestima. No hay pecado contra Dios, solo sentimientos que aliviar.', ''],
@@ -456,26 +456,26 @@ export const NOTES = {
 
     naturalism: {
       god: {
-        '*': ['No hay Dios ni ámbito alguno más allá de la naturaleza: ni espíritus, ni almas, ni cielo. Solo es real lo que la ciencia podría en principio medir. Como dijo Carl Sagan, el cosmos es todo lo que es, lo que fue y lo que será.', 'Sagan, Cosmos'],
+        '*': ['“El cosmos es todo lo que es, lo que fue y lo que será.” No hay Dios ni ámbito alguno más allá de la naturaleza: ni espíritus, ni almas, ni cielo. Solo es real lo que la ciencia podría en principio medir.', 'Sagan, Cosmos'],
         1: ['Sin nadie arriba, el sufrimiento no es obra de nadie: no hay a quién culpar ni a quién clamar. La pregunta “¿por qué?” no tiene quien la responda.', ''],
         2: ['No hay nadie a quien pedir ayuda o sabiduría; el hombre solo tiene su propia mente y los métodos de la ciencia para guiarse.', ''],
         3: ['Nadie lo recordará: cuando se apague la última mente, nadie sabrá que algo ocurrió.', ''],
       },
       world: {
         0: ['El cosmos es materia y energía, movidas por leyes físicas ciegas. Nadie lo hizo, no tiene propósito y no va a ninguna parte. Todo, incluidas la mente y la moral, se explica desde abajo.', ''],
-        1: ['A la naturaleza no le importa. El dolor, la enfermedad y la muerte no son una caída desde algo mejor: son sin más el modo en que obra la evolución, con derroche y muerte. El bien y el mal son palabras de los hombres, no cosas del mundo.', 'Dawkins, El río del Edén'],
+        1: ['El dolor, la enfermedad y la muerte no son una caída desde algo mejor: son el modo en que obra la evolución. Dawkins: el universo no tiene “ningún diseño, ningún propósito, ni mal ni bien, nada más que una indiferencia ciega y despiadada.” Pero si no hay mal, el sufrimiento no puede llamarse malo.', 'Dawkins, El río del Edén'],
         2: ['La ciencia estudia el mundo y la tecnología lo pone a trabajar. Que el mundo pueda entenderse es un hecho que el naturalismo no explica: ¿por qué un universo sin mente habría de ser tan ordenado y tan accesible a la mente?', ''],
-        3: ['Con el tiempo las estrellas se apagan y el universo se agota hasta una igualdad fría y oscura, como exige la segunda ley de la termodinámica. Nada de lo ocurrido habrá importado a nada.', 'Russell, El culto del hombre libre'],
+        3: ['Con el tiempo las estrellas se apagan y el universo se agota. Russell: “todos los trabajos de los siglos, toda la devoción, toda la inspiración, todo el brillo meridiano del genio humano, están destinados a extinguirse en la vasta muerte del sistema solar.”', 'Russell, El culto del hombre libre'],
       },
       bridge: {
-        '*': ['Un sistema cerrado: todo suceso tiene una causa natural dentro de la naturaleza, y nada de fuera irrumpe jamás. Así los milagros, la revelación y la oración respondida quedan descartados antes de oír prueba alguna.', 'Lewis, Los milagros'],
+        '*': ['Un sistema cerrado: todo suceso tiene una causa natural, y nada de fuera irrumpe. Lewontin admitió que el compromiso va primero: “no podemos permitir que un Pie Divino cruce la puerta.” Así los milagros y la revelación quedan descartados antes de oír prueba alguna.', 'Lewontin, Billions and Billions of Demons'],
         2: ['El sistema sigue cerrado: ninguna ayuda puede venir de fuera. Lo que el hombre necesite, ha de encontrarlo o hacerlo él mismo dentro de la naturaleza.', ''],
-        3: ['La historia no tiene meta. Es el largo resultado del azar y la necesidad, y no se dirige a ninguna parte.', 'Monod, El azar y la necesidad'],
+        3: ['La historia no tiene meta. Monod: “el hombre sabe al fin que está solo en la inmensidad indiferente del universo, de donde ha surgido por azar.”', 'Monod, El azar y la necesidad'],
       },
       self: {
-        0: ['El hombre es un animal complejo, producto de una evolución sin guía a lo largo de eras. Su mente es el cerebro en funcionamiento; no hay alma que le sobreviva.', ''],
+        0: ['El hombre es un animal complejo, producto de una evolución sin guía. Francis Crick: “Tú, tus alegrías y tus penas, tus recuerdos y tus ambiciones… no sois de hecho más que el comportamiento de un vasto conjunto de células nerviosas y sus moléculas asociadas.”', 'Crick, La búsqueda científica del alma'],
         1: ['El hombre sufre y muere como cualquier otro ser vivo. Su sensación de que eso está mal, de que no debería ser así, es también solo un producto de la naturaleza.', ''],
-        2: ['Si la mente es solo producto de procesos ciegos orientados a sobrevivir, ¿por qué confiar en que halle la verdad? El propio Darwin sintió esa “horrible duda”, y el argumento se vuelve contra el naturalismo mismo.', 'Darwin, carta a W. Graham, 1881'],
+        2: ['Si la mente es producto de procesos ciegos orientados a sobrevivir, ¿por qué confiar en que halle la verdad? Darwin lo sintió: “siempre surge la horrible duda de si las convicciones de la mente del hombre, desarrollada a partir de la de los animales inferiores, tienen algún valor o son en absoluto fiables.”', 'Darwin, carta a W. Graham, 1881'],
         3: ['Cada persona vive un instante y desaparece para siempre. Su amor, su obra y su memoria acaban con la química que los produjo.', ''],
       },
       sin: {
@@ -500,7 +500,7 @@ export const NOTES = {
         3: ['Si todo acaba en la extinción, el progreso es una escalera que no lleva a ninguna parte. La esperanza que descansa solo en el esfuerzo del hombre se agota con el hombre.', 'Ec 1:2–4'],
       },
       self: {
-        0: ['El hombre tiene gran valor: es lo más notable que ha producido la naturaleza. Pero si solo es materia moldeada por el azar, el valor que el humanismo le da es una creencia prestada, no un hecho.', 'Gn 1:27'],
+        0: ['“El hombre es la medida de todas las cosas”, dijo Protágoras: tiene gran valor, es lo más notable que ha producido la naturaleza. Pero si solo es materia moldeada por el azar, el valor que el humanismo le da es una creencia prestada, no un hecho.', 'Protágoras · Gn 1:27'],
         1: ['El hombre es bueno en el fondo; lo que lo frena es la ignorancia, la pobreza, el prejuicio y la religión. Quítense, y florecerá.', ''],
         2: ['El hombre elige sus propios valores. Pero valores que cada uno elige para sí no obligan a nadie más, ni pueden condenar a quien elija otros.', ''],
         3: ['Cada persona sigue viva solo en sus obras y en la memoria de otros, y también estas se desvanecerán.', ''],
@@ -512,7 +512,7 @@ export const NOTES = {
 
     nihilism: {
       god: {
-        '*': ['No hay Dios, y por tanto ni propósito, ni sentido, ni valor inscritos en nada. Nietzsche vio lo que significaba la muerte de Dios: el horizonte borrado, y nada por lo que guiarse.', 'Nietzsche, La gaya ciencia 125'],
+        '*': ['El loco de Nietzsche: “Dios ha muerto. Dios sigue muerto. Y nosotros lo hemos matado… ¿Quién nos dio la esponja para borrar el horizonte entero?” Sin Dios no hay propósito, sentido ni valor inscritos en nada.', 'Nietzsche, La gaya ciencia 125'],
         1: ['No hay nadie que juzgue, así que nada es de veras bueno ni malo. Hasta condenar la crueldad es solo una preferencia.', ''],
         2: ['No hay nadie que salve, ni nada de qué ser salvado. La salvación necesita algo que esté mal y alguien capaz de arreglarlo; el nihilismo no tiene ninguna de las dos cosas, así que no puede ofrecer remedio alguno.', ''],
       },
@@ -521,7 +521,7 @@ export const NOTES = {
         1: ['Nada en el mundo vale más que otra cosa. Si no existe ningún valor, tampoco el de la verdad, y el nihilismo ni siquiera puede llamarse verdadero.', ''],
       },
       bridge: {
-        '*': ['Sin nada arriba, el sentido se escurre: no hay nada en que apoyarlo. Todo intento de hallar sentido en el mundo vuelve vacío.', 'Ec 1:14'],
+        '*': ['“¿Qué significa nihilismo? Que los valores supremos se desvalorizan. Falta la meta; falta la respuesta al ‘¿por qué?’.” Sin nada arriba, el sentido se escurre: no hay nada en que apoyarlo.', 'Nietzsche, La voluntad de poder 2 · Ec 1:14'],
         2: ['No hay salida, porque nada está mal de qué escapar, ni lugar mejor adonde ir.', ''],
         3: ['Todo se escurre y se pierde; nada se guarda, y nada de lo hecho contará.', ''],
       },
@@ -535,23 +535,23 @@ export const NOTES = {
 
     existentialism: {
       god: {
-        '*': ['No hay Dios que dé al hombre una naturaleza o un propósito, así que el hombre debe dárselos. El existencialismo ateo de Sartre, a diferencia del cristiano de Kierkegaard, parte de aquí.', 'Sartre, El existencialismo es un humanismo'],
-        1: ['El hombre clama por sentido, y nadie responde. Camus no negó el anhelo; negó que hubiera alguien para colmarlo, y dijo al hombre que viviera en el silencio sin esperar respuesta.', 'Camus, El mito de Sísifo'],
+        '*': ['Sartre hizo suyas las palabras de Dostoievski: “Si Dios no existiera, todo estaría permitido… ese es el punto de partida del existencialismo.” Sin Dios que le dé una naturaleza o un propósito, el hombre debe dárselos a sí mismo.', 'Sartre, El existencialismo es un humanismo'],
+        1: ['El hombre clama por sentido, y nadie responde. Camus partió de ahí: “No hay más que un problema filosófico verdaderamente serio: el suicidio.” No negó el anhelo; negó que hubiera alguien para colmarlo.', 'Camus, El mito de Sísifo'],
         2: ['Nadie está por encima del hombre para corregirlo: ni ley sobre sus elecciones, ni juez de ellas.', ''],
         3: ['Nadie guarda lo que un hombre hizo de sí mismo: cuando muere, se pierde.', ''],
       },
       world: {
-        '*': ['El mundo simplemente está: sólido, callado e indiferente. Camus llamó “lo absurdo” al choque entre el anhelo de sentido del hombre y el silencio del mundo.', 'Camus, El mito de Sísifo'],
+        '*': ['El mundo simplemente está: sólido, callado e indiferente. Camus: “Lo absurdo nace de esta confrontación entre el llamado humano y el silencio irrazonable del mundo.”', 'Camus, El mito de Sísifo'],
         3: ['El mundo sigue igual cuando un hombre muere, como si nunca hubiera elegido nada.', ''],
       },
       bridge: {
-        '*': ['El sentido no se encuentra, se hace: el hombre da sentido a su vida con sus elecciones. Pero un sentido hecho por el hombre es solo tan grande como él, y acaba cuando él acaba.', ''],
+        '*': ['El sentido no se encuentra, se hace, con las propias elecciones. Camus termina con Sísifo, empujando su roca para siempre: “Hay que imaginarse a Sísifo feliz.” Pero un sentido hecho por el hombre es solo tan grande como él, y acaba cuando él acaba.', 'Camus, El mito de Sísifo'],
         2: ['Cualquier elección vale, si es de veras suya. Pero entonces nada puede decirse contra una elección cruel hecha con autenticidad.', ''],
       },
       self: {
         0: ['“La existencia precede a la esencia”: el hombre primero existe y luego se define. No hay naturaleza humana dada de antemano.', 'Sartre, El existencialismo es un humanismo'],
         1: ['El hombre es libre, y su libertad es una carga: está angustiado y solo, “condenado a ser libre”.', 'Sartre, El ser y la nada'],
-        2: ['Lo que el hombre elige, eso llega a ser; no es más que la suma de sus actos.', ''],
+        2: ['“El hombre no es otra cosa que lo que él se hace”, escribió Sartre: lo que elige, eso llega a ser. Pero un yo hecho de la nada no tiene nada con que medirse.', 'Sartre, El existencialismo es un humanismo'],
         3: ['La muerte acaba con la tarea de hacerse a sí mismo, y con ella su sentido. El proyecto queda inacabado para siempre.', ''],
       },
       sin: {
@@ -567,12 +567,12 @@ export const NOTES = {
       },
       world: {
         0: ['La realidad queda oculta tras nuestras palabras; nunca encontramos el mundo tal como es, solo como lo moldean nuestro lenguaje y nuestra cultura.', ''],
-        1: ['El mundo que vemos está pintado con los colores de quien manda: lo que cuenta como verdadero, normal o bueno lo deciden los fuertes.', 'Foucault, Vigilar y castigar'],
-        2: ['La realidad es lo que un grupo acuerde. Pero si la verdad es solo acuerdo, cuando los grupos discrepan no queda nada a qué apelar, salvo el poder.', ''],
+        1: ['Foucault: “Cada sociedad tiene su régimen de verdad”: lo que cuenta como verdadero, normal o bueno lo fijan quienes tienen el poder. Pero Foucault escribía como si su propio relato fuera simplemente verdadero.', 'Foucault, Verdad y poder'],
+        2: ['La realidad es lo que un grupo acuerde. Rorty describió la verdad como lo que nuestros pares “nos dejan decir sin objeción”. Pero si la verdad es solo acuerdo, cuando los grupos discrepan no queda nada a qué apelar, salvo el poder.', 'Rorty, La filosofía y el espejo de la naturaleza'],
         3: ['La realidad se pierde para siempre, tras un juego interminable de palabras: cada signo apunta solo a otros signos, nunca a la cosa misma. Si es así, también esta frase apunta a nada.', ''],
       },
       bridge: {
-        0: ['El lenguaje no describe el mundo: lo construye. Pero esta afirmación se ofrece ella misma como una descripción verdadera del lenguaje.', ''],
+        0: ['El lenguaje no describe el mundo: lo construye. “No hay nada fuera del texto”, escribió Derrida. Pero esta afirmación se ofrece ella misma como una descripción verdadera de cómo son las cosas.', 'Derrida, De la gramatología'],
         1: ['Todo gran relato (el cristianismo, la Ilustración, el marxismo) se llama máscara del poder, contado para acallar a otros. Pero afirmar que todo relato sirve al poder es también un gran relato.', ''],
         2: ['La deconstrucción desarma un texto o una tradición para exponer lo que oculta. Solo perdona su propio relato: sus propias afirmaciones nunca se deconstruyen.', 'Derrida, De la gramatología'],
         3: ['Unos relatos sustituyen a otros sin fin, y ninguno es verdadero; lo que sirve por ahora es todo lo que cabe esperar. El cristianismo responde con un relato contado por quien está fuera de él, y que entró en él.', ''],
@@ -598,14 +598,14 @@ export const NOTES = {
       },
       world: {
         0: ['La materia es todo lo que hay, y la historia avanza mediante el conflicto (materialismo dialéctico). Cómo se ganan la vida los hombres, la “base económica”, da forma a todo lo demás: el derecho, la moral, el arte y la religión.', 'Marx y Engels, Manifiesto comunista'],
-        1: ['Toda la historia es la historia de la lucha de clases: dueños contra obreros, los que poseen los medios de producción contra los que solo tienen su trabajo que vender.', 'Manifiesto comunista'],
-        2: ['Tras la revolución, el Estado obrero planifica toda la producción desde el centro. Pero sin precios de mercado no puede saber lo que vale nada, y por tanto no puede planificar: como mostró Mises, el cálculo económico racional se vuelve imposible.', 'Mises, El cálculo económico en la comunidad socialista'],
+        1: ['“La historia de todas las sociedades hasta nuestros días es la historia de la lucha de clases”: dueños contra obreros, los que poseen los medios de producción contra los que solo tienen su trabajo que vender.', 'Marx y Engels, Manifiesto comunista'],
+        2: ['El Estado obrero planifica toda la producción desde el centro. Mises mostró por qué no puede funcionar: “donde no hay mercado libre, no hay mecanismo de precios; sin mecanismo de precios, no hay cálculo económico.”', 'Mises, El cálculo económico en la comunidad socialista'],
         3: ['Al final el Estado se extingue y surge la sociedad sin clases: “de cada cual según su capacidad, a cada cual según sus necesidades.” Es el cielo en la tierra, y siempre está por venir.', 'Marx, Crítica del programa de Gotha'],
       },
       bridge: {
-        0: ['Toda idea descansa en la base económica y sirve a la clase que la posee. Pero entonces las ideas del propio Marx son también solo producto de su posición de clase, y no más verdaderas que otras.', ''],
+        0: ['“No es la conciencia del hombre la que determina su ser, sino el ser social el que determina su conciencia.” Toda idea descansa en la base económica. Pero entonces las ideas del propio Marx son solo producto de su posición de clase, y no más verdaderas que otras.', 'Marx, Prólogo a la Contribución a la crítica de la economía política'],
         1: ['La plusvalía: la ganancia es lo que el dueño toma del trabajo del obrero por encima de su salario. Se apoya en la tesis de que solo el trabajo crea valor, que Böhm-Bawerk mostró falsa: el valor nace de lo que la gente quiere, no del trabajo invertido.', 'Böhm-Bawerk, La conclusión del sistema marxiano'],
-        2: ['La revolución es la salvación: los obreros toman el poder por la fuerza y el viejo orden es barrido. En todas las tierras donde se intentó, no trajo liberación, sino el gulag y la hambruna.', ''],
+        2: ['“Los filósofos no han hecho más que interpretar de diversos modos el mundo; de lo que se trata es de transformarlo.” La revolución es la salvación: los obreros toman el poder por la fuerza. Dondequiera que se intentó, no trajo liberación sino el gulag y la hambruna.', 'Marx, Tesis sobre Feuerbach XI'],
       },
       self: {
         0: ['El hombre no es un alma hecha a imagen de Dios, sino “el conjunto de las relaciones sociales”: lo que la sociedad y el trabajo hacen de él.', 'Marx, Tesis sobre Feuerbach'],
@@ -615,7 +615,7 @@ export const NOTES = {
       },
       sin: {
         1: ['El mal está en el sistema, en la propiedad privada y las clases, no en el corazón humano. Cambia el sistema y el mal desaparece.', ''],
-        2: ['Pero el mal seguía en el corazón de los nuevos amos. Como escribió Solzhenitsyn, la línea entre el bien y el mal no pasa entre las clases, sino por el corazón de cada ser humano.', 'Solzhenitsyn, Archipiélago Gulag'],
+        2: ['Pero el mal seguía en el corazón de los nuevos amos. Solzhenitsyn, que sobrevivió a sus campos, escribió que “la línea que separa el bien del mal pasa por el corazón de cada ser humano.”', 'Solzhenitsyn, Archipiélago Gulag'],
       },
     },
   },
