@@ -1,9 +1,9 @@
-// Each deploy raises the ?v= number on these four imports and on the two in index.html, all to the same
-// value, so that browsers fetch the new files together instead of mixing new ones with old cached ones.
-import { createPainter } from './paint.js?v=128';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=128';
-import { CATALOGUE } from './catalogue.js?v=128';
-import { createMenu } from './menu.js?v=128';
+// Each deploy raises the ?v= number on these imports and on those in index.html (the stylesheet, the script and its
+// preloads), all to the same value, so that browsers fetch the new files together instead of mixing new ones with old.
+import { createPainter } from './paint.js?v=129';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=129';
+import { CATALOGUE } from './catalogue.js?v=129';
+import { createMenu } from './menu.js?v=129';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -17,7 +17,7 @@ const num = (name, lo, hi, fallback) => { const v = Number(params.get(name)); re
 // The notes on the cards are a help, not a part the page needs: if they cannot be fetched, the page works as before,
 // with no cards (see the note card below).
 let noteFor = () => null;
-try { ({ noteFor } = await import('./notes.js?v=128')); } catch (err) { console.error(err); }
+try { ({ noteFor } = await import('./notes.js?v=129')); } catch (err) { console.error(err); }
 
 // ---------- language ----------
 // English unless Spanish is asked for: in the address (?lang=es), by the reader's earlier choice, or by the browser's
@@ -39,7 +39,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=128'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=129'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -423,7 +423,14 @@ addEventListener('keydown', (e) => {
 setInterval(() => { if (auto && !document.hidden) go(cur.wv, (cur.act + 1) % 4); }, 14000);
 
 // ---------- layout ----------
-let unit = 1, ext = 1, cx = 0, cy = 0, scale = 1, quality = 1, markH = 0, markY = -0.795;   // (markY: the middle of the names)
+// (quality: the share of full resolution the painting is drawn at. It starts where it settled on the reader's last
+// visit, so that a slow phone does not stutter for its first seconds each time while the resolution comes down;
+// it rises again by itself where frames come quickly)
+const savedQuality = (() => { try { return Number(localStorage.getItem('quality')); } catch (e) { return 0; } })();
+const keepQuality = () => { try { localStorage.setItem('quality', String(quality)); } catch (e) { /* (only a convenience) */ } };
+let unit = 1, ext = 1, cx = 0, cy = 0, scale = 1, markH = 0, markY = -0.795;   // (markY: the middle of the names)
+// (a still, with the clock frozen, is always painted at full resolution)
+let quality = !params.has('t') && [0.5, 0.75].includes(savedQuality) ? savedQuality : 1;
 const wordsBox = new Float32Array(4);           // where the words stand, for the painting to lift the paper under them: centre and half size
 let wordsRight = -1e9, wordsBottom = 1e9;       // the corner of the words on the left, in scene units
 const rects = new Float32Array(12), lifts = [0, 0, 0];
@@ -489,6 +496,9 @@ function wordsFit(W, Hh, u) {
   return tallestWords() + 0.03 * u + 2 * parseFloat(getComputedStyle(labels.sin.el).fontSize) + 4 < top;
 }
 let pageLayout = 'wide';
+// (the window's height, kept from the last resize: reading innerHeight in a frame, after the labels have moved, makes
+// the browser lay out the whole page again there and then, which cost a slow phone more than the rest of the frame)
+let viewH = innerHeight;
 // (the washes gain nothing visible beyond 1.5 pixels per point, and twice the density costs nearly twice as much)
 let repaint = true;
 function fitCanvas() {
@@ -498,6 +508,7 @@ function fitCanvas() {
 }
 function resize(choose = true) {
   const W = innerWidth, Hh = innerHeight, body = document.body.classList;
+  viewH = Hh;
   fitCanvas();
   const set = (l) => { for (const c of ['narrow', 'compact', 'short']) body.toggle(c, l === c); };
   if (choose) {
@@ -715,7 +726,7 @@ function keepApart(at, godY, worldY, dt) {
     fixed.push([x - markW[i] / 2, markY - markH / 2, x + markW[i] / 2, markY + markH / 2]);
   }
   if (wordsRight > -1e8) fixed.push([-1e9, wordsBottom, wordsRight, 1e9]);
-  const top = cy / unit - gap, bottom = -(innerHeight - cy) / unit + gap;
+  const top = cy / unit - gap, bottom = -(viewH - cy) / unit + gap;
   for (const k of MOVABLE) {
     const L = labels[k], s = slide[k];
     if (!L.on) continue;
@@ -1579,22 +1590,42 @@ function drawConn(p, c, G) {
   }
 
   // ----- the line of history -----
+  // (it changes only between acts or when the window does, so it is inked once and kept until then)
   const ty = 0.87, bx = ext * (-0.72 + 0.48 * p.act);
-  g += ink([[-ext, ty], [ext + 0.04, ty]], 0.0055, DARK, 501, { pool: false, wobble: 0.0015 });
-  // (inked in as far as the open act: how much of the story has been told)
-  if (bx + ext > 0.01) g += ink([[-ext, ty], [bx, ty]], 0.0115, ACC, 509, { pool: false, wobble: 0.0015, taper: 0.55 });
-  if (p.tick > 0.01) {
-    let ticks = '';
-    for (let i = 0; i <= 48; i++) ticks += `M${f(-ext + (2 * ext * i) / 48)},${ty + 0.012} v.014 `;
-    g += `<path d="${ticks}" stroke="${DARK}" stroke-width=".002" opacity="${f(0.7 * p.tick)}"/>`;
+  const histKey = `${ext} ${p.act} ${p.tick} ${ACC}`;
+  if (histLine.key !== histKey) {
+    let h = ink([[-ext, ty], [ext + 0.04, ty]], 0.0055, DARK, 501, { pool: false, wobble: 0.0015 });
+    // (inked in as far as the open act: how much of the story has been told)
+    if (bx + ext > 0.01) h += ink([[-ext, ty], [bx, ty]], 0.0115, ACC, 509, { pool: false, wobble: 0.0015, taper: 0.55 });
+    if (p.tick > 0.01) {
+      let ticks = '';
+      for (let i = 0; i <= 48; i++) ticks += `M${f(-ext + (2 * ext * i) / 48)},${ty + 0.012} v.014 `;
+      h += `<path d="${ticks}" stroke="${DARK}" stroke-width=".002" opacity="${f(0.7 * p.tick)}"/>`;
+    }
+    h += `<path d="M${f(ext + 0.085)},${ty} L${f(ext + 0.03)},${ty - 0.026} L${f(ext + 0.03)},${ty + 0.026}Z" fill="${DARK}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/>`;
+    for (let i = 0; i < 4; i++) h += `<circle cx="${f(ext * (-0.72 + 0.48 * i))}" cy="${ty}" r=".013" fill="${i < p.act - 0.5 ? ACC : PAP}" stroke="${DARK}" stroke-width=".0055"/>`;
+    histLine.key = histKey; histLine.m = h;
   }
-  g += `<path d="M${f(ext + 0.085)},${ty} L${f(ext + 0.03)},${ty - 0.026} L${f(ext + 0.03)},${ty + 0.026}Z" fill="${DARK}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/>`;
-  for (let i = 0; i < 4; i++) g += `<circle cx="${f(ext * (-0.72 + 0.48 * i))}" cy="${ty}" r=".013" fill="${i < p.act - 0.5 ? ACC : PAP}" stroke="${DARK}" stroke-width=".0055"/>`;
   const beat = lerp(0.004 * Math.sin(c.t * 2.4), 0.005 * c.tock, p.tick);     // a pulse, or the tick of a clock
-  g += `<circle cx="${f(bx)}" cy="${ty}" r="${f(0.031 + beat)}" fill="none" stroke="${ACC}" stroke-width=".003"/><circle cx="${f(bx)}" cy="${ty}" r=".018" fill="${ACC}" stroke="${PAP}" stroke-width=".004"/>`;
-
-  connSvg.innerHTML = `<g transform="translate(${f(cx)},${f(cy)}) scale(${f(unit)})">${g}</g>`;
-  flatten(connSvg, 1);
+  const present = `<circle cx="${f(bx)}" cy="${ty}" r="${f(0.031 + beat)}" fill="none" stroke="${ACC}" stroke-width=".003"/><circle cx="${f(bx)}" cy="${ty}" r=".018" fill="${ACC}" stroke="${PAP}" stroke-width=".004"/>`;
+  setConn(`translate(${f(cx)},${f(cy)}) scale(${f(unit)})`, [g, histLine.m, present]);
+}
+const histLine = { key: '', m: '' };
+// The connectors go into the page in three groups, in this order: the connectors themselves, the line of history and
+// the mark of the present on it. A group whose drawing is the same as in the last frame is left alone, so the browser
+// has nothing to read again or lay out there (the line of history alone was most of the drawing in most worldviews).
+let connRoot = null;
+const connParts = [];
+function setConn(transform, parts) {
+  if (!connRoot) { connSvg.innerHTML = '<g></g>'; connRoot = connSvg.firstChild; }
+  if (connRoot.getAttribute('transform') !== transform) connRoot.setAttribute('transform', transform);
+  parts.forEach((m, i) => {
+    const P = connParts[i] ||= { el: connRoot.appendChild(document.createElementNS(NS, 'g')), m: null };
+    if (P.m === m) return;
+    P.m = m;
+    P.el.innerHTML = m;
+    flatten(P.el, 1);
+  });
 }
 
 // ---------- time ----------
@@ -1617,6 +1648,7 @@ function hands() {
 
 // ---------- loop ----------
 let lastT = 0, acc = 0, nF = 0, arrow = 0, orb = Math.PI / 2, accent = '';
+document.addEventListener('visibilitychange', () => { lastT = 0; acc = 0; nF = 0; });
 // Where God actually is. Most worldviews keep him in his place above; one sends him round man,
 // a little larger and in front of the world on the near side, smaller and behind it on the far side.
 // The orbit is a tilted ellipse round man; a is the angle along it, and its near half is where sin(a) > 0.
@@ -1779,16 +1811,20 @@ function frame(now) {
   // is moving, where a jump in sharpness would show; but if frames are very slow it is made at once, since a
   // graphics card that is overwhelmed can fail outright. When frames have come at full speed for a while, the
   // resolution goes back up a step; if that step proves too much, it comes down again and stays below it.
+  // A frame slower than a quarter of a second counts as a quarter of a second, so that one stall (a card being
+  // painted, say) cannot lower the resolution alone, while a phone that is slow on every frame still brings it down.
+  // Frames that slow are also counted in fewer of them, so it comes down within a second or two rather than ten.
+  // (When the page was hidden, lastT is set to 0, and the gap on its return is not counted.)
   const moving = now - t0 < dur + 400;
-  if (frozen === null && lastT && now - lastT < 400) {      // a long gap means the page was hidden, not slow
-    acc += now - lastT;
-    if (++nF === 20) {
+  if (frozen === null && lastT) {
+    acc += Math.min(250, now - lastT);
+    if (++nF === 20 || (nF >= 6 && acc > 1500)) {
       const ms = acc / nF;
       if (quality > 0.5 && (ms > 80 || (ms > 36 && !moving))) {
         if (now - raisedAt < 15000) { ceiling = quality - 0.25; raisedAt = -1e9; }
-        quality -= 0.25; calm = 0; fitCanvas();
+        quality -= 0.25; calm = 0; fitCanvas(); keepQuality();
       } else if (ms < 20 && !moving && quality < ceiling) {
-        if (++calm === 5) { quality += 0.25; raisedAt = now; calm = 0; fitCanvas(); }
+        if (++calm === 5) { quality += 0.25; raisedAt = now; calm = 0; fitCanvas(); keepQuality(); }
       } else calm = 0;
       acc = 0; nF = 0;
     }
@@ -1947,12 +1983,14 @@ function makeTiles() {
 }
 function paintStrokeAt(W, H, rgbc, dpr) {
   tiles ||= makeTiles();
-  const mk = () => { const k = document.createElement('canvas'); k.width = Math.round(W * dpr); k.height = Math.round(H * dpr); const x = k.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); return [k, x]; };
+  // (the two canvases read back pixel by pixel are kept in ordinary memory: read from the graphics card, each read
+  // would wait for the card to finish painting the watercolour, which on a slow phone took seconds)
+  const mk = (read = false) => { const k = document.createElement('canvas'); k.width = Math.round(W * dpr); k.height = Math.round(H * dpr); const x = k.getContext('2d', { willReadFrequently: read }); x.setTransform(dpr, 0, 0, dpr, 0, 0); return [k, x]; };
   const x0 = 20, x1 = W - 8, cy = H / 2 + 2, half = H / 2 - 20;
   const spine = (x) => cy - 0.03 * H * Math.sin(((x - x0) / (x1 - x0)) * Math.PI * 0.9) + 0.02 * H * ((x - x0) / (x1 - x0));
   const widthAt = (u) => half * (u < 0.05 ? 0.82 + 0.18 * Math.sin((u / 0.05) * Math.PI / 2) : u > 0.84 ? 1 - 0.2 * ((u - 0.84) / 0.16) : 1) * (1 + 0.025 * Math.sin(u * 11));
   // the shape: the hairs of a broad brush, set down in a curve, its outer hairs ragged, running dry at the end
-  const [mask, m] = mk();
+  const [mask, m] = mk(true);
   const N = Math.round(H / 2.1);
   m.lineCap = 'round'; m.strokeStyle = '#000';
   for (let k = 0; k < N; k++) {
@@ -1972,7 +2010,7 @@ function paintStrokeAt(W, H, rgbc, dpr) {
     if (on) m.stroke();
   }
   // its colour and its dried edge
-  const [blur, b] = mk(); b.setTransform(1, 0, 0, 1, 0, 0); b.filter = `blur(${2.5 * dpr}px)`; b.drawImage(mask, 0, 0);
+  const [blur, b] = mk(true); b.setTransform(1, 0, 0, 1, 0, 0); b.filter = `blur(${2.5 * dpr}px)`; b.drawImage(mask, 0, 0);
   const cw = mask.width, ch = mask.height;
   const md = m.getImageData(0, 0, cw, ch).data, bd = b.getImageData(0, 0, cw, ch).data;
   const [paint, p] = mk(), [tide, t] = mk();
