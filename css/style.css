@@ -470,11 +470,12 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 
 /* ---------- the entrance ----------
    While the scripts arrive, drops of the painting's three colours (the gold of God, the teal of the world and the red
-   of the cross, as in the site's icon) fall in turn into a small pool of water on the bare sheet and bloom out in it.
-   It shows only if the wait passes a third of a second, and the word under it only if the wait runs long. Each drop
-   and the pool keep one shape, roughened once by the filter, and only grow and fade: work the browser hands to the
-   graphics card, which costs a slow phone almost nothing. Then the pool fades as the first painting flows out of it
-   (uEnter in js/paint.js), and the words are brushed in as at a change of language.
+   of the cross, as in the site's icon) fall in turn into a small pool of water on the bare sheet and bloom out in it,
+   with the word for painting under it. It shows on every load, however quick, for at least as long as the first drop
+   takes to bloom (see the entrance in js/main.js). Each drop and the pool keep one shape, roughened once by the
+   filter, and only grow and fade: work the browser hands to the graphics card, which costs a slow phone almost
+   nothing. Then the pool fades as the first painting flows out of it (uEnter in js/paint.js), and the words are
+   brushed in as at a change of language.
    Until then the words wait unseen and the page takes no input. Should the scripts never arrive, the words show
    after twenty seconds all the same. */
 #loading {
@@ -482,7 +483,7 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
   display: flex; align-items: center; justify-content: center;
   pointer-events: none;
   opacity: 0;
-  animation: load-show .6s ease .33s forwards, load-hide .6s ease 20s forwards;
+  animation: load-show .45s ease forwards, load-hide .6s ease 20s forwards;
 }
 #loading .w { display: flex; flex-direction: column; align-items: center; margin-top: -4vh; transition: opacity .55s ease; }
 #loading.done .w { opacity: 0; }
@@ -515,7 +516,7 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
   font-family: var(--soft); font-variation-settings: 'SOFT' 100, 'WONK' 0; font-style: italic; font-size: 1.05rem;
   letter-spacing: .03em; color: rgba(43, 33, 29, .62);
   opacity: 0;
-  animation: load-show .8s ease 1.4s forwards;
+  animation: load-show .8s ease .5s forwards;
 }
 #loading .cap::after { content: '\2026'; display: inline-block; width: 1.1em; text-align: left; animation: load-dots 1.6s steps(4, end) infinite; overflow: hidden; vertical-align: bottom; }
 @keyframes load-show { to { opacity: 1; } }

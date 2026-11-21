@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these imports and on those in index.html (the stylesheet, the script and its
 // preloads), all to the same value, so that browsers fetch the new files together instead of mixing new ones with old.
-import { createPainter } from './paint.js?v=130';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=130';
-import { CATALOGUE } from './catalogue.js?v=130';
-import { createMenu } from './menu.js?v=130';
+import { createPainter } from './paint.js?v=131';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=131';
+import { CATALOGUE } from './catalogue.js?v=131';
+import { createMenu } from './menu.js?v=131';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -17,7 +17,7 @@ const num = (name, lo, hi, fallback) => { const v = Number(params.get(name)); re
 // The notes on the cards are a help, not a part the page needs: if they cannot be fetched, the page works as before,
 // with no cards (see the note card below).
 let noteFor = () => null;
-try { ({ noteFor } = await import('./notes.js?v=130')); } catch (err) { console.error(err); }
+try { ({ noteFor } = await import('./notes.js?v=131')); } catch (err) { console.error(err); }
 
 // ---------- language ----------
 // English unless Spanish is asked for: in the address (?lang=es), by the reader's earlier choice, or by the browser's
@@ -39,7 +39,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=130'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=131'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -2378,10 +2378,12 @@ if (pageLayout === 'narrow' && !budsKnown && !reduced) for (const k of KEYS) if 
 document.fonts.ready.then(() => { resize(); placeLang(); markLang(); });
 requestAnimationFrame(frame);
 // The entrance starts once the fonts have come, so that the words are laid out in them before they are brushed in (or
-// after a second and a half without them), and once the painting has been painted a few times, so that the slow
+// after a second and a half without them), no sooner than 1.3 seconds into the load, and once the painting has been painted a few times, so that the slow
 // first painting of a new shader falls before it and does not jump its clock. The wash starts where the pool was.
 if (entrance.on) {
-  Promise.race([document.fonts.ready, pause(1500)]).then(() => {
+  // (the loading screen stays up at least 1.3 seconds from the start of the page's load, however quick the load,
+  // so that the first drop has bloomed in the pool before the painting flows out of it)
+  Promise.all([Promise.race([document.fonts.ready, pause(1500)]), pause(Math.max(0, 1300 - performance.now()))]).then(() => {
     const start = (now) => {
       if (!entrance.on) return;
       if (entrance.painted < 3) { requestAnimationFrame(start); return; }
