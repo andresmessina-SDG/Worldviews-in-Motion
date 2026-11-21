@@ -108,7 +108,7 @@ const TEXT = {
         self: ['Israel', 'Vuelve a Dios por el arrepentimiento'],
         sin: ['Pecado', 'Sin sacrificio por él desde el año 70 d. C.'],
       }],
-      ['El mundo venidero', 'Vendrá el Mesías, un hombre del linaje de David. Reunirá a los exiliados, reconstruirá el templo y traerá la paz. Los muertos resucitarán para el mundo venidero.', {
+      ['El mundo venidero', 'Vendrá el Mesías, un hombre del linaje de David. Reunirá a los exiliados, reconstruirá el templo y traerá la paz. Los muertos resucitarán y serán juzgados, y los justos entrarán en el mundo venidero.', {
         god: ['El SEÑOR', 'Rey sobre toda la tierra'],
         world: ['El mundo venidero', 'El templo reconstruido, y la paz'],
         bridge: ['El Mesías', 'Aún esperado, aunque el templo ya cayó'],
@@ -171,7 +171,7 @@ const TEXT = {
         bridge: ['La razón', 'El hombre sube razonando'],
         self: ['El hombre', 'Guiado por su propia luz'],
       }],
-      ['Un fin incierto', 'Quizá los buenos sean premiados tras la muerte. Dios no ha prometido nada, así que nadie puede estar seguro.', {
+      ['Un fin incierto', 'Quizá los buenos sean premiados tras la muerte, y los malos castigados. Pero Dios no ha prometido nada, así que nadie puede estar seguro.', {
         god: ['El Creador', 'Más lejos, y aún callado'],
         world: ['El mundo', 'Sigue su tictac'],
         bridge: ['Ninguna promesa', 'Nada se ha dicho'],
@@ -698,7 +698,7 @@ const TEXT = {
         self: ['El filósofo', 'Recuerda lo que una vez supo'],
         sin: ['Ignorancia', 'Curada por el conocimiento'],
       }],
-      ['Liberación', 'Al morir, el alma purificada deja el cuerpo para siempre y vuelve a las Formas. Las demás almas nacen otra vez en cuerpos nuevos.', {
+      ['Liberación', 'Al morir, toda alma es juzgada. Las purificadas dejan el cuerpo para siempre y vuelven a las Formas; otras nacen de nuevo, y las incurables son arrojadas al Tártaro.', {
         god: ['El Bien', 'Visto al fin, pero no puede amar'],
         world: ['El mundo del devenir', 'Donde renacen las otras almas'],
         bridge: ['El alma', 'Libre del cuerpo para siempre'],

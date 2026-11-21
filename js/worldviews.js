@@ -433,7 +433,7 @@ export const WORLDVIEWS = {
       {
         slug: 'end',
         name: 'An Uncertain End',
-        text: 'The good may be rewarded after death. God has made no promise, so no one can be sure.',
+        text: 'The good may be rewarded after death, and the wicked punished. But God has made no promise, so no one can be sure.',
         p: { Gy: 0.62, rG: 0.16, godA: 0.36, reason: 0.3, glow: 0.4, dull: 0.3, lBrY: 0.19, tBrY: 0.17 },
         labels: {
           god: ['The Creator', 'Further off, still silent'],
@@ -546,7 +546,7 @@ export const WORLDVIEWS = {
       {
         slug: 'the-world-to-come',
         name: 'The World to Come',
-        text: 'The Messiah, a man descended from David, will come. He will gather the exiles, rebuild the temple and bring peace. The dead will be raised to the world to come.',
+        text: 'The Messiah, a man descended from David, will come. He will gather the exiles, rebuild the temple and bring peace. The dead will be raised and judged, and the righteous will enter the world to come.',
         p: { awaited: 1, lit: 0.6, glow: 0.6, rip: 0.6, tBrX: 0.052 },
         labels: {
           god: ['The LORD', 'King over all the earth'],
@@ -1495,7 +1495,7 @@ export const WORLDVIEWS = {
       {
         slug: 'release',
         name: 'Release',
-        text: 'At death the purified soul leaves the body for good and returns to the Forms. Other souls are born again into new bodies.',
+        text: 'At death every soul is judged. The purified leave the body for good and return to the Forms; others are born again, and the incurable are cast into Tartarus.',
         p: { soulY: 0.3, manA: 0.15, hollow: 1, manI: 0.6, ladder: 0.5, rebirth: 1, partake: 0.6, lBrX: 0.3, lBrY: 0.45, tBrX: 0.035, tBrY: 0.33 },
         labels: {
           god: ['The Good', 'Seen at last, but it cannot love'],

@@ -47,7 +47,7 @@ export const NOTES = {
         '*': ['God made the world good and gave it to man to tend. It is not to be escaped but enjoyed and made holy. Before bread a Jew says: “Blessed are you, LORD our God, King of the universe, who brings forth bread from the earth.”', 'Gen 1:31; 2:15 · the blessing over bread'],
         1: ['The land was God’s gift, and its loss, first to Babylon and then to Rome, is read as the fruit of Israel’s sins: “By the waters of Babylon, there we sat down and wept, when we remembered Zion.” Exile became the setting of Jewish life for nearly two thousand years.', 'Deut 28:63–64 · Ps 137:1'],
         2: ['Every part of life is hallowed by a commandment: what is eaten, when one rests, how one does business, what is said over bread. “You shall be holy, for I the LORD your God am holy”: the world is made holy by keeping God’s law within it.', 'Lev 19:2'],
-        3: ['The world to come, when the dead are raised, the exiles gathered and the temple rebuilt, and “the earth shall be full of the knowledge of the LORD as the waters cover the sea.” Its details the rabbis left open.', 'Isa 11:9 · Dan 12:2'],
+        3: ['The world to come, when the exiles are gathered, the temple rebuilt and “the earth shall be full of the knowledge of the LORD as the waters cover the sea.” The wicked are judged first, in Gehinnom; the rabbis taught that the righteous of the nations also have a share. Many details they left open.', 'Isa 11:9 · Tosefta Sanhedrin 13:2'],
       },
       bridge: {
         0: ['God bound himself to Abraham by oath: a land, descendants beyond counting, and a promise that “in you all the families of the earth shall be blessed.” At Sinai the covenant was given to his children as a people.', 'Gen 12:1–3; 15:17–18'],
@@ -59,7 +59,7 @@ export const NOTES = {
         0: ['Man is made in God’s image, and every life is of great worth. Israel was chosen not for its greatness (“it was not because you were more in number than any other people that the LORD set his love on you”) but to be a holy people and a light to the nations.', 'Gen 1:27 · Deut 7:6–8'],
         1: ['Man is not born guilty or corrupt. He has two inclinations, one good and one evil, and is free to master the evil one by study and obedience. Scripture speaks more darkly: “the intention of man’s heart is evil from his youth.”', 'Gen 4:7; 8:21 · Ps 51:5'],
         2: ['When a Jew sins, he returns to God (teshuvah) by regret, confession and a changed life, above all on the Day of Atonement: “Return, O Israel, to the LORD your God.” God receives the penitent, but the sacrifice the Law appointed is gone.', 'Hos 14:1–2'],
-        3: ['The last of Judaism’s thirteen principles: “I believe with perfect faith that there will be a resurrection of the dead at the time when it shall please the Creator.” Israel, scattered among the nations, will be brought home and raised to life.', 'Maimonides, Thirteen Principles · Ezek 37:12–14'],
+        3: ['“I believe with perfect faith that there will be a resurrection of the dead.” Yet not all rise to the same end: “some to everlasting life, and some to shame and everlasting contempt.” The Mishnah teaches that “all Israel has a share in the world to come”, then names those who have none, beginning with whoever denies the resurrection.', 'Maimonides, Thirteen Principles · Dan 12:2 · Sanhedrin 10:1'],
       },
       sin: {
         1: ['Sin is a wrong act, not a fallen nature. The evil inclination is a drive to be tamed, and the Torah its remedy. The Talmud has God say: “I created the evil inclination, and I created the Torah as its antidote.” But a drive to be tamed needs no saviour.', 'Kiddushin 30b · Gen 8:21'],
@@ -111,12 +111,12 @@ export const NOTES = {
       bridge: {
         '*': ['Deism denies that God has spoken: no prophets, no miracles, no scripture and no incarnation. “My own mind is my own church,” wrote Thomas Paine. But if God has not spoken, his mind and will remain closed to us.', 'Paine, The Age of Reason · Heb 1:1–2'],
         2: ['Man climbs toward God by reason alone. Reason is God’s gift, but on the Bible’s account it is darkened by sin, and men “became futile in their thinking”.', 'Rom 1:21'],
-        3: ['God has promised nothing: neither forgiveness, nor resurrection, nor a life to come. A deist can hope, but he has no word to rest his hope on.', ''],
+        3: ['God has promised nothing: neither forgiveness, nor resurrection, nor a life to come. Herbert of Cherbury, the father of English deism, still counted “reward or punishment after this life” among the articles of natural religion; but reason can guess at a judgement it cannot tell how to escape.', 'Herbert of Cherbury, De Veritate'],
       },
       self: {
         '*': ['Man is a rational being, able to discover by the light of nature that God exists and what is right; he needs no revelation and no redeemer. Jefferson advised his nephew: “Fix reason firmly in her seat, and call to her tribunal every fact, every opinion.”', 'Jefferson, letter to Peter Carr, 1787'],
         1: ['What holds man back is not a sinful heart but superstition, and the priests who keep him in the dark. Paine called the churches “human inventions, set up to terrify and enslave mankind, and monopolize power and profit.” Teach man, and he will do well.', 'Paine, The Age of Reason'],
-        3: ['Paine’s whole creed: “I believe in one God, and no more; and I hope for happiness beyond this life.” He hopes, but a God who has promised nothing gives him nothing to stand on.', 'Paine, The Age of Reason'],
+        3: ['Paine hoped for “happiness beyond this life”, and Franklin believed that the soul “will be treated with justice in another life respecting its conduct in this.” Most deists expected both reward and punishment. But a God who has promised nothing gives no ground for the hope, nor any way to escape the fear.', 'Paine, The Age of Reason · Franklin, letter to Ezra Stiles, 1790'],
       },
       sin: {
         1: ['Deism has no fall: wrong comes from ignorance and superstition, and the cure is education and reason. Yet the most enlightened are not thereby the most good, for “the heart is deceitful above all things, and desperately sick.”', 'Jer 17:9'],
@@ -443,7 +443,7 @@ export const NOTES = {
         3: ['Moksha is release from the wheel of rebirth. The Upanishad prays: “Lead me from the unreal to the real, from darkness to light, from death to immortality.”', 'Brihadaranyaka Upanishad 1.3.28'],
       },
       bridge: {
-        1: ['Samsara is the wheel of birth, death and rebirth, driven by karma, the moral weight of one’s deeds. The Gita: “as a man casts off worn-out clothes and puts on others that are new, so the embodied self casts off worn-out bodies.”', 'Bhagavad Gita 2.22'],
+        1: ['Samsara is the wheel of birth, death and rebirth, driven by karma, the moral weight of one’s deeds. “Those whose conduct here has been good will quickly attain a good birth… but those whose conduct here has been evil will quickly attain an evil birth, the birth of a dog, a hog or an outcaste.”', 'Chandogya Upanishad 5.10.7 · Bhagavad Gita 2.22'],
         2: ['Release may take many lives: knowledge ripens slowly, through discipline, study and meditation under a teacher. The Gita offers other paths too: devotion and selfless action. But each depends on the seeker’s own effort.', 'Bhagavad Gita 4.39'],
       },
       self: {
@@ -467,7 +467,7 @@ export const NOTES = {
       },
       world: {
         0: ['Everything arises from causes and passes away; nothing has a lasting essence. “All conditioned things are impermanent”, said the Buddha. Even the world is a stream of events, not a creation.', 'Dhammapada 277'],
-        1: ['Samsara: birth, death and birth again, without beginning. In the Fire Sermon the Buddha declared that “all is burning”: the senses and the mind ablaze with craving, hatred and delusion.', 'Adittapariyaya Sutta (SN 35.28)'],
+        1: ['Samsara: birth, death and birth again, without beginning, among gods, men, animals, hungry ghosts and the hells, as karma decides. In the Fire Sermon the Buddha declared that “all is burning”: the senses and the mind ablaze with craving, hatred and delusion.', 'Adittapariyaya Sutta (SN 35.28)'],
         3: ['Nirvana is the flame blown out: craving extinguished, and with it rebirth. “As a flame put out by the force of the wind goes out and can no longer be reckoned, so the sage released from name-and-body.” It is not a place, and not a union with God.', 'Sutta Nipata 1074'],
       },
       bridge: {
@@ -478,7 +478,7 @@ export const NOTES = {
         0: ['There is no soul (anatta). The self is five passing parts: body, feeling, perception, mental formations and consciousness. As Nagasena taught, “chariot” names its parts put together, not something more.', 'Milindapanha'],
         1: ['The self grasps at what cannot last, and so suffers. The first sermon: “birth is suffering, ageing is suffering, sickness is suffering, death is suffering.”', 'Dhammacakkappavattana Sutta'],
         2: ['The self works its own release by effort, discipline and meditation. The Buddha’s last words: “All conditioned things are subject to decay. Strive on with diligence.”', 'Mahaparinibbana Sutta (DN 16)'],
-        3: ['Was anyone ever there? Asked whether the enlightened one exists after death, the Buddha would not answer. Christianity promises not extinction but a person raised and known.', 'Cula-Malunkyovada Sutta (MN 63) · 1 Cor 13:12'],
+        3: ['Was anyone ever there? Asked whether the enlightened one exists after death, the Buddha would not answer. Christ promises his people not extinction but to be raised and known: “then I shall know fully, even as I have been fully known.”', 'Cula-Malunkyovada Sutta (MN 63) · 1 Cor 13:12'],
       },
       sin: {
         1: ['Craving (tanha) is the cause of suffering: “craving for sensual pleasures, craving for existence, craving for non-existence.” The problem is desire, not sin against God.', 'Dhammacakkappavattana Sutta'],
@@ -583,7 +583,7 @@ export const NOTES = {
         0: ['The world of becoming is a copy of the eternal Forms, always changing. In the Timaeus, time is “a moving image of eternity”.', 'Plato, Timaeus 37d'],
         1: ['The cave: prisoners chained so that they see only shadows on the wall, and for them “the truth would be literally nothing but the shadows of the images.” Freed and led into the sunlight, one is at first dazzled; back in the cave, the others would kill him.', 'Plato, Republic 514a–517a'],
         2: ['The world is seen through at last, for what it is: a shadow of the real. The philosopher turns away from it, but Plato bids him return to lead others out: “each of you, when his turn comes, must go down.”', 'Plato, Republic 519d–520c'],
-        3: ['The world of becoming is where unpurified souls are born again, until they too are freed. In the Phaedo the gluttonous “pass into asses”, and the violent “into wolves, or into hawks and kites.”', 'Plato, Phaedo 81e–82a'],
+        3: ['After death every soul is judged. The unpurified are born again: in the Phaedo the gluttonous “pass into asses”. The worst never return at all: the incurable “are hurled into Tartarus, which is their suitable destiny, and they never come out.”', 'Plato, Phaedo 81e–82a; 113e · Gorgias 523–526'],
       },
       bridge: {
         0: ['The Forms: perfect, eternal patterns of which things here are copies, known by the mind, not the senses. “Is there such a thing as absolute justice?” asks Socrates; “Assuredly there is.” Yet the Forms are truth without a speaker: perfect ideas, with no mind whose ideas they are.', 'Plato, Phaedo 65d'],
@@ -612,7 +612,7 @@ export const NOTES = {
         0: ['The world is matter, made by mistake: a power of the Fullness, Sophia, fell, and from her error came a lesser god who made this world. The Gospel of Philip: “The world came about through a mistake.” Creation is a catastrophe, not a gift.', 'Apocryphon of John · Gospel of Philip 75'],
         1: ['The world is a prison, ruled by the maker’s powers (archons), who keep the sparks of light asleep in their bodies. The Gospel of Thomas: “Whoever has come to understand the world has found only a corpse.”', 'Gospel of Thomas 56'],
         2: ['The world is not worth saving: salvation is escape from it, not its renewal. Paul says the opposite: “the creation itself will be set free from its bondage to corruption.”', 'Rom 8:21'],
-        3: ['In the end all matter is burned up, never made new. God says instead: “Behold, I am making all things new.”', 'Rev 21:5'],
+        3: ['In the end all matter is burned up, never made new, and with it those who have no spark. Irenaeus reports that the Valentinians divided men into three kinds, spiritual, animal and material, and that the material “must of necessity perish”. God says instead: “Behold, I am making all things new.”', 'Irenaeus, Against Heresies I.6.1; I.7.5 · Rev 21:5'],
       },
       bridge: {
         0: ['The maker, Yaldabaoth, is a lesser god, ignorant of the Fullness above him. In the Apocryphon of John he boasts: “I am a jealous God, and there is no other God beside me”, turning the God of Israel into the villain.', 'Apocryphon of John · Isa 45:5'],
@@ -670,7 +670,7 @@ export const NOTES = {
         '*': ['Dios hizo bueno el mundo y lo dio al hombre para que lo cuidara. No es para huir de él, sino para disfrutarlo y santificarlo. Antes del pan, el judío dice: “Bendito eres tú, Señor nuestro Dios, Rey del universo, que sacas el pan de la tierra.”', 'Gn 1:31; 2:15 · la bendición del pan'],
         1: ['La tierra fue un don de Dios, y su pérdida, primero ante Babilonia y luego ante Roma, se lee como fruto de los pecados de Israel: “Junto a los ríos de Babilonia, allí nos sentábamos, y aun llorábamos, acordándonos de Sion.” El exilio fue el marco de la vida judía durante casi dos mil años.', 'Dt 28:63–64 · Sal 137:1'],
         2: ['Cada parte de la vida queda santificada por un mandamiento: lo que se come, cuándo se descansa, cómo se negocia, qué se dice sobre el pan. “Santos seréis, porque santo soy yo Jehová vuestro Dios”: el mundo se santifica guardando en él la ley de Dios.', 'Lv 19:2'],
-        3: ['El mundo venidero, cuando los muertos resuciten, los desterrados sean reunidos y el templo reconstruido, y “la tierra será llena del conocimiento de Jehová, como las aguas cubren el mar”. Sus detalles los rabinos los dejaron abiertos.', 'Is 11:9 · Dn 12:2'],
+        3: ['El mundo venidero, cuando los desterrados sean reunidos, el templo reconstruido y “la tierra será llena del conocimiento de Jehová, como las aguas cubren el mar”. Antes, los impíos son juzgados en el Guehinom; los rabinos enseñaron que también los justos de las naciones tienen parte. Muchos detalles los dejaron abiertos.', 'Is 11:9 · Tosefta Sanedrín 13:2'],
       },
       bridge: {
         0: ['Dios se obligó con Abraham por juramento: una tierra, una descendencia incontable y la promesa de que “serán benditas en ti todas las familias de la tierra”. En el Sinaí el pacto se dio a sus hijos como pueblo.', 'Gn 12:1–3; 15:17–18'],
@@ -682,7 +682,7 @@ export const NOTES = {
         0: ['El hombre está hecho a imagen de Dios, y toda vida tiene gran valor. Israel fue escogido no por su grandeza (“no por ser vosotros más que todos los pueblos os ha querido Jehová y os ha escogido”), sino para ser un pueblo santo y luz de las naciones.', 'Gn 1:27 · Dt 7:6–8'],
         1: ['El hombre no nace culpable ni corrompido. Tiene dos inclinaciones, una buena y otra mala, y es libre de dominar la mala por el estudio y la obediencia. La Escritura habla con más gravedad: “el intento del corazón del hombre es malo desde su juventud.”', 'Gn 4:7; 8:21 · Sal 51:5'],
         2: ['Cuando un judío peca, vuelve a Dios (teshuvá) por el pesar, la confesión y una vida cambiada, sobre todo en el Día de la Expiación: “Vuelve, oh Israel, a Jehová tu Dios.” Dios recibe al arrepentido, pero el sacrificio que la Ley señalaba ya no existe.', 'Os 14:1–2'],
-        3: ['El último de los trece principios del judaísmo: “Creo con fe perfecta que habrá resurrección de los muertos en el momento en que plazca al Creador.” Israel, disperso entre las naciones, será traído de vuelta y resucitado.', 'Maimónides, Trece principios · Ez 37:12–14'],
+        3: ['“Creo con fe perfecta que habrá resurrección de los muertos.” Pero no todos resucitan para lo mismo: “unos para vida eterna, y otros para vergüenza y confusión perpetua”. La Misná enseña que “todo Israel tiene parte en el mundo venidero”, y luego nombra a quienes no la tienen, empezando por quien niega la resurrección.', 'Maimónides, Trece principios · Dn 12:2 · Sanedrín 10:1'],
       },
       sin: {
         1: ['El pecado es un acto malo, no una naturaleza caída. La mala inclinación es un impulso que hay que domar, y la Torá su remedio. El Talmud pone en boca de Dios: “Yo creé la mala inclinación, y creé la Torá como su antídoto.” Pero un impulso que se doma no necesita un salvador.', 'Kidushín 30b · Gn 8:21'],
@@ -734,12 +734,12 @@ export const NOTES = {
       bridge: {
         '*': ['El deísmo niega que Dios haya hablado: ni profetas, ni milagros, ni escritura, ni encarnación. “Mi propia mente es mi propia iglesia”, escribió Thomas Paine. Pero si Dios no ha hablado, su mente y su voluntad nos quedan cerradas.', 'Paine, La edad de la razón · He 1:1–2'],
         2: ['El hombre sube hacia Dios solo con la razón. La razón es un don de Dios, pero según la Biblia está oscurecida por el pecado, y los hombres “se envanecieron en sus razonamientos”.', 'Ro 1:21'],
-        3: ['Dios no ha prometido nada: ni perdón, ni resurrección, ni vida venidera. El deísta puede esperar, pero no tiene palabra en que apoyar su esperanza.', ''],
+        3: ['Dios no ha prometido nada: ni perdón, ni resurrección, ni vida venidera. Herbert de Cherbury, padre del deísmo inglés, aún contaba “el premio o el castigo después de esta vida” entre los artículos de la religión natural; pero la razón puede intuir un juicio sin saber cómo librarse de él.', 'Herbert de Cherbury, De Veritate'],
       },
       self: {
         '*': ['El hombre es un ser racional, capaz de descubrir por la luz de la naturaleza que Dios existe y qué es lo recto; no necesita revelación ni redentor. Jefferson aconsejó a su sobrino: “Asienta firmemente a la razón en su trono, y cita ante su tribunal todo hecho, toda opinión.”', 'Jefferson, carta a Peter Carr, 1787'],
         1: ['Lo que frena al hombre no es un corazón pecador, sino la superstición y los sacerdotes que lo mantienen a oscuras. Paine llamó a las iglesias “invenciones humanas, establecidas para aterrorizar y esclavizar a la humanidad, y monopolizar el poder y el lucro”. Enséñese al hombre, y obrará bien.', 'Paine, La edad de la razón'],
-        3: ['Todo el credo de Paine: “Creo en un solo Dios, y en nada más; y espero la felicidad más allá de esta vida.” Espera, pero un Dios que no ha prometido nada no le da nada en que apoyarse.', 'Paine, La edad de la razón'],
+        3: ['Paine esperaba “la felicidad más allá de esta vida”, y Franklin creía que el alma “será tratada con justicia en otra vida según su conducta en esta”. La mayoría de los deístas esperaban premio y castigo. Pero un Dios que nada ha prometido no da fundamento a la esperanza, ni modo de escapar al temor.', 'Paine, La edad de la razón · Franklin, carta a Ezra Stiles, 1790'],
       },
       sin: {
         1: ['El deísmo no tiene caída: el mal viene de la ignorancia y la superstición, y el remedio es la educación y la razón. Pero los más ilustrados no son por eso los mejores, porque “engañoso es el corazón más que todas las cosas, y perverso”.', 'Jer 17:9'],
@@ -1066,7 +1066,7 @@ export const NOTES = {
         3: ['Moksha es la liberación de la rueda de los renacimientos. El Upanishad ora: “Llévame de lo irreal a lo real, de la oscuridad a la luz, de la muerte a la inmortalidad.”', 'Brihadaranyaka Upanishad 1.3.28'],
       },
       bridge: {
-        1: ['El samsara es la rueda del nacimiento, la muerte y el renacimiento, movida por el karma, el peso moral de los propios actos. La Gita: “como el hombre se quita la ropa gastada y se pone otra nueva, así el ser encarnado deja los cuerpos gastados.”', 'Bhagavad Gita 2.22'],
+        1: ['El samsara es la rueda del nacer, morir y renacer, movida por el karma, el peso moral de los actos. “Quienes aquí han obrado bien alcanzarán pronto un buen nacimiento… pero quienes aquí han obrado mal alcanzarán pronto un mal nacimiento: el de un perro, un cerdo o un paria.”', 'Chandogya Upanishad 5.10.7 · Bhagavad Gita 2.22'],
         2: ['La liberación puede llevar muchas vidas: el conocimiento madura despacio, con disciplina, estudio y meditación junto a un maestro. La Gita ofrece también otros caminos: la devoción y la acción desinteresada. Pero todos dependen del esfuerzo del que busca.', 'Bhagavad Gita 4.39'],
       },
       self: {
@@ -1090,7 +1090,7 @@ export const NOTES = {
       },
       world: {
         0: ['Todo surge de causas y pasa; nada tiene esencia duradera. “Todas las cosas condicionadas son impermanentes”, dijo el Buda. Hasta el mundo es una corriente de sucesos, no una creación.', 'Dhammapada 277'],
-        1: ['Samsara: nacer, morir y volver a nacer, sin principio. En el Sermón del Fuego el Buda declaró que “todo está ardiendo”: los sentidos y la mente en llamas de ansia, odio y engaño.', 'Adittapariyaya Sutta (SN 35.28)'],
+        1: ['Samsara: nacer, morir y nacer otra vez, sin principio, entre dioses, hombres, animales, espíritus hambrientos e infiernos, según decida el karma. En el Sermón del Fuego el Buda declaró que “todo arde”: los sentidos y la mente en llamas de ansia, odio y engaño.', 'Adittapariyaya Sutta (SN 35.28)'],
         3: ['El nirvana es la llama apagada: el ansia extinguida, y con ella el renacimiento. “Como una llama apagada por la fuerza del viento se extingue y ya no puede contarse, así el sabio liberado del nombre y el cuerpo.” No es un lugar, ni una unión con Dios.', 'Sutta Nipata 1074'],
       },
       bridge: {
@@ -1101,7 +1101,7 @@ export const NOTES = {
         0: ['No hay alma (anatta). El yo es cinco partes pasajeras: cuerpo, sensación, percepción, formaciones mentales y conciencia. Como enseñó Nagasena, “carro” nombra sus piezas juntas, no algo más.', 'Milindapanha'],
         1: ['El yo se aferra a lo que no puede durar, y por eso sufre. El primer sermón: “el nacimiento es sufrimiento, la vejez es sufrimiento, la enfermedad es sufrimiento, la muerte es sufrimiento.”', 'Dhammacakkappavattana Sutta'],
         2: ['El yo obra su propia liberación con esfuerzo, disciplina y meditación. Las últimas palabras del Buda: “Todas las cosas condicionadas están sujetas a decadencia. Esforzaos con diligencia.”', 'Mahaparinibbana Sutta (DN 16)'],
-        3: ['¿Hubo alguna vez alguien? Preguntado si el iluminado existe tras la muerte, el Buda no quiso responder. El cristianismo no promete la extinción, sino una persona resucitada y conocida.', 'Cula-Malunkyovada Sutta (MN 63) · 1 Co 13:12'],
+        3: ['¿Hubo alguien alguna vez? Cuando le preguntaron si el iluminado existe tras la muerte, el Buda no quiso responder. Cristo promete a su pueblo no la extinción, sino ser resucitado y conocido: “entonces conoceré como fui conocido.”', 'Cula-Malunkyovada Sutta (MN 63) · 1 Co 13:12'],
       },
       sin: {
         1: ['El ansia (tanha) es la causa del sufrimiento: “el ansia de placeres sensuales, el ansia de existencia, el ansia de no existencia”. El problema es el deseo, no el pecado contra Dios.', 'Dhammacakkappavattana Sutta'],
@@ -1206,7 +1206,7 @@ export const NOTES = {
         0: ['El mundo del devenir es copia de las Formas eternas, siempre cambiante. En el Timeo, el tiempo es “una imagen móvil de la eternidad”.', 'Platón, Timeo 37d'],
         1: ['La caverna: prisioneros encadenados que solo ven sombras en la pared, y para ellos “la verdad no sería otra cosa que las sombras de los objetos”. Liberado y llevado a la luz del sol, uno queda al principio deslumbrado; de vuelta en la caverna, los demás lo matarían.', 'Platón, República 514a–517a'],
         2: ['El mundo se ve al fin como lo que es: una sombra de lo real. El filósofo se aparta de él, pero Platón le manda volver para sacar a otros: “cada uno de vosotros, cuando le llegue el turno, ha de bajar.”', 'Platón, República 519d–520c'],
-        3: ['El mundo del devenir es donde las almas no purificadas renacen, hasta que también ellas quedan libres. En el Fedón los glotones “pasan a asnos”, y los violentos “a lobos, halcones y milanos”.', 'Platón, Fedón 81e–82a'],
+        3: ['Tras la muerte, toda alma es juzgada. Las no purificadas nacen otra vez: en el Fedón los glotones “pasan a asnos”. Las peores ya no vuelven: las incurables “son arrojadas al Tártaro, que es su destino merecido, y nunca salen de allí”.', 'Platón, Fedón 81e–82a; 113e · Gorgias 523–526'],
       },
       bridge: {
         0: ['Las Formas: modelos perfectos y eternos de los que las cosas de aquí son copias, conocidos por la mente, no por los sentidos. “¿Existe una justicia en sí?”, pregunta Sócrates; “Ciertamente existe.” Pero las Formas son verdad sin quien la diga: ideas perfectas, sin una mente de la que sean ideas.', 'Platón, Fedón 65d'],
@@ -1235,7 +1235,7 @@ export const NOTES = {
         0: ['El mundo es materia, hecha por error: una potencia de la Plenitud, Sofía, cayó, y de su error nació un dios menor que hizo este mundo. El Evangelio de Felipe: “El mundo surgió por un error.” La creación es una catástrofe, no un regalo.', 'Apócrifo de Juan · Evangelio de Felipe 75'],
         1: ['El mundo es una cárcel, gobernada por las potestades del hacedor (arcontes), que mantienen dormidas en sus cuerpos las chispas de luz. El Evangelio de Tomás: “Quien ha llegado a conocer el mundo ha encontrado un cadáver.”', 'Evangelio de Tomás 56'],
         2: ['El mundo no merece salvarse: la salvación es escapar de él, no su renovación. Pablo dice lo contrario: “la creación misma será libertada de la esclavitud de corrupción.”', 'Ro 8:21'],
-        3: ['Al final toda la materia es consumida, nunca renovada. Dios dice en cambio: “He aquí, yo hago nuevas todas las cosas.”', 'Ap 21:5'],
+        3: ['Al final toda la materia arde, nunca se hace nueva, y con ella quienes no tienen chispa. Ireneo cuenta que los valentinianos dividían a los hombres en tres clases, espirituales, psíquicos y materiales, y que los materiales “necesariamente perecen”. Dios dice en cambio: “He aquí, yo hago nuevas todas las cosas.”', 'Ireneo, Contra las herejías I.6.1; I.7.5 · Ap 21:5'],
       },
       bridge: {
         0: ['El hacedor, Yaldabaot, es un dios menor, ignorante de la Plenitud que está sobre él. En el Apócrifo de Juan se jacta: “Yo soy un Dios celoso, y no hay otro Dios fuera de mí”, haciendo del Dios de Israel el villano.', 'Apócrifo de Juan · Is 45:5'],
