@@ -467,3 +467,76 @@ button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; borde
 .card-open svg#lines g:not(.hot) { opacity: .14; }
 .card-over-words .t { opacity: .14; transition: opacity .35s ease; }
 .card-open .l:not(.open):focus-visible { outline-color: transparent; }
+
+/* ---------- the entrance ----------
+   While the scripts arrive, drops of the painting's three colours (the gold of God, the teal of the world and the red
+   of the cross, as in the site's icon) fall in turn into a small pool of water on the bare sheet and bloom out in it.
+   It shows only if the wait passes a third of a second, and the word under it only if the wait runs long. Each drop
+   and the pool keep one shape, roughened once by the filter, and only grow and fade: work the browser hands to the
+   graphics card, which costs a slow phone almost nothing. Then the pool fades as the first painting flows out of it
+   (uEnter in js/paint.js), and the words are brushed in as at a change of language.
+   Until then the words wait unseen and the page takes no input. Should the scripts never arrive, the words show
+   after twenty seconds all the same. */
+#loading {
+  position: fixed; inset: 0; z-index: 6;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  animation: load-show .6s ease .33s forwards, load-hide .6s ease 20s forwards;
+}
+#loading .w { display: flex; flex-direction: column; align-items: center; margin-top: -4vh; transition: opacity .55s ease; }
+#loading.done .w { opacity: 0; }
+#loading .pool {
+  position: relative;
+  width: min(40vmin, 220px); aspect-ratio: 1;
+  animation: load-breathe 3.6s ease-in-out infinite;
+  will-change: transform;
+}
+/* (the water: barely darker than the paper, with a finer, darker line where it stops) */
+#loading .pool::before {
+  content: ''; position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(120, 150, 160, .035), rgba(120, 150, 160, .06) 80%, rgba(96, 126, 140, .2) 92%, rgba(96, 126, 140, 0) 97%);
+  filter: url(#ragged);
+}
+#loading .pool i {
+  position: absolute; width: 62%; aspect-ratio: 1; border-radius: 50%;
+  filter: url(#ragged-drop);
+  mix-blend-mode: multiply;
+  opacity: 0;
+  animation: load-drop 3.3s cubic-bezier(.2, .6, .3, 1) infinite;
+  will-change: transform, opacity;
+}
+#loading .pool i:nth-child(1) { left: 12%; top: 10%; --c: 233, 181, 72; }
+#loading .pool i:nth-child(2) { left: 28%; top: 30%; --c: 60, 154, 160; animation-delay: 1.1s; }
+#loading .pool i:nth-child(3) { left: 8%; top: 32%; --c: 163, 38, 43; animation-delay: 2.2s; }
+#loading .pool i { background: radial-gradient(closest-side, rgba(var(--c), .34), rgba(var(--c), .24) 50%, rgba(var(--c), .5) 82%, rgba(var(--c), .1) 93%, rgba(var(--c), 0)); }
+#loading .cap {
+  margin: 14px 0 0;
+  font-family: var(--soft); font-variation-settings: 'SOFT' 100, 'WONK' 0; font-style: italic; font-size: 1.05rem;
+  letter-spacing: .03em; color: rgba(43, 33, 29, .62);
+  opacity: 0;
+  animation: load-show .8s ease 1.4s forwards;
+}
+#loading .cap::after { content: '\2026'; display: inline-block; width: 1.1em; text-align: left; animation: load-dots 1.6s steps(4, end) infinite; overflow: hidden; vertical-align: bottom; }
+@keyframes load-show { to { opacity: 1; } }
+@keyframes load-hide { to { opacity: 0; visibility: hidden; } }
+@keyframes load-breathe { 50% { transform: scale(1.045) rotate(4deg); } }
+@keyframes load-drop {
+  0% { transform: scale(.05); opacity: 0; }
+  5% { opacity: .95; }
+  14% { transform: scale(.34); }
+  62% { opacity: .75; }
+  100% { transform: scale(1.1); opacity: 0; }
+}
+@keyframes load-dots { from { width: 0; } to { width: 1.1em; } }
+@media (prefers-reduced-motion: reduce) {
+  #loading .pool, #loading .cap::after { animation: none; }
+  #loading .pool i { animation: none; opacity: .6; transform: scale(.8); }
+}
+/* the page while the first painting is laid down */
+.unpainted :is(.t, #labels, #marks, #menu, #lang, svg#lines, #ask) { opacity: 0; animation: load-show .6s ease 20s forwards; }
+#c { transition: opacity .7s ease; }
+.blank #c { opacity: 0; }
+.entering, .entering * { cursor: progress !important; }
+.entering :is(#labels, #marks, #moves, #menu, #lang) { pointer-events: none; }
+.arrive :is(#menu, #lang) { animation: line-in .9s ease .5s both; }

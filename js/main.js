@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these imports and on those in index.html (the stylesheet, the script and its
 // preloads), all to the same value, so that browsers fetch the new files together instead of mixing new ones with old.
-import { createPainter } from './paint.js?v=129';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=129';
-import { CATALOGUE } from './catalogue.js?v=129';
-import { createMenu } from './menu.js?v=129';
+import { createPainter } from './paint.js?v=130';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=130';
+import { CATALOGUE } from './catalogue.js?v=130';
+import { createMenu } from './menu.js?v=130';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -17,7 +17,7 @@ const num = (name, lo, hi, fallback) => { const v = Number(params.get(name)); re
 // The notes on the cards are a help, not a part the page needs: if they cannot be fetched, the page works as before,
 // with no cards (see the note card below).
 let noteFor = () => null;
-try { ({ noteFor } = await import('./notes.js?v=129')); } catch (err) { console.error(err); }
+try { ({ noteFor } = await import('./notes.js?v=130')); } catch (err) { console.error(err); }
 
 // ---------- language ----------
 // English unless Spanish is asked for: in the address (?lang=es), by the reader's earlier choice, or by the browser's
@@ -39,7 +39,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=129'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=130'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -97,6 +97,39 @@ function markLang() {
 
 const frozen = params.has('t') ? num('t', 0, 1e5, 5) : null;
 
+// ---------- the entrance ----------
+// The first painting is laid down on the bare sheet rather than shown all at once. Its wash flows out from the pool of
+// the loading screen (index.html), wet, the pale colours ahead of the dark (uEnter in paint.js); the connectors and
+// the line of history are drawn in after it; then the words are brushed in, as at a change of language, and the page
+// takes input. ENTER gives those moments, in seconds from the start. (There is no entrance for the tests and stills,
+// which leave the painting out or freeze its clock.)
+const ENTER = { lines: 1.15, words: 1.3, open: 1.8, end: 3 };
+const entrance = { on: !['nopaint', 't', 'k', 'wash'].some((n) => params.has(n)), at: null, words: false, painted: 0 };
+// (for stills: ?enter=1.2 holds the entrance at 1.2 seconds)
+const enterHeld = params.has('enter') ? num('enter', 0, 10, 1) : null;
+const enterU = new Float32Array(4);       // (for the shader: where the wash starts, the seconds since, and 1 while it runs)
+let histIn = 1;                           // how far the line of history is drawn
+// (while it runs, nothing the reader does reaches the page, though the browser's own shortcuts and Tab still work)
+for (const type of ['keydown', 'pointerdown', 'pointerup', 'pointermove', 'click', 'wheel', 'touchstart']) {
+  addEventListener(type, (e) => {
+    if (!document.body.classList.contains('entering')) return;
+    if (type === 'keydown' && (e.metaKey || e.ctrlKey || e.altKey || e.key === 'Tab')) return;
+    e.stopImmediatePropagation();
+    if (type === 'keydown' || type === 'click') e.preventDefault();
+  }, { capture: true });
+}
+// the page at once, with no entrance
+function openPage() {
+  document.body.classList.remove('unpainted', 'entering', 'blank');
+  $('loading')?.remove();
+  entrance.on = false;
+  histIn = 1;
+  enterU[3] = 0;
+}
+if (!entrance.on) openPage();
+// (should the entrance not have started in eight seconds, the page opens as it is rather than stay closed)
+setTimeout(() => { if (entrance.on && entrance.at === null) openPage(); }, 8000);
+
 const canvas = $('c');
 let painter = null;
 // ?nopaint leaves the sheet blank, so tests of the controls run at full speed
@@ -104,6 +137,7 @@ if (!params.has('nopaint')) {
   try { painter = createPainter(canvas); } catch (err) { console.error(err); }
   if (!painter) $('nogl').hidden = false;
 }
+if (!painter) openPage();
 
 // ---------- where we are ----------
 const cur = { wv: HOME, act: 0 };
@@ -1608,7 +1642,12 @@ function drawConn(p, c, G) {
   }
   const beat = lerp(0.004 * Math.sin(c.t * 2.4), 0.005 * c.tock, p.tick);     // a pulse, or the tick of a clock
   const present = `<circle cx="${f(bx)}" cy="${ty}" r="${f(0.031 + beat)}" fill="none" stroke="${ACC}" stroke-width=".003"/><circle cx="${f(bx)}" cy="${ty}" r=".018" fill="${ACC}" stroke="${PAP}" stroke-width=".004"/>`;
-  setConn(`translate(${f(cx)},${f(cy)}) scale(${f(unit)})`, [g, histLine.m, present]);
+  const parts = [g, histLine.m, present];
+  if (histIn < 1) {
+    parts[1] = histIn <= 0 ? '' : `<defs><clipPath id="hist-in"><rect x="${f(-ext - 0.1)}" y="${f(ty - 0.1)}" width="${f((2 * ext + 0.3) * histIn)}" height=".2"/></clipPath></defs><g clip-path="url(#hist-in)">${histLine.m}${present}</g>`;
+    parts[2] = '';
+  }
+  setConn(`translate(${f(cx)},${f(cy)}) scale(${f(unit)})`, parts);
 }
 const histLine = { key: '', m: '' };
 // The connectors go into the page in three groups, in this order: the connectors themselves, the line of history and
@@ -1791,7 +1830,7 @@ const U = {};             // the shader's uniforms, refilled each painting
 // The values that never change in some worldviews, as #defines for a version of the shader that leaves out what
 // cannot show there (see version() in paint.js). Only values passed by name are fixed in this way: never those
 // worked out in frame(), which change even where the value of the same name does not (uTick, uSoul).
-const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA', 'uWords', 'uHome', 'uHot', 'uWash', 'uFormsIn', 'uTabletsIn', 'uAwait', 'uChip', 'uPan[0]', 'uBond[0]', 'uPage[0]', 'uAeon[0]', 'uAccC']);
+const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA', 'uWords', 'uEnter', 'uHome', 'uHot', 'uWash', 'uFormsIn', 'uTabletsIn', 'uAwait', 'uChip', 'uPan[0]', 'uBond[0]', 'uPage[0]', 'uAeon[0]', 'uAccC']);
 const fixedMemo = new Map();
 let readyNext = false, workedChecked = false;
 function fixedIn(ids) {
@@ -1832,7 +1871,8 @@ function frame(now) {
   lastT = now;
   // While nothing on the page moves quickly, 30 paintings a second are enough: the washes drift by less than a
   // point between them. Moves, the glide between sizes and God's orbit get every frame the screen offers.
-  const quick = moving || glide || live.orbit > 0.01 || frozen !== null;
+  const E = enteringAt(now);
+  const quick = moving || glide || live.orbit > 0.01 || frozen !== null || entrance.on;
   if (!quick && !repaint && now - lastDraw < 1000 / 30 - 4) return;
   repaint = false;
   const dt = lastDraw ? Math.min(100, now - lastDraw) / 1000 : 0;
@@ -1885,13 +1925,16 @@ function frame(now) {
     U.uWords = wordsBox;
     U.uHot = hot;
     U.uWash = washOf(now);
+    U.uEnter = enterU;
     // the pictorial things the painting paints (the connectors leave them out while it does): as far as they are drawn in
     U.uFormsIn = p.forms > 0.01 ? p.forms * (drawn.forms ?? 1) : 0;
     U.uTabletsIn = p.tablets > 0.01 ? p.tablets * (drawn.tablets ?? 1) : 0;
     paintedThings(p, G, t);
     U.uAwait = awaitV; U.uChip = chipV; U['uPan[0]'] = panV; U['uBond[0]'] = bondV; U['uPage[0]'] = pageV; U['uAeon[0]'] = aeonV; U.uAccC = accC;
     U.uHome = Math.exp(-(((now - homeAt) / 1100) ** 2));
-    painter.draw(U, fixedIn(onPage), !reduced && frozen === null && !params.has('k') && now - t0 < dur);
+    painter.draw(U, fixedIn(onPage), (!reduced && frozen === null && !params.has('k') && now - t0 < dur) || (entrance.on && E >= 0));
+    // (the painted sheet, grained and a little whiter than the page, comes up over it gently the first time)
+    if (++entrance.painted === 1) document.body.classList.remove('blank');
     // once a worldview has settled, its question's move is made ready in the background
     if (readyNext) { readyNext = false; painter.prepare(fixedIn([cur.wv, WORLDVIEWS[cur.wv].move.to])); }
     // (a value worked out here but missing from WORKED could be fixed wrongly: say so)
@@ -1901,7 +1944,37 @@ function frame(now) {
       for (const u in U) if (!byName.has(u) && !WORKED.has(u)) console.error(`main.js: ${u} is worked out in frame() but missing from WORKED`);
     }
   }
-  drawConn(p, { t, arrow, orb, tock: hd.tock }, G);
+  if (E >= 0) drawConn(p, { t, arrow, orb, tock: hd.tock }, G);
+}
+// The entrance's clock, in seconds (-1 before it starts; Infinity once it is over), and all that follows it. The
+// connectors present are drawn in from their start to their finish, as after a move; the line of history from the left.
+function enteringAt(now) {
+  if (!entrance.on) return Infinity;
+  if (entrance.at === null) { enterU.set([0, 0, -1, 1]); return -1; }
+  const E = enterHeld ?? (now - entrance.at) / 1000;
+  if (E >= ENTER.end) { entrance.on = false; drawn = {}; histIn = 1; enterU[3] = 0; return Infinity; }
+  if (E >= ENTER.words && !entrance.words) inkWords();
+  if (E >= ENTER.open) document.body.classList.remove('entering');
+  const k = ease(unit01((E - ENTER.lines) / 0.8));
+  for (const n of STAGED) if (live[n] > 0.01) drawn[n] = k;
+  histIn = ease(unit01((E - ENTER.lines + 0.15) / 0.9));
+  enterU[2] = E;
+  return E;
+}
+// the words brushed in, one after another in the order they are read, as at a change of language
+function inkWords() {
+  entrance.words = true;
+  const B = document.body.classList;
+  INKED.forEach((sel, i) => document.querySelectorAll(sel).forEach((el) => el.style.setProperty('--d', `${(i * 0.045).toFixed(3)}s`)));
+  READ.forEach((k) => labels[k].g.style.setProperty('--d', `${((INKED.indexOf(`#labels .l.${k}`) + 4) * 0.045).toFixed(3)}s`));
+  B.remove('unpainted');
+  B.add('lang-in', 'arrive');
+  // (a bud that called while the words were unseen calls again, now that it can be seen)
+  for (const k of KEYS) {
+    const el = labels[k].el;
+    if (el.classList.contains('call')) { el.classList.remove('call'); void el.offsetWidth; el.classList.add('call'); }
+  }
+  setTimeout(() => { if (!changing) B.remove('lang-in'); B.remove('arrive'); }, 1500 + INKED.length * 45 + 600);
 }
 
 // The language switch stands on the line of the site's name: at the right of the column of words, or of the page.
@@ -2304,3 +2377,22 @@ markLang();
 if (pageLayout === 'narrow' && !budsKnown && !reduced) for (const k of KEYS) if (labels[k].on) labels[k].el.classList.add('call');
 document.fonts.ready.then(() => { resize(); placeLang(); markLang(); });
 requestAnimationFrame(frame);
+// The entrance starts once the fonts have come, so that the words are laid out in them before they are brushed in (or
+// after a second and a half without them), and once the painting has been painted a few times, so that the slow
+// first painting of a new shader falls before it and does not jump its clock. The wash starts where the pool was.
+if (entrance.on) {
+  Promise.race([document.fonts.ready, pause(1500)]).then(() => {
+    const start = (now) => {
+      if (!entrance.on) return;
+      if (entrance.painted < 3) { requestAnimationFrame(start); return; }
+      const pool = document.querySelector('#loading .pool')?.getBoundingClientRect();
+      const x = pool ? pool.left + pool.width / 2 : innerWidth / 2, y = pool ? pool.top + pool.height / 2 : innerHeight / 2;
+      enterU.set([(x - cx) / unit, (cy - y) / unit, -1, 1]);
+      $('loading')?.classList.add('done');
+      setTimeout(() => $('loading')?.remove(), 900);
+      if (reduced) { openPage(); return; }
+      entrance.at = now;
+    };
+    requestAnimationFrame(start);
+  });
+}

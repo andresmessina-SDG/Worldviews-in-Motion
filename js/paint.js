@@ -75,6 +75,7 @@ uniform vec4 uLab[3];           // where lettering sits inside a shape, and its 
 uniform vec3 uLabA;             // how much each of those three names shows
 uniform vec4 uWords;            // where the page's words stand (centre and half size): the paper is lifted a little under them
 uniform vec2 uWash;             // a change of language: a stroke of clean water passing across, where it is and how strong
+uniform vec4 uEnter;            // the first painting laid down: where the wash starts, the seconds since it began, and 1 while it runs
 uniform vec4 uHot;              // the thing whose label the pointer is on: where, how wide, how strongly lit
 uniform float uHome;            // the light that floods the page on coming home to where the questions began
 uniform sampler2D uBakeA, uBakeB;  // the noise that stands still (see BAKE), when uBaked is 1
@@ -829,6 +830,17 @@ void main(){
   }
   A += K(vec3(.2, .13, .1)) * min(ink, 1.) * (.5 + H);
 
+  // The first painting, laid down on the bare sheet as a painter would: the water goes on first, darkening the paper
+  // a little; then the colour flows out from where the wash began, the pale washes ahead of the dark ones, each
+  // reaching the paper at its own moment ('when', in seconds), with its pigment gathered for a moment at its wet edge.
+  if (uEnter.w > .5) {
+    float dark = smoothstep(.1, 1.2, dot(A, vec3(.3333)));
+    float when = length(q - uEnter.xy) * .42 + dark * .95 + (v1 - .5) * .45 + wM.x * .3;
+    float since = uEnter.z - when;
+    float e = smoothstep(0., .3, since);
+    A *= e + .8 * exp(-pow((since - .06) / .07, 2.));
+    A += vec3(.035, .03, .022) * exp(-pow((since + .14) / .12, 2.));
+  }
   // lettering inside a shape: paper lifted a little with a damp brush
   float lift = 0.;
   for (int i = 0; i < 3; i++){

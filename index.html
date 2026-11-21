@@ -20,16 +20,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Cormorant+SC:wght@600;700&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,100;1,9..144,300..600,100&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=129">
+<link rel="stylesheet" href="css/style.css?v=130">
 <!-- the scripts js/main.js imports, asked for at once with it rather than only once it has arrived -->
-<link rel="modulepreload" href="js/main.js?v=129">
-<link rel="modulepreload" href="js/paint.js?v=129">
-<link rel="modulepreload" href="js/worldviews.js?v=129">
-<link rel="modulepreload" href="js/catalogue.js?v=129">
-<link rel="modulepreload" href="js/menu.js?v=129">
-<link rel="modulepreload" href="js/notes.js?v=129">
+<link rel="modulepreload" href="js/main.js?v=130">
+<link rel="modulepreload" href="js/paint.js?v=130">
+<link rel="modulepreload" href="js/worldviews.js?v=130">
+<link rel="modulepreload" href="js/catalogue.js?v=130">
+<link rel="modulepreload" href="js/menu.js?v=130">
+<link rel="modulepreload" href="js/notes.js?v=130">
 </head>
-<body>
+<!-- Until the first painting has been laid down, the page's words wait unseen (unpainted) and it takes no input
+     (entering); until the sheet is first painted, the canvas is hidden (blank). js/main.js lifts all three. -->
+<body class="unpainted entering blank">
+<!-- While the scripts arrive: drops of the painting's three colours falling into a pool of water on the bare sheet. The
+     first painting then flows out from the pool (see the entrance in js/main.js). -->
+<div id="loading" role="status" aria-label="Loading"><div class="w">
+  <div class="pool"><i></i><i></i><i></i></div>
+  <p class="cap">Painting</p>
+</div></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="ragged" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="3" seed="7"/><feDisplacementMap in="SourceGraphic" scale="9"/></filter>
+  <filter id="ragged-drop" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency=".07" numOctaves="3" seed="3"/><feDisplacementMap in="SourceGraphic" scale="7"/></filter></svg>
+<script>
+  // (the caption in the language the page will open in, chosen as js/main.js chooses it)
+  (function () {
+    var q = new URLSearchParams(location.search).get('lang'), s = null;
+    try { s = localStorage.getItem('lang'); } catch (e) {}
+    var l = q === 'es' || q === 'en' ? q : s === 'es' || s === 'en' ? s : /^es\b/i.test(navigator.language || '') ? 'es' : 'en';
+    if (l === 'es') { document.querySelector('#loading .cap').textContent = 'Pintando'; document.getElementById('loading').setAttribute('aria-label', 'Cargando'); }
+  })();
+</script>
 <canvas id="c" aria-hidden="true"></canvas>
 <svg id="conn" aria-hidden="true"></svg>
 <svg id="lines" aria-hidden="true"></svg>
@@ -55,6 +75,6 @@
 
 <!-- The ?v= number here, on the stylesheet and on the preloads above matches the imports in js/main.js;
      raise them all together on each deploy, so no browser mixes new files with old cached ones. -->
-<script type="module" src="js/main.js?v=129"></script>
+<script type="module" src="js/main.js?v=130"></script>
 </body>
 </html>
