@@ -75,7 +75,7 @@ const TEXT = {
         self: ['El hombre', 'Salvo por gracia, mediante la fe'],
         sin: ['Pecado', 'Pagado en la cruz'],
       }],
-      ['Nueva creación', 'Cristo volverá, resucitará a los muertos y juzgará al mundo. Dios vivirá con su pueblo en un mundo renovado.', {
+      ['Nueva creación', 'Cristo volverá, resucitará a los muertos y juzgará al mundo. Quienes lo rechazaron serán condenados; su pueblo vivirá con Dios en un mundo renovado.', {
         god: TRINE,
         world: ['La nueva creación', 'Sin pecado ni muerte'],
         bridge: ['Cara a cara', 'Verán su rostro'],

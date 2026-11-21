@@ -376,7 +376,7 @@ export const WORLDVIEWS = {
       {
         slug: 'new-creation',
         name: 'New Creation',
-        text: 'Christ will return, raise the dead and judge the world. God will live with his people in a world made new.',
+        text: 'Christ will return, raise the dead and judge the world. Those who rejected him will be condemned; his people will live with God in a world made new.',
         p: { Gy: 0.4, rG: 0.27, Wy: -0.28, rW: 0.38, Sy: -0.26, bridge: 1, bbot: -0.19, crim: 1, lit: 1, glow: 1, rip: 0.7, lBrX: 0.2, lBrY: 0.12, tBrX: 0.03, tBrY: 0.06 },
         labels: {
           god: ['The triune God', 'Father, Son and Holy Spirit'],

@@ -18,8 +18,8 @@ export const NOTES = {
       world: {
         0: ['“In the beginning, God created the heavens and the earth”: out of nothing, and not out of himself. The world is real, ordered and good, his handiwork, not an illusion or an accident. That is why it can be studied, enjoyed and cared for.', 'Gen 1:1, 31'],
         1: ['The world is still God’s good work, but the curse that followed man’s sin lies on it: “cursed is the ground because of you.” Thorns, toil, decay and death came with it, and “the whole creation has been groaning” ever since, waiting to be set free.', 'Gen 3:17–19 · Rom 8:20–22'],
-        2: ['“For God so loved the world, that he gave his only Son.” What sin ruined he is putting right, beginning in his people and reaching at last to the whole of creation: through Christ he means “to reconcile to himself all things”.', 'John 3:16 · Col 1:19–20'],
-        3: ['Not a world thrown away but a world made new: “Behold, I am making all things new.” Heaven and earth are renewed, with no curse, no tears and no death, and God himself will dwell with his people.', 'Rev 21:1–5'],
+        2: ['“God so loved the world, that he gave his only Son, that whoever believes in him should not perish but have eternal life”; and “whoever does not believe is condemned already.” What sin ruined, Christ is putting right: in his people now, and at last in the whole creation.', 'John 3:16–18 · Rom 8:21'],
+        3: ['Not a world thrown away but a world made new: “Behold, I am making all things new.” No curse, no tears, no death, and God himself dwelling with his people. But not everyone enters it: “nothing unclean will ever enter it,” but “only those who are written in the Lamb’s book of life.”', 'Rev 21:1–5, 27'],
       },
       bridge: {
         0: ['From the beginning God spoke to man and bound himself to him by covenant, with commands, promises and his own company. Man knows God because God makes himself known: “at many times and in many ways, God spoke to our fathers by the prophets.”', 'Gen 2:16–17 · Heb 1:1–2'],
@@ -30,8 +30,8 @@ export const NOTES = {
       self: {
         0: ['Man is made in God’s image: personal, rational and moral, made to know God and rule the earth under him. His worth comes from his Maker, not his usefulness. “Man’s chief end is to glorify God, and to enjoy him for ever.”', 'Gen 1:26–27 · Westminster Shorter Catechism, Q. 1'],
         1: ['Man still bears God’s image, but sin has bent every part of him: mind, will and affections. He is not merely weak or ignorant but “dead in the trespasses and sins”, a rebel who cannot save himself.', 'Rom 3:10–12 · Eph 2:1–3'],
-        2: ['“By grace you have been saved through faith. And this is not your own doing; it is the gift of God.” Not by his own merit but in Christ alone, he is forgiven, declared righteous and made new, and now lives to please God.', 'Eph 2:8–10 · Rom 5:1'],
-        3: ['Raised in body and made perfect in holiness, the redeemed live with God for ever: “What is sown is perishable; what is raised is imperishable.” They do not dissolve into God or drift as spirits: they are themselves, at last as they were meant to be.', '1 Cor 15:42–44 · Rev 21:3'],
+        2: ['“By grace you have been saved through faith. And this is not your own doing; it is the gift of God.” The believer is forgiven, declared righteous and made new. The one who will not come stays as he was: “whoever does not obey the Son shall not see life, but the wrath of God remains on him.”', 'Eph 2:8–10 · John 3:36'],
+        3: ['Raised in body and made perfect in holiness, the redeemed live with God for ever, themselves at last as they were meant to be. All the dead are raised, but not all to life: “these will go away into eternal punishment, but the righteous into eternal life.”', 'Matt 25:46 · 1 Cor 15:42–44'],
       },
       sin: {
         1: ['Sin is not first a mistake or a sickness but rebellion: man refusing God’s rule to be, as the serpent promised, “like God”. “The wages of sin is death,” and everyone since Adam is born under it.', 'Gen 3:5 · Rom 5:12; 6:23'],
@@ -641,8 +641,8 @@ export const NOTES = {
       world: {
         0: ['“En el principio creó Dios los cielos y la tierra”: de la nada, no de sí mismo. El mundo es real, ordenado y bueno, obra de sus manos, no una ilusión ni un accidente. Por eso puede estudiarse, disfrutarse y cuidarse.', 'Gn 1:1, 31'],
         1: ['El mundo sigue siendo buena obra de Dios, pero pesa sobre él la maldición que siguió al pecado del hombre: “maldita será la tierra por tu causa.” Con ella vinieron espinos, fatiga, corrupción y muerte, y desde entonces “toda la creación gime”, esperando ser libertada.', 'Gn 3:17–19 · Ro 8:20–22'],
-        2: ['“Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito.” Lo que el pecado arruinó, él lo está restaurando, empezando por su pueblo y alcanzando al fin a toda la creación: por medio de Cristo quiere “reconciliar consigo todas las cosas”.', 'Jn 3:16 · Col 1:19–20'],
-        3: ['No un mundo desechado, sino un mundo hecho nuevo: “He aquí, yo hago nuevas todas las cosas.” Cielos y tierra renovados, sin maldición, sin lágrimas y sin muerte, y Dios mismo morará con su pueblo.', 'Ap 21:1–5'],
+        2: ['“De tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna”; y “el que no cree, ya ha sido condenado”. Lo que el pecado arruinó, Cristo lo está restaurando: en su pueblo ahora, y al fin en toda la creación.', 'Jn 3:16–18 · Ro 8:21'],
+        3: ['No un mundo desechado, sino un mundo hecho nuevo: “He aquí, yo hago nuevas todas las cosas.” Sin maldición, sin lágrimas, sin muerte, y Dios mismo morando con su pueblo. Pero no todos entran: “no entrará en ella ninguna cosa inmunda”, “sino solamente los que están inscritos en el libro de la vida del Cordero”.', 'Ap 21:1–5, 27'],
       },
       bridge: {
         0: ['Desde el principio Dios habló al hombre y se comprometió con él por pacto, con mandamientos, promesas y su propia compañía. El hombre conoce a Dios porque Dios se da a conocer: “muchas veces y de muchas maneras en otro tiempo a los padres por los profetas”.', 'Gn 2:16–17 · He 1:1–2'],
@@ -653,8 +653,8 @@ export const NOTES = {
       self: {
         0: ['El hombre está hecho a imagen de Dios: personal, racional y moral, creado para conocer a Dios y gobernar la tierra bajo él. Su valor viene de su Hacedor, no de su utilidad. “El fin principal del hombre es glorificar a Dios y gozar de él para siempre.”', 'Gn 1:26–27 · Catecismo Menor de Westminster, P. 1'],
         1: ['El hombre aún lleva la imagen de Dios, pero el pecado ha torcido todo su ser: mente, voluntad y afectos. No es solo débil o ignorante, sino que está “muerto en sus delitos y pecados”: un rebelde que no puede salvarse a sí mismo.', 'Ro 3:10–12 · Ef 2:1–3'],
-        2: ['“Porque por gracia sois salvos por medio de la fe; y esto no de vosotros, pues es don de Dios.” No por su mérito sino solo en Cristo, es perdonado, declarado justo y hecho nuevo, y ahora vive para agradar a Dios.', 'Ef 2:8–10 · Ro 5:1'],
-        3: ['Resucitados en el cuerpo y perfeccionados en santidad, los redimidos viven con Dios para siempre: “Se siembra en corrupción, resucitará en incorrupción.” No se disuelven en Dios ni vagan como espíritus: son ellos mismos, al fin como debían ser.', '1 Co 15:42–44 · Ap 21:3'],
+        2: ['“Por gracia sois salvos por medio de la fe; y esto no de vosotros, pues es don de Dios.” El creyente es perdonado, declarado justo y hecho nuevo. El que no quiere venir sigue como estaba: “el que rehúsa creer en el Hijo no verá la vida, sino que la ira de Dios está sobre él.”', 'Ef 2:8–10 · Jn 3:36'],
+        3: ['Resucitados en el cuerpo y perfeccionados en santidad, los redimidos viven con Dios para siempre, al fin ellos mismos como debían ser. Todos los muertos resucitan, pero no todos para vida: “irán éstos al castigo eterno, y los justos a la vida eterna.”', 'Mt 25:46 · 1 Co 15:42–44'],
       },
       sin: {
         1: ['El pecado no es ante todo un error ni una enfermedad, sino rebelión: el hombre rechaza el gobierno de Dios para ser, como prometió la serpiente, “como Dios”. “La paga del pecado es muerte”, y todos desde Adán nacen bajo ella.', 'Gn 3:5 · Ro 5:12; 6:23'],
