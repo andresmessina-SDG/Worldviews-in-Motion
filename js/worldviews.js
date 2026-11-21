@@ -87,7 +87,7 @@ const mtdBase = {
 
 const judaismBase = {
   // the one God above, bound to Israel by covenant: two lines, his and theirs
-  Gy: 0.58, rG: 0.22, Wy: -0.28, rW: 0.36, Sy: -0.22,
+  Gy: 0.47, rG: 0.2, Wy: -0.32, rW: 0.36, Sy: -0.26,
   glory: [1, 0.98, 0.9], sky: [0.9, 0.92, 0.95], far: [0.82, 0.85, 0.92], low: [0.9, 0.9, 0.86], deep: [0.7, 0.76, 0.86],
   sea: [0.3, 0.5, 0.72], land: [0.82, 0.76, 0.58], shade: [0.2, 0.3, 0.5], warm: 0.3, bg: 0.42,
   godC: [0.99, 0.95, 0.82], godRim: [0.6, 0.72, 0.9], godA: 1,
