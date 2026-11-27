@@ -40,7 +40,7 @@ const ok = (name, cond, extra='') => { if (!cond) fails++; console.log(`${cond ?
   }
   // above and below the list
   await p.mouse.move(120, 20); await p.waitForTimeout(700); s = await st(); ok('pointer above the list: lens on first tab, nothing hot', Math.round(s.f) === 0 && s.hot === -1, JSON.stringify({f:s.f,hot:s.hot}));
-  await p.mouse.move(120, 880); await p.waitForTimeout(700); s = await st(); ok('pointer below the list: lens on last tab', Math.round(s.f) === 21, `f=${s.f}`);
+  await p.mouse.move(120, 880); await p.waitForTimeout(700); s = await st(); { const last = await p.evaluate(() => document.querySelectorAll('.tab').length - 1); ok('pointer below the list: lens on last tab', Math.round(s.f) === last, `f=${s.f} last=${last}`); }
 
   // pencil tab: click does nothing, note appears (only while some worldview is still unbuilt)
   const hasPencil = await p.evaluate(() => !!document.querySelector('.tab.pencil'));
