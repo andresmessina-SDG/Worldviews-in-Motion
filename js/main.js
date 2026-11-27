@@ -1,9 +1,9 @@
 // Each deploy raises the ?v= number on these imports and on those in index.html (the stylesheet, the script and its
 // preloads), all to the same value, so that browsers fetch the new files together instead of mixing new ones with old.
-import { createPainter } from './paint.js?v=133';
-import { WORLDVIEWS, HOME } from './worldviews.js?v=133';
-import { CATALOGUE } from './catalogue.js?v=133';
-import { createMenu } from './menu.js?v=133';
+import { createPainter } from './paint.js?v=134';
+import { WORLDVIEWS, HOME } from './worldviews.js?v=134';
+import { CATALOGUE } from './catalogue.js?v=134';
+import { createMenu } from './menu.js?v=134';
 
 // The address ends in #worldview/act, for example #deism/reason.
 // For stills: ?wv=deism&act=3&t=5 freezes the clock; adding &k=0.5 shows the
@@ -17,7 +17,7 @@ const num = (name, lo, hi, fallback) => { const v = Number(params.get(name)); re
 // The notes on the cards are a help, not a part the page needs: if they cannot be fetched, the page works as before,
 // with no cards (see the note card below).
 let noteFor = () => null;
-try { ({ noteFor } = await import('./notes.js?v=133')); } catch (err) { console.error(err); }
+try { ({ noteFor } = await import('./notes.js?v=134')); } catch (err) { console.error(err); }
 
 // ---------- language ----------
 // English unless Spanish is asked for: in the address (?lang=es), by the reader's earlier choice, or by the browser's
@@ -39,7 +39,7 @@ const TEXT_EN = {
   }])),
 };
 let T = UI_EN, BREAKS_ES = '', esModule = null;
-const loadEs = async () => (esModule ||= await import('./es.js?v=133'));
+const loadEs = async () => (esModule ||= await import('./es.js?v=134'));
 function applyLang(l) {
   if (l === 'es') {
     esModule.apply(WORLDVIEWS, CATALOGUE);
@@ -178,7 +178,7 @@ const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 // drawn[n] is how far connector n is drawn (missing: wholly); its value keeps the strength it has when at rest.
 const STAGED = new Set(['ladder', 'bridge', 'ghost', 'empty', 'wheel', 'spokes', 'current', 'push', 'offer', 'bonds', 'wheelYr', 'cast', 'spiral',
   'rings', 'fence', 'upload', 'steps', 'covenant', 'tablets', 'awaited', 'sent', 'scales', 'extract', 'revolt', 'reason', 'call', 'rise',
-  'divide', 'partake', 'forms', 'rebirth', 'pleroma', 'spheres', 'seeming']);
+  'divide', 'partake', 'forms', 'rebirth', 'pleroma', 'spheres', 'seeming', 'asha', 'chinvat', 'fravahar', 'saosh']);
 let drawn = {}, drawnFrom = {};
 const unit01 = (v) => Math.min(1, Math.max(0, v));
 function stageP(a, b, x, whole) {
@@ -345,7 +345,7 @@ moveBtn.onclick = () => { auto = false; go(moveTo, cur.act, true); };
 const BREAKS = 'De-con-struc-tion For-get-ful-ness Dis-con-nec-tion Super-sti-tion Im-per-ma-nence En-hance-ment Sin-gu-lar-ity '
   + 'Cul-ti-va-tion Re-mem-brance Ap-pease-ment Re-demp-tion Clock-mak-er Sub-mis-sion Ex-tinc-tion Alien-ation Rev-o-lu-tion '
   + 'Re-pres-sion Ful-fil-ment Un-fin-ished For-get-ting Ig-no-rance Un-cer-tain Judge-ment Suf-fer-ing Com-mu-nism Awak-en-ing '
-  + 'As-cen-sion Knowl-edge An-ces-tors Ex-pres-sion';
+  + 'As-cen-sion Knowl-edge An-ces-tors Ex-pres-sion Won-der-ful Dark-ness';
 const shyOf = (breaks) => Object.fromEntries(breaks.trim().split(' ').map((w) => [w.replace(/-/g, ''), w.replace(/-/g, '\u00ad')]));
 let SHY = shyOf(`${BREAKS} ${BREAKS_ES}`);
 const breakable = (name) => name.split(' ').map((w) => w.split('-').map((x) => SHY[x] ?? x).join('-')).join(' ');
@@ -709,11 +709,20 @@ function layout(p, G, dt) {
   // (once the stain has been lifted onto the cross, its name moves up beside it)
   // (in Marxism the stain sits on the top of the pyramid, not on man, and its name goes with it)
   const onY = p.Wy + p.rW * 0.52;
-  const sinX = lerp(-(p.rW + p.lSide), -0.15, p.stainUp), sinY0 = lerp(lerp(p.Sy - 0.08, 0.03, p.stainUp), onY + 0.04, p.stainOn);
+  // (in Zoroastrianism's first act, evil is not in man but below the world: the name of the Hostile Spirit sits low,
+  // and its line reaches down into the dark)
+  const sinX = lerp(-(p.rW + p.lSide), -0.15, p.stainUp), sinY0 = lerp(lerp(lerp(p.Sy - 0.08, 0.03, p.stainUp), onY + 0.04, p.stainOn), p.Wy - p.rW * 0.78, p.sinDark);
   const sinY = sinX - labels.sin.w < wordsRight + 0.03 ? Math.min(sinY0, wordsBottom - labels.sin.h / 2 - 0.03) : sinY0;
-  at.sin = [sinX, sinY, lerp(lerp(-0.02 - p.stainR * 0.8, -0.115, p.stainUp), -p.stainR * 0.8, p.stainOn), lerp(lerp(p.Sy - 0.06, 0.03, p.stainUp), onY, p.stainOn)];
+  at.sin = [sinX, sinY, lerp(lerp(lerp(-0.02 - p.stainR * 0.8, -0.115, p.stainUp), -p.stainR * 0.8, p.stainOn), -p.rW * 0.8, p.sinDark),
+    lerp(lerp(lerp(p.Sy - 0.06, 0.03, p.stainUp), onY, p.stainOn), p.Wy - p.rW * 0.88, p.sinDark)];
   keepApart(at, godY, worldY, dt);
   for (const k of MOVABLE) place(k, at[k][0], at[k][1] + slide[k][0], at[k][2], at[k][3]);
+  // (a name that has come to lie on Zoroastrianism's darkness is lettered pale, as in white paint, to read on it)
+  for (const k of MOVABLE) {
+    const b = boxOf(k, at[k][0], at[k][1] + slide[k][0]), x = (b[0] + b[2]) / 2, y = (b[1] + b[3]) / 2;
+    const on = p.night > 0.4 && y < p.nightY - 0.2 * x * x - 0.02 && b[1] > markY + markH / 2 + 0.02;
+    if (on !== labels[k].pale) { labels[k].pale = on; labels[k].el.classList.toggle('pale', on); labels[k].g.classList.toggle('pale', on); }
+  }
   // what each label names, for the light under the pointer
   named.god = [G.x, G.y, G.r + 0.03]; named.world = [0, p.Wy, p.rW + 0.03]; named.self = [0, p.Sy, 0.11];
   named.bridge = [at.bridge[2], at.bridge[3], 0.1]; named.sin = [at.sin[2], at.sin[3], Math.max(0.08, p.stainR + 0.05)];
@@ -1021,6 +1030,9 @@ const runs = (n, p, G) => {
   const down = ['y', G.y - G.r * 0.4, p.Sy - 0.13], up = ['y', p.Sy - 0.02, G.y - G.r + 0.06];
   switch (n) {
     case 'bridge': case 'covenant': case 'sent': case 'seeming': case 'ghost': return down;
+    case 'asha': return ['y', G.y - G.r * 0.4, p.Wy + p.rW - 0.03];
+    case 'chinvat': return ['y', p.Wy + p.rW * 0.55, G.y - G.r * 0.2];
+    case 'fravahar': return ['y', p.fravY - 0.2, p.fravY + 0.2];
     case 'scales': return ['y', G.y - G.r + 0.02, G.y - G.r - 0.34];
     case 'partake': return ['y', 0.4, p.Wy];
     case 'rebirth': return ['y', 0.28, -0.22];
@@ -1378,6 +1390,126 @@ function drawConn(p, c, G) {
     g = g0 + reveal('awaited', g, p, G);
   }
 
+  // ----- Zoroastrianism: Asha, the right order of things, a gold thread from the Wise Lord down to the world's crown.
+  //       Torn in the assault, it runs on in pieces. -----
+  if (p.asha > 0.01) {
+    const g0 = g; g = '';
+    const y0 = G.y - G.r - 0.012, y1 = p.Wy + p.rW + 0.004;
+    if (y0 > y1) {
+      const GOLD = 'rgb(196,138,28)';
+      if (p.fray > 0.02) {
+        const len = y0 - y1, on = 0.05 * (1 - p.fray) + 0.016, period = on + 0.022 * p.fray;
+        for (let s0 = 0, i = 0; s0 < len; s0 += period, i++) {
+          const a = s0, b = Math.min(len, s0 + on), at = (u) => [G.x * (1 - u / len) + 0.0035 * p.fray * Math.sin(i * 2.3), -y0 + u];
+          if (b - a > 0.002) g += ink([at(a), at(b)], 0.0052, GOLD, 300 + i, { pool: false, taper: 0.45 });
+        }
+      } else g += ink([[G.x, -y0], [0, -y1]], 0.0056, GOLD, 301);
+      g = `<g opacity="${f(p.asha)}">${g}</g>`;
+    }
+    g = g0 + reveal('asha', g, p, G);
+  }
+
+  // ----- Zoroastrianism: the Chinvat Bridge, arched from the world up toward the light over the dark. For the just it
+  //       is a broad way of planks; for the wicked it narrows to a thread. It widens and narrows by turns. -----
+  if (p.chinvat > 0.01) {
+    const g0 = g; g = '';
+    const a0 = 0.95, a1 = 0.62;                                      // (from the world's right shoulder to the Wise Lord's lower right)
+    const P0 = [p.rW * Math.sin(a0), p.Wy + p.rW * Math.cos(a0)], P3 = [G.x + G.r * Math.sin(a1), G.y - G.r * Math.cos(a1) - 0.012];
+    const P1 = [P0[0] + 0.16, P0[1] + 0.12], P2 = [P3[0] + 0.15, P3[1] - 0.1];
+    const bz = (u) => { const v = 1 - u; return [0, 1].map((j) => v * v * v * P0[j] + 3 * v * v * u * P1[j] + 3 * v * u * u * P2[j] + u * u * u * P3[j]); };
+    // (the width steps rather than gliding, so that each width's pen lines are drawn once and kept)
+    const breathe = 0.5 + 0.5 * Math.sin(c.t * 0.45);
+    const W = Math.round((0.006 + 0.04 * breathe) / 0.003) * 0.003;
+    const N = 40, rails = [[], []], planks = [];
+    for (let i = 0; i <= N; i++) {
+      const u = i / N, [x, y] = bz(u), [xa, ya] = bz(Math.min(1, u + 0.01)), [xb, yb] = bz(Math.max(0, u - 0.01));
+      let nx = -(ya - yb), ny = xa - xb; const nl = Math.hypot(nx, ny) || 1; nx /= nl; ny /= nl;
+      const w = W * (0.75 + 0.25 * Math.sin(Math.PI * u));
+      rails[0].push([x + nx * w / 2, -(y + ny * w / 2)]); rails[1].push([x - nx * w / 2, -(y - ny * w / 2)]);
+      if (i % 2 === 1 && W > 0.012) planks.push([[x + nx * w / 2, -(y + ny * w / 2)], [x - nx * w / 2, -(y - ny * w / 2)]]);
+    }
+    g += ink(rails[0], 0.0046, DARK, 320, { pool: false });
+    if (W > 0.008) g += ink(rails[1], 0.0046, DARK, 321, { pool: false });
+    planks.forEach((pl, i) => { g += `<path d="M${f(pl[0][0])},${f(pl[0][1])} L${f(pl[1][0])},${f(pl[1][1])}" fill="none" stroke="${ACC}" stroke-width=".0026"/>`; });
+    g = `<g opacity="${f(p.chinvat)}">${g}</g>`;
+    g = g0 + reveal('chinvat', g, p, G);
+  }
+
+  // ----- Zoroastrianism: the fire altar on the world's crown, a stone chalice on a stepped foot, which the painting's
+  //       flame burns in -----
+  if (p.fire > 0.01) {
+    const y0 = -(p.Wy + p.rW - 0.008), Y = (y) => f(y0 - y);
+    const d = `M-.03,${Y(0)} L.03,${Y(0)} L.03,${Y(0.01)} L.021,${Y(0.01)} L.021,${Y(0.018)} L.009,${Y(0.018)} L.009,${Y(0.033)} L.031,${Y(0.05)} L-.031,${Y(0.05)} L-.009,${Y(0.033)} L-.009,${Y(0.018)} L-.021,${Y(0.018)} L-.021,${Y(0.01)} L-.03,${Y(0.01)} Z`;
+    g += `<g opacity="${f(p.fire)}"><path d="${d}" fill="#ece0c8" stroke="${DARK}" stroke-width=".0038" stroke-linejoin="round"/></g>`;
+  }
+
+  // ----- Zoroastrianism: the Faravahar, read today as man's fravashi, his guardian spirit: a ring about him, a figure
+  //       rising from it with one hand raised, the wings in three rows of feathers (good thoughts, words and deeds), the
+  //       tail below, and two streamers for the choice. At the end it rises toward the light. -----
+  if (p.fravahar > 0.01) {
+    const g0 = g; g = '';
+    // (round man, the ring is wide enough to hold him; risen and free of him, it closes to the ring of the old carvings)
+    const R = lerp(0.082, 0.04, unit01((p.fravY - p.Sy) / 0.25));
+    const oy = -p.fravY, L = (pts) => `M${pts.map(([x, y]) => `${f(x)},${f(oy - y)}`).join(' L')}`;
+    let d = '', fine = '';
+    const x0 = R + 0.006, span = 0.2;
+    // a wing's row k: its top edge at x, the rows stacked, each a little shorter than the one above, rising to the tip
+    const top = (x, k) => 0.022 - k * 0.026 + 0.05 * Math.pow(Math.max(0, (x - x0) / span), 1.5);
+    for (const s of [-1, 1]) {
+      const X = (x) => s * x;
+      for (let k = 0; k < 3; k++) {
+        const x1 = x0 + span * (1 - 0.15 * k), n = 8 - k;
+        if (k === 0) { const pts = []; for (let i = 0; i <= 10; i++) { const x = x0 + (x1 - x0) * i / 10; pts.push([X(x), top(x, 0)]); } d += L(pts) + ' '; }
+        // the row's foot: a scallop for each feather, and a fine line between one feather and the next
+        const pts = [];
+        for (let i = 0; i < n; i++) {
+          const xa = x0 + (x1 - x0) * i / n, xb = x0 + (x1 - x0) * (i + 1) / n;
+          for (let j = 0; j <= 4; j++) { const x = xa + (xb - xa) * j / 4; pts.push([X(x), top(x, k) - 0.026 - 0.006 * Math.sin(Math.PI * j / 4)]); }
+          if (i > 0) fine += L([[X(xa), top(xa, k) - 0.003], [X(xa), top(xa, k) - 0.024]]) + ' ';
+        }
+        d += L(pts) + ' ' + L([[X(x1), top(x1, k)], [X(x1), top(x1, k) - 0.026]]) + ' ';
+      }
+      // a streamer from the ring's foot, sweeping out and curling up at its end
+      const st = [];
+      for (let i = 0; i <= 14; i++) { const u = i / 14; st.push([X(R * 0.55 + 0.11 * u), -R - 0.005 - 0.045 * Math.sin(u * 2.4)]); }
+      const ex = R * 0.55 + 0.11, ey = -R - 0.005 - 0.045 * Math.sin(2.4), cr = 0.014;
+      for (let i = 1; i <= 12; i++) { const a = -Math.PI / 2 + (i / 12) * Math.PI * 1.6, r = cr * (1 - 0.4 * i / 12); st.push([X(ex + r * Math.sin(a + Math.PI / 2) * 0 + r * Math.cos(a)), ey + cr + r * Math.sin(a)]); }
+      d += L(st) + ' ';
+    }
+    // the tail: three rows below the ring, widening downward, with a scalloped foot
+    const ty0 = -R - 0.004;
+    for (let k = 0; k <= 3; k++) {
+      const y = ty0 - k * 0.024, hw = 0.026 + 0.012 * k;
+      if (k < 3) d += L([[-hw, y], [hw, y]]) + ' ';
+      if (k > 0) d += L([[-(hw - 0.012), y + 0.024], [-hw, y]]) + ' ' + L([[hw - 0.012, y + 0.024], [hw, y]]) + ' ';
+      if (k > 0) for (let i = 1; i < 3 + k; i++) { const u = i / (3 + k); fine += L([[(-hw + 0.012 + 2 * (hw - 0.012) * u), y + 0.024], [(-hw + 2 * hw * u), y]]) + ' '; }
+      if (k === 3) { const pts = []; for (let i = 0; i <= 24; i++) { const x = -hw + 2 * hw * i / 24; pts.push([x, y - 0.006 * Math.abs(Math.sin(Math.PI * i * 6 / 24))]); } d += L(pts) + ' '; }
+    }
+    // the figure rising from the ring: body, head, one hand raised, the other holding out a ring
+    const b0 = R * 0.75, b1 = R + 0.052;
+    d += L([[-0.019, b0], [-0.023, b1 - 0.012], [-0.011, b1], [0.011, b1], [0.023, b1 - 0.012], [0.019, b0]]) + ' ';
+    d += L([[0.021, b1 - 0.008], [0.047, b1 + 0.008], [0.055, b1 + 0.032]]) + ' ';
+    d += L([[-0.021, b1 - 0.01], [-0.044, b1 - 0.018]]) + ' ';
+    g += `<g opacity="${f(p.fravahar)}">`;
+    g += `<path d="${d}" fill="none" stroke="${DARK}" stroke-width=".0042"/>`;
+    g += `<path d="${fine}" fill="none" stroke="${DARK}" stroke-width=".0024"/>`;
+    g += `<circle cx="0" cy="${f(oy - b1 - 0.018)}" r=".015" fill="none" stroke="${DARK}" stroke-width=".0042"/>`;
+    g += `<circle cx="-.054" cy="${f(oy - b1 + 0.018)}" r=".009" fill="none" stroke="${ACC}" stroke-width=".0036"/>`;
+    g += `<circle cx="0" cy="${f(oy)}" r="${f(R)}" fill="none" stroke="${DARK}" stroke-width=".0046"/>`;
+    g += '</g>';
+    g = g0 + reveal('fravahar', g, p, G);
+  }
+
+  // ----- Zoroastrianism: the Saoshyant, the saviour still to come, a small gold light standing on the world's crown,
+  //       ringed with a broken line: awaited, not yet here -----
+  if (p.saosh > 0.01) {
+    const g0 = g; g = '';
+    const x = 0.24, y = p.Wy + Math.sqrt(Math.max(0, p.rW * p.rW - 0.24 * 0.24)) + 0.035;
+    g += `<g opacity="${f(p.saosh)}"><circle cx="${f(x)}" cy="${f(-y)}" r=".022" fill="rgb(246,200,90)" stroke="${ACC}" stroke-width=".004"/>`;
+    g += `<circle cx="${f(x)}" cy="${f(-y)}" r=".04" fill="none" stroke="${ACC}" stroke-width=".0036" stroke-linecap="round" stroke-dasharray=".01 .012" stroke-dashoffset="${f(c.t * 0.004)}"/></g>`;
+    g = g0 + reveal('saosh', g, p, G);
+  }
+
   // ----- the Quran sent down: a ruled line from God to man, with its pages coming down it. God himself stays above. -----
   if (p.sent > 0.01) {
     const g0 = g; g = '';
@@ -1626,9 +1758,13 @@ function drawConn(p, c, G) {
   // ----- the line of history -----
   // (it changes only between acts or when the window does, so it is inked once and kept until then)
   const ty = 0.87, bx = ext * (-0.72 + 0.48 * p.act);
-  const histKey = `${ext} ${p.act} ${p.tick} ${ACC}`;
+  // (on Zoroastrianism's darkness, the line and the names of the acts are lettered pale)
+  // (only once the dark has risen well above them: during a move it may be on its way up, or down)
+  const pale = nightLow() && p.night * unit01((p.nightY - 0.2 * ext * ext - markY) / 0.12) > 0.5, LINE = pale ? '#efe6d2' : DARK;
+  if (pale !== marksPale) { marksPale = pale; $('marks').classList.toggle('pale', pale); }
+  const histKey = `${ext} ${p.act} ${p.tick} ${ACC} ${pale}`;
   if (histLine.key !== histKey) {
-    let h = ink([[-ext, ty], [ext + 0.04, ty]], 0.0055, DARK, 501, { pool: false, wobble: 0.0015 });
+    let h = ink([[-ext, ty], [ext + 0.04, ty]], 0.0055, LINE, 501, { pool: false, wobble: 0.0015 });
     // (inked in as far as the open act: how much of the story has been told)
     if (bx + ext > 0.01) h += ink([[-ext, ty], [bx, ty]], 0.0115, ACC, 509, { pool: false, wobble: 0.0015, taper: 0.55 });
     if (p.tick > 0.01) {
@@ -1636,8 +1772,8 @@ function drawConn(p, c, G) {
       for (let i = 0; i <= 48; i++) ticks += `M${f(-ext + (2 * ext * i) / 48)},${ty + 0.012} v.014 `;
       h += `<path d="${ticks}" stroke="${DARK}" stroke-width=".002" opacity="${f(0.7 * p.tick)}"/>`;
     }
-    h += `<path d="M${f(ext + 0.085)},${ty} L${f(ext + 0.03)},${ty - 0.026} L${f(ext + 0.03)},${ty + 0.026}Z" fill="${DARK}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/>`;
-    for (let i = 0; i < 4; i++) h += `<circle cx="${f(ext * (-0.72 + 0.48 * i))}" cy="${ty}" r=".013" fill="${i < p.act - 0.5 ? ACC : PAP}" stroke="${DARK}" stroke-width=".0055"/>`;
+    h += `<path d="M${f(ext + 0.085)},${ty} L${f(ext + 0.03)},${ty - 0.026} L${f(ext + 0.03)},${ty + 0.026}Z" fill="${LINE}" stroke="${PAP}" stroke-width=".004" stroke-linejoin="round"/>`;
+    for (let i = 0; i < 4; i++) h += `<circle cx="${f(ext * (-0.72 + 0.48 * i))}" cy="${ty}" r=".013" fill="${i < p.act - 0.5 ? ACC : PAP}" stroke="${LINE}" stroke-width=".0055"/>`;
     histLine.key = histKey; histLine.m = h;
   }
   const beat = lerp(0.004 * Math.sin(c.t * 2.4), 0.005 * c.tock, p.tick);     // a pulse, or the tick of a clock
@@ -1650,6 +1786,11 @@ function drawConn(p, c, G) {
   setConn(`translate(${f(cx)},${f(cy)}) scale(${f(unit)})`, parts);
 }
 const histLine = { key: '', m: '' };
+let marksPale = false;
+// Zoroastrianism's darkness reaches down to the paper's margin where the names of the acts sit under the painting,
+// and they are lettered pale on it; on a phone, where the act's words follow below, it stops above the names.
+const nightLow = () => pageLayout !== 'narrow';
+const nightFloor = () => (nightLow() ? -(viewH - cy) / unit + 0.05 : markY + markH / 2 + 0.02);
 // The connectors go into the page in three groups, in this order: the connectors themselves, the line of history and
 // the mark of the present on it. A group whose drawing is the same as in the last frame is left alone, so the browser
 // has nothing to read again or lay out there (the line of history alone was most of the drawing in most worldviews).
@@ -1830,7 +1971,7 @@ const U = {};             // the shader's uniforms, refilled each painting
 // The values that never change in some worldviews, as #defines for a version of the shader that leaves out what
 // cannot show there (see version() in paint.js). Only values passed by name are fixed in this way: never those
 // worked out in frame(), which change even where the value of the same name does not (uTick, uSoul).
-const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA', 'uWords', 'uEnter', 'uHome', 'uHot', 'uWash', 'uFormsIn', 'uTabletsIn', 'uAwait', 'uChip', 'uPan[0]', 'uBond[0]', 'uPage[0]', 'uAeon[0]', 'uAccC']);
+const WORKED = new Set(['uRes', 'uCen', 'uUnit', 'uT', 'uG', 'uGx', 'uGf', 'uGb', 'uW', 'uSoul', 'uSpA', 'uSp[0]', 'uRipY', 'uTick', 'uHands', 'uLab[0]', 'uLabA', 'uWords', 'uEnter', 'uHome', 'uHot', 'uWash', 'uFormsIn', 'uTabletsIn', 'uAwait', 'uChip', 'uPan[0]', 'uBond[0]', 'uPage[0]', 'uAeon[0]', 'uAccC', 'uNightF']);
 const fixedMemo = new Map();
 let readyNext = false, workedChecked = false;
 function fixedIn(ids) {
@@ -1926,6 +2067,7 @@ function frame(now) {
     U.uHot = hot;
     U.uWash = washOf(now);
     U.uEnter = enterU;
+    U.uNightF = nightFloor();
     // the pictorial things the painting paints (the connectors leave them out while it does): as far as they are drawn in
     U.uFormsIn = p.forms > 0.01 ? p.forms * (drawn.forms ?? 1) : 0;
     U.uTabletsIn = p.tablets > 0.01 ? p.tablets * (drawn.tablets ?? 1) : 0;

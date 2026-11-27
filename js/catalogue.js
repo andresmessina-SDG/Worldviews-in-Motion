@@ -28,6 +28,7 @@ export const CATALOGUE = [
   { id: 'confucianism', name: 'Confucianism', family: 'eastern', c: ['#d8c8a0', '#a03a2a'] },
   { id: 'animism', name: 'Animism', family: 'eastern', c: ['#a06a3a', '#4a7a3a'] },
 
+  { id: 'zoroastrianism', name: 'Zoroastrianism', family: 'classical', c: ['#f0a830', '#2c2a4a'] },
   { id: 'platonism', name: 'Platonism', family: 'classical', c: ['#e8dcc0', '#8a7fc0'] },
   { id: 'gnosticism', name: 'Gnosticism', family: 'classical', c: ['#dcd8ec', '#8a5a2a'] },
 ];

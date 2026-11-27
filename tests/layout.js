@@ -3,7 +3,7 @@
 const { chromium } = require('playwright');
 const { site } = require('./common');
 const SIZES = [[1440,900],[1920,1080],[1280,720],[1024,768],[2560,1080],[1100,800],[768,1024],[390,844],[320,568],[360,640],[1366,600],[1280,1024],[3440,1440],[1024,600],[600,1024],[412,915],[375,667],[1536,730],[1280,620],[820,1180],[1180,820]];
-const WV = {christian:4,judaism:4,islam:4,deism:4,mtd:4,naturalism:4,humanism:4,nihilism:4,existentialism:4,postmodernism:4,marxism:4,individualism:4,transhumanism:4,'new-age':4,'neo-paganism':4,'hindu-monism':4,buddhism:4,taoism:4,confucianism:4,animism:4,platonism:4,gnosticism:4};
+const WV = {christian:4,judaism:4,islam:4,deism:4,mtd:4,naturalism:4,humanism:4,nihilism:4,existentialism:4,postmodernism:4,marxism:4,individualism:4,transhumanism:4,'new-age':4,'neo-paganism':4,'hindu-monism':4,buddhism:4,taoism:4,confucianism:4,animism:4,zoroastrianism:4,platonism:4,gnosticism:4};
 (async () => {
   const b = await chromium.launch();
   let bad = 0;

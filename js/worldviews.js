@@ -35,13 +35,14 @@ const DEFAULTS = {
   selfR: 0.02, selfA: 0, selfC: [0.86, 0.33, 0.24],
   one: 0, maya: 0, worldA: 1, manI: 1, wheel: 0,
   moons: 0, seasons: 0, aura: 0, circuit: 0, shards: 0, dominant: 0, play: 0, gap: 0, script: 0, pyr: 0, level: 0, strata: 0, split: 0, churn: 0, stainOn: 0, star: 0, law: 0,
+  night: 0, nightY: -1.4, mixture: 0, fire: 0, molten: 0,
   spirits: 0, pull: 0, anger: 0, near: 0, offer: 0, bi: 0, unbound: 0, bonds: 0, loose: 0, lineage: 0, yin: 0, mist: 0, current: 0, push: 0, along: 0, flux: 0, bundle: 0, scatter: 0, spokes: 0, scan: 0, lit: 0, stainUp: 0, stainR: 0.02, stainA: 0, glow: 0, dull: 0, rip: 0, ripAt: 1,
   demi: 0, demiY: 0.3, demiR: 0.085,
   // connectors
   bridge: 0, bw: 0.006, bbot: -0.02, crim: 0, cross: 0, snap: 0, flow: 0,
-  wheelYr: 0, cast: 0, spiral: 0, spiralW: 0, rings: 0, ringDir: 0, fence: 0, burst: 0, upload: 0, steps: 0, covenant: 0, broken: 0, tablets: 0, awaited: 0, sent: 0, scales: 0, extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, divY: 0.14, pleroma: 0, sophia: 0, spheres: 0, guard: 0, gates: 0, seeming: 0, tick: 0, acc: [163, 38, 43],
+  wheelYr: 0, cast: 0, spiral: 0, spiralW: 0, rings: 0, ringDir: 0, fence: 0, burst: 0, upload: 0, steps: 0, covenant: 0, broken: 0, tablets: 0, awaited: 0, sent: 0, scales: 0, extract: 0, revolt: 0, ghost: 0, reason: 0, call: 0, rise: 0, orbit: 0, oR: 0.6, oTilt: 0.4, oRot: 0, oSpd: 0, forms: 0, partake: 0, copies: 0, copyDark: 0, soul: 0, soulY: 0, ladder: 0, rebirth: 0, divide: 0, divY: 0.14, pleroma: 0, sophia: 0, spheres: 0, guard: 0, gates: 0, seeming: 0, tick: 0, asha: 0, fray: 0, chinvat: 0, fravahar: 0, fravY: 0, saosh: 0, acc: [163, 38, 43],
   // lettering
-  lGodK: 0, lSide: 0.1, lBrX: 0.3, lBrY: 0.145, tBrX: 0.05, tBrY: 0.11, tBrS: 0,
+  lGodK: 0, lSide: 0.1, sinDark: 0, lBrX: 0.3, lBrY: 0.145, tBrX: 0.05, tBrY: 0.11, tBrS: 0,
 };
 
 const christianBase = {
@@ -280,6 +281,20 @@ const confucianBase = {
   bi: 1, bonds: 1,
   acc: [160, 58, 42],
   lBrY: 0.35, tBrX: 0.17,
+};
+
+const zoroastrianBase = {
+  // the Wise Lord above in endless light, a sun of fire; below, the endless darkness of the Hostile Spirit, its front
+  // rising and falling from act to act; between them the world, made good and set there to fight
+  Gy: 0.5, rG: 0.2, Wy: -0.4, rW: 0.32, Sy: -0.3,
+  glory: [1, 0.93, 0.68], sky: [0.99, 0.84, 0.56], far: [0.97, 0.88, 0.72], low: [0.9, 0.88, 0.84], deep: [0.78, 0.77, 0.8],
+  sea: [0.24, 0.52, 0.62], land: [0.56, 0.62, 0.36], shade: [0.2, 0.22, 0.42], warm: 0.5, bg: 0.5,
+  godC: [0.99, 0.8, 0.34], godRim: [0.96, 0.5, 0.2], godA: 1,
+  stainC: [0.12, 0.1, 0.2],
+  manC: [0.8, 0.46, 0.26],
+  wave: 1, night: 1, nightY: -0.5, asha: 1,
+  acc: [170, 74, 24],
+  lGodK: 0, lBrX: 0.12, lBrY: 0.17, tBrX: 0.012, tBrY: 0.17,
 };
 
 const animistBase = {
@@ -1398,7 +1413,7 @@ export const WORLDVIEWS = {
   animism: {
     name: 'Animism',
     tagline: 'The world is full of spirits, and they must be kept content.',
-    move: { to: 'platonism', q: 'What if reason can climb past the spirits to the Good?' },
+    move: { to: 'zoroastrianism', q: 'What if one Wise Lord stands against the demons?' },
     acts: build(animistBase, [
       {
         slug: 'a-world-alive',
@@ -1445,6 +1460,64 @@ export const WORLDVIEWS = {
           god: ['The High God', 'Still far off'],
           world: ['The world', 'Its spirits remain'],
           self: ['Man', 'An ancestor, until forgotten'],
+        },
+      },
+    ]),
+  },
+  zoroastrianism: {
+    name: 'Zoroastrianism',
+    tagline: 'Light and darkness are at war, and man must choose his side.',
+    move: { to: 'platonism', q: 'What if evil is only ignorance, cured by reason?' },
+    acts: build(zoroastrianBase, [
+      {
+        slug: 'light-and-darkness',
+        name: 'Light and Darkness',
+        text: 'Ahura Mazda, the Wise Lord, dwells in endless light. Below him, in endless darkness, is the Hostile Spirit, wholly evil and not made by him. The Wise Lord made a good world to fight him, and set man in it as his ally.',
+        p: { sinDark: 1 },
+        labels: {
+          god: ['Ahura Mazda', 'The Wise Lord, in endless light'],
+          world: ['Creation', 'Good, and made for battle'],
+          bridge: ['Asha', 'Truth, the order of all things'],
+          self: ['Man', 'His ally, free to choose'],
+          sin: ['Angra Mainyu', 'The Hostile Spirit, uncreated'],
+        },
+      },
+      {
+        slug: 'the-assault',
+        name: 'The Assault',
+        text: 'The Hostile Spirit broke into the world from below, bringing death, disease, smoke and salt. The first ox and the first man died. Now good and evil are mixed in everything, and the first couple lied that he had made the world.',
+        p: { nightY: -0.28, mixture: 1, fray: 1, stainR: 0.1, stainA: 0.45, dull: 0.45, rip: -0.6 },
+        labels: {
+          god: ['Ahura Mazda', 'Holding the line, not yet the victor'],
+          world: ['The world', 'Light and darkness mixed'],
+          bridge: ['Asha', 'Torn, but not undone'],
+          self: ['Man', 'Mortal now, but born pure'],
+          sin: ['The Lie', 'An invader, not a nature'],
+        },
+      },
+      {
+        slug: 'the-choice',
+        name: 'The Choice',
+        text: 'Zarathustra brought the Wise Lord’s word: choose truth over the Lie. By good thoughts, good words and good deeds, and by keeping fire and body pure, each fights for the light. At death his deeds are weighed at the Chinvat Bridge.',
+        p: { nightY: -0.5, mixture: 0.25, asha: 0, chinvat: 1, fire: 1, fravahar: 1, fravY: -0.3, stainR: 0.06, stainA: 0.2, dull: 0.12, glow: 0.2, lBrX: 0.3, lBrY: 0.14, tBrX: 0.2, tBrY: 0.12 },
+        labels: {
+          god: ['Ahura Mazda', 'Known through his prophet'],
+          world: ['The world', 'A battlefield, kept pure'],
+          bridge: ['The Chinvat Bridge', 'Wide for the just, a thread for the wicked'],
+          self: ['The faithful', 'Good thoughts, words and deeds'],
+          sin: ['The Lie', 'Outweighed, it is hoped'],
+        },
+      },
+      {
+        slug: 'made-wonderful',
+        name: 'Made Wonderful',
+        text: 'At the end a last saviour, born of Zarathustra’s seed, raises the dead. A river of molten metal flows over the earth and makes everyone pure. The Hostile Spirit is undone, hell is purified, and the world is made wonderful.',
+        p: { night: 0, nightY: -1.3, low: [0.99, 0.9, 0.66], deep: [0.97, 0.82, 0.56], asha: 0, molten: 1, fravahar: 1, fravY: 0.07, saosh: 1, lit: 0.55, glow: 0.5, rip: 0.6, lBrX: 0.36, lBrY: -0.08, tBrX: 0.262, tBrY: -0.16 },
+        labels: {
+          god: ['Ahura Mazda', 'Supreme at last'],
+          world: ['The world', 'Made wonderful, with no dark below'],
+          bridge: ['The Saoshyant', 'The saviour still to come'],
+          self: ['All mankind', 'Raised and made pure'],
         },
       },
     ]),

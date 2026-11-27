@@ -30,7 +30,7 @@ const atRest = (r) => !r.ask && r.askOp < 0.02 && !/swap|rise/.test(r.cls) && r.
   for (const [w, h] of [[1280, 800], [375, 667]]) {
     const p = await page(w, h); await p.goto(URL + '#christian/creation'); await p.waitForTimeout(1500);
     let cur = 'christian', bad = [];
-    for (let i = 0; i < 22; i++) {
+    for (let i = 0; i < Object.keys(W).length; i++) {
       const next = W[cur].move.to;
       await p.evaluate(() => document.querySelector('#moves button').click());
       await p.waitForTimeout(700);
@@ -41,7 +41,7 @@ const atRest = (r) => !r.ask && r.askOp < 0.02 && !/swap|rise/.test(r.cls) && r.
       if (r.name !== W[next].name || !r.hash.startsWith('#' + next) || !atRest(r) || r.btn !== W[next].move.q) bad.push(`${cur}->${next}: ${JSON.stringify(r)}`);
       cur = next;
     }
-    ok(`loop of 22 by its questions at ${w}x${h}: each arrives whole and at rest`, bad.length === 0 && cur === 'christian', bad.slice(0, 3).join('\n'));
+    ok(`loop of ${Object.keys(W).length} by its questions at ${w}x${h}: each arrives whole and at rest`, bad.length === 0 && cur === 'christian', bad.slice(0, 3).join('\n'));
     await p.close();
   }
 

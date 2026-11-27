@@ -78,6 +78,8 @@ uniform vec2 uWash;             // a change of language: a stroke of clean water
 uniform vec4 uEnter;            // the first painting laid down: where the wash starts, the seconds since it began, and 1 while it runs
 uniform vec4 uHot;              // the thing whose label the pointer is on: where, how wide, how strongly lit
 uniform float uHome;            // the light that floods the page on coming home to where the questions began
+uniform float uNight, uNightY, uNightF;  // the endless darkness below: how much, the height of its front, and where it thins out above the names of the acts
+uniform float uMixture, uFire, uMolten;  // that darkness got into the world; the sacred fire on the world's crown; the river of molten metal at the end
 uniform sampler2D uBakeA, uBakeB;  // the noise that stands still (see BAKE), when uBaked is 1
 uniform float uBaked;
 uniform sampler2D uWetM;           // how wet the paint still is, where a move has just laid it (see WET below)
@@ -257,6 +259,25 @@ void main(){
     float m = smoothstep(rG * 1.7, -rG * .3, mr);
     m *= m * (3. - 2. * m);
     A += K(uGodC) * m * uMist * (.4 + .5 * v1 + .3 * fbm(q * 3. + t * .02)) * mix(1., bloom(q * 1.7, 71.), .5);
+  }
+
+
+  // ---------- the endless darkness below: indigo and soot, rising to a ragged front with fingers reaching up from it,
+  //            and a pale band of empty paper just above, the Void between the two realms. It thins out above the
+  //            names of the acts, so that they stay on clean paper ----------
+  if (uNight > .001) {
+    float front = uNightY - .2 * q.x * q.x;                                    // (a little higher under the world than at the sides)
+    float e = q.y - front + (fbm(vec2(q.x * 1.6 + t * .01, 4.1 + t * .006)) - .5) * .22 + wM.x * .06 + (v1 - .5) * .08;
+    float base = smoothstep(uNightF - .005, uNightF + .07, q.y + wM.y * .04 + (v2 - .5) * .04);
+    float night = smoothstep(.03, -.1, e) * base * uNight;
+    float deep = smoothstep(-.02, -.42, e);
+    vec3 An = mix(K(vec3(.5, .47, .6)), K(vec3(.16, .14, .26)), deep) * (.85 + .7 * v1) * bloom(q * 1.6, 23.) + K(vec3(.22, .18, .2)) * (.3 + .6 * v2) * deep;
+    A = A * (1. - .75 * night) + An * night * 1.2;
+    A += K(vec3(.18, .16, .3)) * exp(-pow((e + .025) / .02, 2.)) * .5 * base * uNight;      // its dark tide line
+    // smoke rising from it toward the light, in thin strands that thin out as they climb
+    float sm = noise(vec2(q.x * 8. + wL.x * 3. + .4 * sin(q.y * 5. + t * .15), q.y * 1.8 - t * .05));
+    A += K(vec3(.42, .4, .52)) * smoothstep(.62, .86, sm) * exp(-max(e, 0.) / .1) * step(-.02, e) * .45 * base * uNight;
+    A *= 1. - .4 * exp(-pow((e - .1) / .07, 2.)) * base * uNight;                           // the Void
   }
 
   // glory going out from God in slow waves
@@ -493,6 +514,18 @@ void main(){
       A += K(col) * fill * mix(.55, .9, uCopyDark) * (.75 + .5 * v1) * inW * uCopies;
       ink += smoothstep(.0026, .0008, abs(d + .002)) * .55 * (1. - uCopyDark) * step(.35, noise(lp * 30. + fi)) * inW * uCopies;
     }
+  }
+
+
+  // ---------- the darkness got into the world: it creeps up from the world's foot in tongues, and dulls what it covers ----------
+  if (uMixture > .001 && dW < .02) {
+    vec2 p = q - Wc;
+    float inW = smoothstep(.0, -.025, dW) * uWorldA;
+    float crawl = fbm(p * 3.2 + kL * 1.5 + vec2(0., -t * .035));
+    float reach = uNightY + .3 - .55 * q.x * q.x;
+    float m = smoothstep(.12, -.12, q.y - reach + (crawl - .5) * .45) * inW * uMixture;
+    A = A * (1. - .35 * m) + K(vec3(.25, .22, .36)) * m * (.7 + .9 * v1) * bloom(q * 2.4, 37.);
+    ink += penW(q.y - reach + (crawl - .5) * .45 + .1, kPW) * step(.45, noise(p * 9. + 2.)) * .5 * inW * uMixture;
   }
 
   ink *= uWorldA;
@@ -746,6 +779,50 @@ void main(){
     A += K(uGodC) * layersAt(d, 3., .02, .004, tide, nM, nF) * (.75 + .5 * v1) * uMoons;
     A += K(uGodRim) * layersAt(dFull + R0 * .45, 7., .03, .01, .3, nM, nF) * .35 * uMoons;
     ink += penW(d + .008 + nM.x * .01, nPW) * .8 * uMoons;
+  }
+
+
+  // ---------- the sacred fire on the world's crown: a flame that never goes out, gold at its heart, with the paper
+  //            lifted round it as its light pushes back the dark ----------
+  if (uFire > .001) {
+    vec2 F = vec2(0., Wc.y + rW + .04);                              // (in the bowl of its altar, drawn with the connectors)
+    vec2 fp = q - F;
+    A *= 1. - .55 * uFire * exp(-pow(length(fp - vec2(0., .05)) / .22, 2.));
+    if (abs(fp.x) < .09 && fp.y > -.04 && fp.y < .2) {
+      float h = .13 * (1. + .06 * sin(t * 2.3) + .04 * sin(t * 3.7 + 1.));
+      float yy = clamp((fp.y + .012) / h, 0., 1.);
+      float sway = (noise(vec2(fp.y * 9. - t * 1.6, 3.)) - .5) * .03 * yy + .008 * sin(t * 1.3) * yy * yy;
+      float r = .046 * pow(sin(3.1416 * min(1., yy * 1.25 + .05)), .7) * (1. - .55 * yy) + .002;
+      float d = max(abs(fp.x - sway) - r, -fp.y - .012);
+      d = max(d, fp.y - h);
+      float lick = (noise(vec2(fp.x * 30., fp.y * 14. - t * 3.)) - .5) * .012;
+      float body = smoothstep(.004, -.006, d + lick);
+      float heart = smoothstep(.004, -.03, d + lick + yy * .012) * smoothstep(1., .3, yy);
+      A *= 1. - .9 * body * uFire;
+      ink *= 1. - .8 * body * uFire;
+      A += K(vec3(.97, .52, .16)) * body * (.75 + .4 * (1. - yy)) * uFire;
+      A += K(vec3(.99, .86, .45)) * heart * .6 * uFire;
+      A *= 1. - .55 * heart * uFire;
+      ink += penW(d + lick + .002, .0018) * .55 * uFire * step(.3, noise(fp * 40. + t));
+    }
+  }
+
+  // ---------- the river of molten metal, poured over the earth at the end: it runs across the world and down off its
+  //            sides, bright as it flows, and the dark it passes through is lifted ----------
+  if (uMolten > .001 && dW < .06) {
+    vec2 p = q - Wc;
+    float yc = .02 + .05 * sin(p.x * 8. + 1.2) + .015 * sin(p.x * 17. - t * .4);
+    float w = .034 + .01 * sin(p.x * 13. + 2.);
+    float d = abs(p.y - yc + kM.x * .02) - w;
+    float inW = smoothstep(.005, -.02, dW) * uWorldA;
+    float riv = smoothstep(.004, -.006, d) * inW;
+    float flow = fbm(vec2(p.x * 9. - t * .5, p.y * 22.));
+    A *= 1. - .5 * uMolten * exp(-pow(max(d, 0.) / .05, 2.)) * inW;
+    A *= 1. - .85 * riv * uMolten;
+    ink *= 1. - .8 * riv * uMolten;
+    A += K(vec3(.98, .55, .14)) * riv * (.55 + .7 * flow) * uMolten;
+    A += K(vec3(1., .9, .55)) * riv * smoothstep(.55, .75, flow) * .5 * uMolten;
+    ink += penW(d + .002, kPW) * .45 * inW * uMolten * step(.35, noise(p * 12.));
   }
 
   // ---------- light lifted around man ----------

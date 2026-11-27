@@ -236,6 +236,10 @@ body.short .act p::first-letter { font-size: 2.888em; margin-top: -.095em; margi
   transition: opacity .5s ease;
   will-change: transform;
 }
+/* (lettering on the dark of Zoroastrianism's lower realm, in paper-white) */
+.l.pale { color: #f6efe0; transition: opacity .5s ease, color .6s ease; }
+svg#lines g.pale path { stroke: #f6efe0; }
+svg#lines g.pale circle { fill: #f6efe0; }
 .l small { display: block; font-size: .68em; opacity: .85; margin-top: 2px; }
 .l .hang-l { margin-left: -.44em; }
 .l .hang-r { margin-right: -.44em; }
@@ -262,6 +266,8 @@ body.short .act p::first-letter { font-size: 2.888em; margin-top: -.095em; margi
 #marks button:hover { opacity: 1; }
 #marks button[aria-current='true'] { opacity: 1; color: var(--red); font-weight: 700; }
 #marks button { transition: opacity .3s, color .6s; }
+#marks.pale button { color: #f3ead8; opacity: .85; }
+#marks.pale button[aria-current='true'] { color: #f6c35e; opacity: 1; }
 /* between worldviews the names of the acts fade out and back with the other words (see renderText) */
 body.swap-all #marks button { opacity: 0; }
 /* too little room for four names: only the open act keeps its name */

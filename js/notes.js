@@ -572,6 +572,38 @@ export const NOTES = {
       },
     },
 
+    zoroastrianism: {
+      god: {
+        0: ['Ahura Mazda, the Wise Lord, dwells in light and is wholly good: “the region of light is the place of Auharmazd, which they call ‘endless light’.” Below him the Hostile Spirit waits “in darkness, with backward understanding and desire for destruction”.', 'Bundahishn 1.2–3 (tr. West)'],
+        1: ['The Wise Lord is not yet the victor. He set a time on the war, because “if I do not grant a period of contest, then it will be possible for him to act so that he may be able to cause the seduction of my creatures to himself.” The God of the Bible makes no terms with evil. Of the Persian king Cyrus he says: “I form light and create darkness… I am the LORD, who does all these things.”', 'Bundahishn 1.17 · Isa 45:1, 7'],
+        2: ['Zarathustra came to know the Wise Lord by asking him: “who, as a skilful artisan, hath made the lights and the darkness?” In his own hymn the night is God’s work as much as the day; the later books gave the darkness to his enemy.', 'Yasna 44.5 (tr. Mills)'],
+        3: ['At the end the Wise Lord wins, and “brings the land of hell back for the enlargement of the world.” But a God who must wait nine thousand years to win was never Lord of all. “The LORD has established his throne in the heavens, and his kingdom rules over all.”', 'Bundahishn 30.32 · Ps 103:19'],
+      },
+      world: {
+        0: ['The world is good, made by the Wise Lord to fight evil in. Before birth the guardian spirits of men were asked whether they would “contend in a bodily form with the fiend,” and they agreed to go. Here Zoroastrians are right that matter is good: “God saw everything that he had made, and behold, it was very good.”', 'Bundahishn 2.10–11 · Gen 1:31'],
+        1: ['The Hostile Spirit “sprang, like a snake, out of the sky down to the earth… just like a fly, he rushed out upon the whole creation.” Since then good and evil have been mixed in everything.', 'Bundahishn 3.11–14 (tr. West)'],
+        2: ['The world is a battlefield, kept pure by fire, water and rites. A corpse is the worst defilement, so the dead were laid out in towers for the birds. Jesus put defilement in the heart instead: “the things that come out of a person are what defile him.”', 'Vendidad 3, 5–8 · Mark 7:15'],
+        3: ['All is made wonderful, and “the world is immortal for ever and everlasting.” Christians hope for a new earth too, made new by God, not won back from a rival: “Behold, I am making all things new.”', 'Bundahishn 30.32 · Rev 21:5'],
+      },
+      bridge: {
+        0: ['Asha is truth and right order, the way things ought to be; its enemy is druj, the Lie. The prayer said most often begins: “Holiness is the best of all good.” Scripture roots right order in God himself, not in a principle beside him: “The Rock, his work is perfect, for all his ways are justice.”', 'Ashem Vohu (tr. Darmesteter) · Deut 32:4'],
+        1: ['The assault struck each creation in turn: the sky, water, earth, plants, the first ox, the first man and fire. Yet the Wise Lord had set its limit before it began: “he knew that by appointing this period the evil spirit would be undone.”', 'Bundahishn 1.18; 3'],
+        2: ['At death the soul comes to the Chinvat Bridge, over hell. A maiden meets the righteous soul: “above the Kinvad bridge she places it in the presence of the heavenly gods themselves.” For the wicked the bridge narrows to a thread, and they fall. Christ does not wait at the far end of a bridge; he is the way across: “No one comes to the Father except through me.”', 'Vendidad 19.30 (tr. Darmesteter) · John 14:6'],
+        3: ['The Saoshyant, the last saviour, is born at the end of time to a maiden, from Zarathustra’s seed, which the angels “in time will blend… with a mother.” He is a man who helps, not God who saves. Wise men from the east, magi, the title of Persian priests, came to worship the child Jesus.', 'Bundahishn 32.8 · Matt 2:1–11'],
+      },
+      self: {
+        0: ['Man is the Wise Lord’s ally. His guardian spirit, his fravashi, chose this life before birth: the fravashis of men “became of the same opinion with the omniscient wisdom about going to the world.”', 'Bundahishn 2.11 (tr. West)'],
+        1: ['Man is born pure, and evil comes at him from outside. Scripture finds it within: “Behold, I was brought forth in iniquity, and in sin did my mother conceive me.”', 'Ps 51:5'],
+        2: ['The faithful promise three things when they are first tied with the sacred cord: good thoughts, good words, good deeds. The winged Faravahar about him is read today as the fravashi, his guardian spirit, with three rows of feathers for the three. The reading is modern; what the Persian kings meant by it is not known.', 'Achaemenid reliefs, Persepolis'],
+        3: ['All are raised, and ask one another, “hast thou been righteous or wicked?” Then “all men will pass into that melted metal and will become pure.” If the wicked are made pure anyway, the weighing at the bridge settled little. Jesus spoke of two ends: “these will go away into eternal punishment, but the righteous into eternal life.”', 'Bundahishn 30.20–21 · Matt 25:46'],
+      },
+      sin: {
+        0: ['The two spirits are twins: “a better thing, they two, and a worse, as to thought, as to word, and as to deed.” If good and evil are equally old, nothing stands above them to say which is good. Many Parsis today hold that evil was never God’s equal. Scripture: “God is light, and in him is no darkness at all.”', 'Yasna 30.3 (tr. Mills) · 1 John 1:5'],
+        1: ['The Lie came at man from outside. The first couple “exclaimed that the evil spirit created the water and earth,” and “through that false speech they both became wicked.” Yet even the later books give the Hostile Spirit no body of his own: he can only spoil what God made. That is near the Christian answer, that evil is a parasite on the good.', 'Bundahishn 15.8–9 (tr. West)'],
+        2: ['Deeds are weighed in Rashnu’s golden scales. Arda Viraf was told that “every one whose good works are three Srosho-charanams more than his sin is for heaven.” But no one can tip those scales: “If you, O LORD, should mark iniquities, O Lord, who could stand?” The Christian hope is forgiveness, not a surplus: “by grace you have been saved through faith… not a result of works.”', 'Arda Viraf 6 (tr. West) · Ps 130:3 · Eph 2:8–9'],
+      },
+    },
+
     platonism: {
       god: {
         0: ['The Good: the highest of the Forms, source of the being and truth of all things. Plato calls it “beyond being, exceeding it in dignity and power”. It is the source of all, but not a person.', 'Plato, Republic 509b'],
@@ -1192,6 +1224,38 @@ export const NOTES = {
       sin: {
         1: ['La ofensa: un tabú roto, un espíritu airado. Es una ruptura del equilibrio con los poderes, no un pecado contra un Dios santo.', ''],
         2: ['La ofensa se apacigua, no se perdona: el espíritu se calma, pero la relación sigue siendo de miedo. “En el amor no hay temor, sino que el perfecto amor echa fuera el temor.”', '1 Jn 4:18'],
+      },
+    },
+
+    zoroastrianism: {
+      god: {
+        0: ['Ahura Mazda, el Señor Sabio, mora en la luz y es bueno del todo: “la región de la luz es el lugar de Ormazd, que llaman ‘luz sin fin’”. Debajo de él aguarda el Espíritu Hostil, “en tinieblas, de entendimiento torcido y con deseo de destruir”.', 'Bundahishn 1.2–3'],
+        1: ['El Señor Sabio aún no ha vencido. Puso plazo a la guerra, porque “si no concedo un tiempo de lucha, él podrá obrar de modo que seduzca a mis criaturas para sí”. El Dios de la Biblia no pacta con el mal. Del rey persa Ciro dice: “que formo la luz y creo las tinieblas… Yo Jehová soy el que hago todo esto.”', 'Bundahishn 1.17 · Is 45:1, 7'],
+        2: ['Zaratustra conoció al Señor Sabio preguntándole: “¿quién, como hábil artesano, hizo las luces y las tinieblas?” En su propio himno la noche es obra de Dios tanto como el día; los libros posteriores dieron las tinieblas a su enemigo.', 'Yasna 44.5'],
+        3: ['Al final vence el Señor Sabio, y “devuelve la tierra del infierno para ensanchar el mundo”. Pero un Dios que debe esperar nueve mil años para vencer nunca fue Señor de todo. “Jehová estableció en los cielos su trono, y su reino domina sobre todos.”', 'Bundahishn 30.32 · Sal 103:19'],
+      },
+      world: {
+        0: ['El mundo es bueno, hecho por el Señor Sabio para luchar en él contra el mal. Antes de nacer, a los espíritus guardianes de los hombres se les preguntó si querían “luchar en forma corporal contra el demonio”, y aceptaron ir. En esto el zoroastrismo acierta: la materia es buena. “Y vio Dios todo lo que había hecho, y he aquí que era bueno en gran manera.”', 'Bundahishn 2.10–11 · Gn 1:31'],
+        1: ['El Espíritu Hostil “saltó como una serpiente del cielo a la tierra… igual que una mosca, se lanzó sobre toda la creación”. Desde entonces el bien y el mal están mezclados en todo.', 'Bundahishn 3.11–14'],
+        2: ['El mundo es un campo de batalla, guardado puro con fuego, agua y ritos. Un cadáver es la peor impureza, y por eso los muertos se dejaban en torres para las aves. Jesús puso la impureza en el corazón: “lo que sale de él, eso es lo que contamina al hombre.”', 'Vendidad 3, 5–8 · Mr 7:15'],
+        3: ['Todo se hace maravilloso, y “el mundo es inmortal por siempre jamás”. También los cristianos esperan una tierra nueva, pero hecha nueva por Dios, no recobrada de un rival: “He aquí, yo hago nuevas todas las cosas.”', 'Bundahishn 30.32 · Ap 21:5'],
+      },
+      bridge: {
+        0: ['Asha es la verdad y el recto orden, como deben ser las cosas; su enemiga es la druj, la Mentira. La oración que más se reza empieza: “La santidad es el mejor de todos los bienes.” La Escritura arraiga el recto orden en Dios mismo, no en un principio junto a él: “Él es la Roca, cuya obra es perfecta, porque todos sus caminos son rectitud.”', 'Ashem Vohu · Dt 32:4'],
+        1: ['El asalto golpeó cada creación por turno: el cielo, el agua, la tierra, las plantas, el primer buey, el primer hombre y el fuego. Pero el Señor Sabio había fijado su límite antes de que empezara: “sabía que, fijando ese plazo, el espíritu maligno quedaría deshecho”.', 'Bundahishn 1.18; 3'],
+        2: ['Al morir, el alma llega al puente Chinvat, sobre el infierno. Una doncella sale al encuentro del alma justa: “por encima del puente Chinvat la coloca ante los mismos dioses celestiales”. Para el malvado el puente se estrecha hasta un hilo, y cae. Cristo no espera al otro lado de un puente; él es el camino: “nadie viene al Padre, sino por mí.”', 'Vendidad 19.30 · Jn 14:6'],
+        3: ['El Saoshyant, el último salvador, nace al fin de los tiempos de una doncella, de la simiente de Zaratustra, que los ángeles “a su tiempo unirán… con una madre”. Es un hombre que ayuda, no Dios que salva. Unos magos, título de los sacerdotes persas, vinieron del oriente a adorar al niño Jesús.', 'Bundahishn 32.8 · Mt 2:1–11'],
+      },
+      self: {
+        0: ['El hombre es aliado del Señor Sabio. Su espíritu guardián, su fravashi, eligió esta vida antes de nacer: los fravashis de los hombres “se pusieron de acuerdo con la sabiduría omnisciente en ir al mundo”.', 'Bundahishn 2.11'],
+        1: ['El hombre nace puro, y el mal le viene de fuera. La Escritura lo halla dentro: “He aquí, en maldad he sido formado, y en pecado me concibió mi madre.”', 'Sal 51:5'],
+        2: ['Los fieles prometen tres cosas cuando se les ciñe por primera vez el cordón sagrado: buenos pensamientos, buenas palabras, buenas obras. El Faravahar alado que lo rodea se lee hoy como el fravashi, su espíritu guardián, con tres filas de plumas por las tres. Esa lectura es moderna; no se sabe qué quisieron decir con él los reyes persas.', 'Relieves aqueménidas, Persépolis'],
+        3: ['Todos resucitan, y se preguntan unos a otros: “¿has sido justo o malvado?” Luego “todos los hombres pasarán por ese metal fundido y quedarán puros”. Si los malvados quedan puros de todos modos, poco decidió el peso en el puente. Jesús habló de dos destinos: “E irán éstos al castigo eterno, y los justos a la vida eterna.”', 'Bundahishn 30.20–21 · Mt 25:46'],
+      },
+      sin: {
+        0: ['Los dos espíritus son gemelos: “uno mejor y otro peor, en pensamiento, en palabra y en obra”. Si el bien y el mal son igual de antiguos, nada está por encima de ellos para decir cuál es el bueno. Muchos parsis de hoy sostienen que el mal nunca fue igual a Dios. La Escritura: “Dios es luz, y no hay ningunas tinieblas en él.”', 'Yasna 30.3 · 1 Jn 1:5'],
+        1: ['La Mentira le vino al hombre de fuera. La primera pareja “exclamó que el espíritu maligno había creado el agua y la tierra”, y “por esa palabra falsa ambos se volvieron malvados”. Aun así, los libros posteriores no dan al Espíritu Hostil cuerpo propio: solo puede estropear lo que Dios hizo. Eso se acerca a la respuesta cristiana: el mal es un parásito del bien.', 'Bundahishn 15.8–9'],
+        2: ['Las obras se pesan en la balanza de oro de Rashnu. A Arda Viraf se le dijo que “todo aquel cuyas buenas obras superen a su pecado en tres sroshocharanams va al cielo”. Pero nadie puede inclinar esa balanza: “JAH, si mirares a los pecados, ¿quién, oh Señor, podrá mantenerse?” La esperanza cristiana es el perdón, no un saldo a favor: “por gracia sois salvos por medio de la fe… no por obras.”', 'Arda Viraf 6 · Sal 130:3 · Ef 2:8–9'],
       },
     },
 

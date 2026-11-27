@@ -20,7 +20,7 @@ export const BREAKS = 'Re-den-ción Re-lo-je-ro Ig-no-ran-cia Su-pers-ti-ción I
   + 'Au-to-ex-pre-sión Rea-li-za-ción Des-co-ne-xión Co-no-ci-mien-to Li-be-ra-ción Su-fri-mien-to Ex-tin-ción Alie-na-ción '
   + 'Re-vo-lu-ción Co-mu-nis-mo Re-pre-sión Ina-ca-ba-do Sin-gu-la-ri-dad As-cen-sión Des-per-tar An-te-pa-sa-dos Su-mi-sión '
   + 'Pro-gre-so Mo-vi-mien-to Ple-ni-tud Elec-ción Arro-ja-do Ab-sur-do Re-tor-no Bon-da-do-so Crea-ción In-cier-to Ve-ni-de-ro '
-  + 'Sa-gra-da Me-mo-ria Des-or-den Cul-ti-vo Pri-sión Ca-ver-na As-cen-so Exi-lio Sen-ti-do Re-me-dio Mun-dos Sen-de-ro';
+  + 'Sa-gra-da Me-mo-ria Des-or-den Cul-ti-vo Pri-sión Ca-ver-na As-cen-so Exi-lio Sen-ti-do Re-me-dio Mun-dos Sen-de-ro Re-no-va-ción Ti-nie-blas';
 
 export const NAMES = {
   christian: 'Teísmo cristiano',
@@ -43,6 +43,7 @@ export const NAMES = {
   taoism: 'Taoísmo',
   confucianism: 'Confucianismo',
   animism: 'Animismo',
+  zoroastrianism: 'Zoroastrismo',
   platonism: 'Platonismo',
   gnosticism: 'Gnosticismo',
 };
@@ -646,7 +647,7 @@ const TEXT = {
 
   animism: {
     tagline: 'El mundo está lleno de espíritus, y hay que tenerlos contentos.',
-    q: '¿Y si la razón sube más allá de los espíritus, hasta el Bien?',
+    q: '¿Y si un Señor Sabio se alza contra los demonios?',
     acts: [
       ['Un mundo vivo', 'Los espíritus habitan en ríos, árboles, animales y en los muertos. Muy por encima de ellos hay un Creador, pero se ha retirado y rara vez se le invoca.', {
         god: ['El Dios Supremo', 'Lejano, y rara vez invocado'],
@@ -670,6 +671,40 @@ const TEXT = {
         god: ['El Dios Supremo', 'Aún lejos'],
         world: ['El mundo', 'Sus espíritus permanecen'],
         self: ['El hombre', 'Antepasado, hasta ser olvidado'],
+      }],
+    ],
+  },
+
+  zoroastrianism: {
+    tagline: 'La luz y las tinieblas están en guerra, y el hombre debe elegir su bando.',
+    q: '¿Y si el mal es solo ignorancia, que la razón cura?',
+    acts: [
+      ['Luz y tinieblas', 'Ahura Mazda, el Señor Sabio, mora en la luz sin fin. Debajo de él, en tinieblas sin fin, está el Espíritu Hostil, malo del todo y no hecho por él. El Señor Sabio hizo un mundo bueno para combatirlo, y puso en él al hombre como su aliado.', {
+        god: ['Ahura Mazda', 'El Señor Sabio, en la luz sin fin'],
+        world: ['La creación', 'Buena, y hecha para la batalla'],
+        bridge: ['Asha', 'La verdad, el orden de todas las cosas'],
+        self: ['El hombre', 'Su aliado, libre para elegir'],
+        sin: ['Angra Mainyu', 'El Espíritu Hostil, increado'],
+      }],
+      ['El asalto', 'El Espíritu Hostil irrumpió en el mundo desde abajo, trayendo muerte, enfermedad, humo y sal. Murieron el primer buey y el primer hombre. Ahora el bien y el mal están mezclados en todo, y la primera pareja mintió diciendo que él había hecho el mundo.', {
+        god: ['Ahura Mazda', 'Resiste, aún sin vencer'],
+        world: ['El mundo', 'Luz y tinieblas mezcladas'],
+        bridge: ['Asha', 'Desgarrada, pero no deshecha'],
+        self: ['El hombre', 'Mortal ya, pero nacido puro'],
+        sin: ['La Mentira', 'Un invasor, no una naturaleza'],
+      }],
+      ['La elección', 'Zaratustra trajo la palabra del Señor Sabio: elegir la verdad y no la Mentira. Con buenos pensamientos, buenas palabras y buenas obras, y guardando puros el fuego y el cuerpo, cada uno lucha por la luz. Al morir, sus obras se pesan en el puente Chinvat.', {
+        god: ['Ahura Mazda', 'Conocido por su profeta'],
+        world: ['El mundo', 'Un campo de batalla, guardado puro'],
+        bridge: ['El puente Chinvat', 'Ancho para el justo, un hilo para el malvado'],
+        self: ['Los fieles', 'Buenos pensamientos, palabras y obras'],
+        sin: ['La Mentira', 'Vencida en la balanza, se espera'],
+      }],
+      ['La renovación', 'Al final, un último salvador, nacido de la simiente de Zaratustra, resucita a los muertos. Un río de metal fundido corre sobre la tierra y deja puros a todos. El Espíritu Hostil queda deshecho, el infierno purificado, y el mundo hecho maravilloso.', {
+        god: ['Ahura Mazda', 'Supremo al fin'],
+        world: ['El mundo', 'Hecho maravilloso, sin tinieblas debajo'],
+        bridge: ['El Saoshyant', 'El salvador que aún ha de venir'],
+        self: ['Toda la humanidad', 'Resucitada y hecha pura'],
       }],
     ],
   },
